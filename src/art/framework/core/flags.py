@@ -16,7 +16,10 @@ class Flags(Flag):
     MARKED = auto()
     DELETED = auto()
     GENUINE = auto()
+    # additional (artificial) tokens which are inserted into the token stream, syntactic sugar - desugaring ...
     SYNTHETIC = auto()
+    # contextual, recognized in specific contexts, similar to C# get/set, async/await ...
+    CONTEXTUAL = auto()
     LEAF = auto()
     OVERFLOW = auto()
     UNDERFLOW = auto()
