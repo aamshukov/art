@@ -25,7 +25,7 @@ class Content(Base):
         self._cached_line = Content.FIRST_LINE
         self._cached_position = Content.FIRST_POSITION
         self._tab_map = None  # tab positions
-        self._tab_size = tab_size  # tab size, default is 4
+        self._tab_size = tab_size  # tab size, default is 4 if == 0 - do not consider
 
     @property
     def data(self):
@@ -58,8 +58,9 @@ class Content(Base):
         i = 0
         n = self._count
         d = self._data
+        t = self._tab_size > 0  # consider tabs if tab size > 0
         line_map = [0] * n
-        tab_map = [False] * n
+        tab_map = [False] * (n if t else 0)
         while i < n:
             line_map[k] = i
             k += 1
@@ -72,7 +73,7 @@ class Content(Base):
                     else:
                         i += 1
                     break
-                elif ch == '\t':
+                elif t and ch == '\t':
                     tab_map[i] = True  # i is column
                 i += 1
                 if i >= n:
@@ -80,9 +81,10 @@ class Content(Base):
         if self._line_map is not None:
             self._line_map.clear()
         self._line_map = [line_map[j] for j in range(k)]
-        if self._tab_map is not None:
-            self._tab_map.clear()
-        self._tab_map = tab_map.copy()
+        if t:
+            if self._tab_map is not None:
+                self._tab_map.clear()
+            self._tab_map = tab_map.copy()
 
     def get_line(self, position):
         """
@@ -114,9 +116,13 @@ class Content(Base):
         assert position < self._count, "Position out of range."
         line_start = self._line_map[self.get_line(position) - Content.FIRST_LINE]
         column = 0
-        for k in range(line_start, position):
-            if self._tab_map[k]:
-                column = (column // self._tab_size * self._tab_size) + self._tab_size
-            else:
+        if self._tab_size > 0:  # consider tabs
+            for k in range(line_start, position):
+                if self._tab_map[k]:
+                    column = (column // self._tab_size * self._tab_size) + self._tab_size
+                else:
+                    column += 1
+        else:
+            for k in range(line_start, position):
                 column += 1
         return column + Content.FIRST_COLUMN

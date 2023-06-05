@@ -313,6 +313,29 @@ class Test(unittest.TestCase):
         assert(content.get_line(93) == 0)
         assert(content.get_line(94) == 1)
 
+    def test_content_location_no_tabs_success(self):
+        dp = StringDataProvider(Test.TABBED_TEXT)
+        data = dp.load()
+        content = Content(data, Source(0, ''), tab_size=0)
+        assert len(data) == content.count
+        assert Text.equal(data, content.data)
+        content.build_line_map()
+        assert(content.get_line(0) == Content.FIRST_LINE)
+        assert(content.get_column(0) == Content.FIRST_COLUMN)
+        assert(content.get_line(1) == Content.FIRST_LINE)
+        assert(content.get_column(1) == 1)
+        assert(content.get_line(3) == Content.FIRST_LINE)
+        assert(content.get_column(3) == 3)
+        assert(content.get_column(4) == 4)
+        assert(content.get_column(5) == 5)
+        assert(content.get_column(6) == 6)
+        assert(content.get_column(7) == 7)
+        assert(content.get_column(8) == 8)
+        assert(content.get_line(91) == 0)
+        assert(content.get_line(92) == 0)
+        assert(content.get_line(93) == 0)
+        assert(content.get_line(94) == 1)
+
 
 if __name__ == '__main__':
     """
