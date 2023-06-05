@@ -2,6 +2,7 @@
 # UI Lab Inc. Arthur Amshukov
 #
 """ Vertex """
+from collections import namedtuple
 from art.framework.core.flags import Flags
 from art.framework.core.colors import Colors
 from art.framework.core.text import Text
@@ -13,6 +14,7 @@ from art.framework.core.visitable import Visitable
 class Vertex(Entity, Visitable):
     """
     """
+    AdjValue = namedtuple('AdjValue', 'vertex edge')
 
     def __init__(self,
                  id,
@@ -145,12 +147,12 @@ class Vertex(Entity, Visitable):
     def add_adjacence(self, vertex, edge):
         """
         """
-        self._adjacencies.append(DomainHelper.AdjValue(vertex, edge))
+        self._adjacencies.append(Vertex.AdjValue(vertex, edge))
 
     def remove_adjacence(self, vertex, edge):
         """
         """
-        self._adjacencies.remove(DomainHelper.AdjValue(vertex, edge))
+        self._adjacencies.remove(Vertex.AdjValue(vertex, edge))
 
     def validate(self):
         """

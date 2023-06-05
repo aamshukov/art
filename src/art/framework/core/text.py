@@ -130,3 +130,11 @@ class Text(Base):
             result.append(index)
             index += len(pattern)
         return result
+
+    @staticmethod
+    def epsilon_codepoint():
+        return 0x000003B5
+
+    @staticmethod
+    def epsilon():
+        return 'ε'

@@ -22,32 +22,25 @@ class Value(Equatable):
     def __hash__(self):
         """
         """
-        result = super().__hash__() ^ hash(self._version)
-        return result
+        return hash(self._version)
 
     @abstractmethod
     def __eq__(self, other):
         """
         """
-        result = (super().__eq__(other) and
-                  Text.equal(self._version, other.version))
-        return result
+        return Text.equal(self._version, other.version)
 
     @abstractmethod
     def __lt__(self, other):
         """
         """
-        result = (super().__lt__(other) and
-                  self._version < other.version)
-        return result
+        return self._version < other.version
 
     @abstractmethod
     def __le__(self, other):
         """
         """
-        result = (super().__le__(other) and
-                  self._version <= other.version)
-        return result
+        return self._version <= other.version
 
     @property
     def version(self):

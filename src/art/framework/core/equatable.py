@@ -15,8 +15,7 @@ class Equatable(Base):
     def __hash__(self):
         """
         """
-        result = super().__hash__()
-        return result
+        raise NotImplemented(self.__hash__.__qualname__)
 
     @abstractmethod
     def __eq__(self, other):
