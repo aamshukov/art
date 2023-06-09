@@ -10,7 +10,6 @@ from art.framework.core.visitor import Visitor
 class GraphVisitor(Visitor):
     """
     """
-
     def __init__(self, graph):
         """
         """

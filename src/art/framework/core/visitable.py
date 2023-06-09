@@ -10,7 +10,6 @@ from art.framework.core.base import Base
 class Visitable(Base):
     """
     """
-
     @abstractmethod
     def accept(self, visitor, *args, **kwargs):
         """

@@ -17,7 +17,6 @@ from art.framework.core.vertex import Vertex
 class GraphAlgorithms(Base):
     """
     """
-
     @staticmethod
     def collect_predecessors(vertex, graph):
         """

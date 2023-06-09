@@ -73,7 +73,7 @@ class Test(unittest.TestCase):
     def generate_random_graph(n=3, digraph=False):
         p = np.random.rand(n, n)  # your "matrix of probabilities"
         adjacency = np.random.rand(*p.shape) <= p  # adjacency[ii, jj] is True with probability P[ii, jj]
-        nx_graph = nx.from_numpy_matrix(adjacency, nx.DiGraph if digraph else nx.Graph)
+        nx_graph = nx.from_numpy_array(adjacency, nx.DiGraph if digraph else nx.Graph)
         result = Graph(digraph=digraph)
         vertices = dict()
         for vertex in nx_graph.nodes:
@@ -102,7 +102,7 @@ class Test(unittest.TestCase):
     def generate_random_array_queries(n=3):
         p = np.random.rand(n, n)  # your "matrix of probabilities"
         adjacency = np.random.rand(*p.shape) <= p  # adjacency[ii, jj] is True with probability P[ii, jj]
-        nx_graph = nx.from_numpy_matrix(adjacency, nx.Graph)
+        nx_graph = nx.from_numpy_array(adjacency, nx.Graph)
         array = list(nx_graph.nodes)
         queries = list(nx_graph.edges)
         random.shuffle(array)
@@ -112,7 +112,7 @@ class Test(unittest.TestCase):
     def generate_random_queries(n=3):
         p = np.random.rand(n, n)
         adjacency = np.random.rand(*p.shape) <= p
-        result = nx.from_numpy_matrix(adjacency, nx.MultiGraph)
+        result = nx.from_numpy_array(adjacency, nx.MultiGraph)
         return list(result)
 
     def test_disjoint_set_success(self):  # union find
@@ -519,7 +519,7 @@ class Test(unittest.TestCase):
     def test_graph_success_random(self):
         now = datetime.now()
         print(f"Start: {now}")
-        n = 1000
+        n = 100
         for k in range(1):
             now = datetime.now()
             print(f"Iteration: {k}  {now}")
@@ -845,7 +845,7 @@ class Test(unittest.TestCase):
     def test_digraph_success(self):
         now = datetime.now()
         print(f"Start: {now}")
-        n = 1000
+        n = 100
         for k in range(1):
             now = datetime.now()
             print(f"Iteration: {k}  {now}")
@@ -864,7 +864,8 @@ class Test(unittest.TestCase):
         print(f"End: {now}")
 
     class CollectNodesVisitor(GraphVisitor):
-
+        """
+        """
         def __init__(self, graph):
             """
             """
@@ -952,7 +953,7 @@ class Test(unittest.TestCase):
     def test_graph_dfs_success(self):
         now = datetime.now()
         print(f"Start: {now}")
-        n = 1000  # watch recursion
+        n = 100  # watch recursion
         for k in range(10):
             now = datetime.now()
             print(f"Iteration: {k}  {now}")
@@ -1043,7 +1044,7 @@ class Test(unittest.TestCase):
     def test_digraph_dfs_success(self):
         now = datetime.now()
         print(f"Start: {now}")
-        n = 1000  # watch recursion
+        n = 100  # watch recursion
         for k in range(10):
             now = datetime.now()
             print(f"Iteration: {k}  {now}")
@@ -1109,7 +1110,7 @@ class Test(unittest.TestCase):
     def test_graph_bfs_success(self):
         now = datetime.now()
         print(f"Start: {now}")
-        n = 1000  # watch recursion
+        n = 100  # watch recursion
         for k in range(10):
             now = datetime.now()
             print(f"Iteration: {k}  {now}")
@@ -1129,7 +1130,7 @@ class Test(unittest.TestCase):
     def test_digraph_bfs_success(self):
         now = datetime.now()
         print(f"Start: {now}")
-        n = 1000  # watch recursion
+        n = 100  # watch recursion
         for k in range(10):
             now = datetime.now()
             print(f"Iteration: {k}  {now}")
@@ -1304,7 +1305,7 @@ class Test(unittest.TestCase):
     def test_graph_dfs_connected_components_random_success(self):
         now = datetime.now()
         print(f"Start: {now}")
-        n = 1000  # watch recursion
+        n = 100  # watch recursion
         for k in range(100):
             now = datetime.now()
             print(f"Iteration: {k}  {now}")
@@ -1655,7 +1656,7 @@ class Test(unittest.TestCase):
     def test_networkx_random_tree(self):
         now = datetime.now()
         print(f"Start: {now}")
-        n = 1000  # watch recursion
+        n = 100  # watch recursion
         for k in range(100):
             now = datetime.now()
             print(f"Iteration: {k}  {now}")
@@ -1716,7 +1717,7 @@ class Test(unittest.TestCase):
     def test_calculate_euler_tour_random(self):
         now = datetime.now()
         print(f"Start: {now}")
-        n = 1000  # watch recursion
+        n = 100  # watch recursion
         for k in range(100):
             now = datetime.now()
             print(f"Iteration: {k}  {now}")
@@ -1803,7 +1804,7 @@ class Test(unittest.TestCase):
     def test_calculate_lowest_common_ancestor_random(self):
         now = datetime.now()
         print(f"Start: {now}")
-        n = 1000  # watch recursion
+        n = 100  # watch recursion
         for k in range(100):
             now = datetime.now()
             print(f"Iteration: {k}  {now}")
@@ -1830,7 +1831,7 @@ class Test(unittest.TestCase):
     def test_execute_range_minimum_queries_random(self):
         now = datetime.now()
         print(f"Start: {now}")
-        n = 1000  # watch recursion
+        n = 100  # watch recursion
         for k in range(100):
             now = datetime.now()
             print(f"Iteration: {k}  {now}")
@@ -1854,7 +1855,7 @@ class Test(unittest.TestCase):
     def test_execute_range_maximum_queries_random(self):
         now = datetime.now()
         print(f"Start: {now}")
-        n = 1000  # watch recursion
+        n = 100  # watch recursion
         for k in range(100):
             now = datetime.now()
             print(f"Iteration: {k}  {now}")

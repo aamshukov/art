@@ -12,7 +12,6 @@ from art.framework.core.base import Base
 class Algorithms(Base):
     """
     """
-
     class Functions(IntEnum):
         """
         """

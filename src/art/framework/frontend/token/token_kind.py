@@ -13,12 +13,14 @@ class TokenKind(IntEnum):
 
     EPSILON = auto()
 
-    WS = auto()
-    EOL = auto()
-    EOS = auto()
+    WS = auto()    # whitespace
+    EOL = auto()   # end of line
+    EOS = auto()   # end of stream (file)
 
     INDENT = auto()  # literal = '    '
     DEDENT = auto()  # literal = '    '
+
+    IDENTIFIER = auto()
 
     INT = auto()
     INTEGER = auto()
@@ -32,6 +34,8 @@ class TokenKind(IntEnum):
     BOOLEAN = auto()
     TRUE = auto()
     FALSE = auto()
+
+    STRING = auto()
 
     ENUM = auto()
 

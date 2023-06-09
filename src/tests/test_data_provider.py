@@ -4,7 +4,6 @@
 #
 import unittest
 from art.framework.core.text import Text
-from art.framework.core.source import Source
 from art.framework.frontend.data_provider.string_data_provider import StringDataProvider
 from art.framework.frontend.data_provider.file_data_provider import FileDataProvider
 
@@ -63,47 +62,47 @@ class Test(unittest.TestCase):
         assert Text.equal(data, data0)
 
     def test_file_data_provider_ascii_0_success(self):
-        dp = FileDataProvider(Source(0, r'data/ascii-0.txt'))
+        dp = FileDataProvider(r'data/ascii-0.txt')
         data = dp.load()
         assert len(data) == 0
 
     def test_file_data_provider_ascii_1_success(self):
-        dp = FileDataProvider(Source(0, r'data/ascii-1.txt'))
+        dp = FileDataProvider(r'data/ascii-1.txt')
         data = dp.load()
         assert len(data) == 1
         assert Text.equal(data, 'A')
 
     def test_file_data_provider_ascii_2_success(self):
-        dp = FileDataProvider(Source(0, r'data/ascii-2.txt'))
+        dp = FileDataProvider(r'data/ascii-2.txt')
         data = dp.load()
         assert len(data) == 2
         assert Text.equal(data, 'AB')
 
     def test_file_data_provider_utf8_0_success(self):
-        dp = FileDataProvider(Source(0, r'data/utf8-0.txt'))
+        dp = FileDataProvider(r'data/utf8-0.txt')
         data = dp.load()
         assert len(data) == 0
 
     def test_file_data_provider_utf8_1_success(self):
-        dp = FileDataProvider(Source(0, r'data/utf8-1.txt'))
+        dp = FileDataProvider(r'data/utf8-1.txt')
         data = dp.load()
         assert len(data) == 1
         assert Text.equal(data, '彡')
 
     def test_file_data_provider_utf8_2_success(self):
-        dp = FileDataProvider(Source(0, r'data/utf8-2.txt'))
+        dp = FileDataProvider(r'data/utf8-2.txt')
         data = dp.load()
         assert len(data) == 2
         assert Text.equal(data, '်ဂ')
 
     def test_file_data_provider_utf8_3_success(self):
-        dp = FileDataProvider(Source(0, r'data/utf8-3.txt'))
+        dp = FileDataProvider(r'data/utf8-3.txt')
         data = dp.load()
         assert len(data) == 3
         assert Text.equal(data, 'дЕA')
 
     def test_file_data_provider_utf8_4_success(self):
-        dp = FileDataProvider(Source(0, r'data/utf8-4.txt'))
+        dp = FileDataProvider(r'data/utf8-4.txt')
         data = dp.load()
         assert len(data) == 4
         assert Text.equal(data, '你叫什么')
@@ -116,31 +115,31 @@ class Test(unittest.TestCase):
            "山乇ㄥ匚ㄖ爪乇　ㄒㄖ　ㄒ卄乇　爪ㄖ丂ㄒ　匚ㄖ爪卩ㄥ乇ㄒ乇　ﾌ卂卩卂几乇丂乇你想去哪里xyz"
 
     def test_file_data_provider_utf8_success(self):
-        dp = FileDataProvider(Source(0, r'data/utf8-text.txt'))
+        dp = FileDataProvider(r'data/utf8-text.txt')
         data = dp.load()
         assert len(data) == len(Test.TEXT)
         assert Text.equal(data, Test.TEXT)
 
     def test_file_data_provider_utf16_BE_success(self):
-        dp = FileDataProvider(Source(0, r'data/utf16-BE-text.txt'))
+        dp = FileDataProvider(r'data/utf16-BE-text.txt')
         data = dp.load()
         assert len(data) == len(Test.TEXT)
         assert Text.equal(data, Test.TEXT)
 
     def test_file_data_provider_utf16_LE_success(self):
-        dp = FileDataProvider(Source(0, r'data/utf16-LE-text.txt'))
+        dp = FileDataProvider(r'data/utf16-LE-text.txt')
         data = dp.load()
         assert len(data) == len(Test.TEXT)
         assert Text.equal(data, Test.TEXT)
 
     def test_file_data_provider_utf32_BE_success(self):
-        dp = FileDataProvider(Source(0, r'data/utf32-BE-text.txt'))
+        dp = FileDataProvider(r'data/utf32-BE-text.txt')
         data = dp.load()
         assert len(data) == len(Test.TEXT)
         assert Text.equal(data, Test.TEXT)
 
     def test_file_data_provider_utf32_LE_success(self):
-        dp = FileDataProvider(Source(0, r'data/utf32-LE-text.txt'))
+        dp = FileDataProvider(r'data/utf32-LE-text.txt')
         data = dp.load()
         assert len(data) == len(Test.TEXT)
         assert Text.equal(data, Test.TEXT)

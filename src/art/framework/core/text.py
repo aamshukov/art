@@ -14,7 +14,6 @@ from art.framework.core.base import Base
 class Text(Base):
     """
     """
-
     @staticmethod
     def equal(lhs, rhs, case_insensitive=False, normalization_form='NFKC'):
         """

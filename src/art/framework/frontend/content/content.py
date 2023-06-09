@@ -3,10 +3,10 @@
 # UI Lab Inc. Arthur Amshukov
 #
 """ Content """
-from art.framework.core.base import Base
+from art.framework.core.entity import Entity
 
 
-class Content(Base):
+class Content(Entity):
     """
     See OpenJDK for details
         ../src/jdk.compiler/share/classes/com/sun/tools/javac/util/Position.java
@@ -15,9 +15,15 @@ class Content(Base):
     FIRST_COLUMN = 0
     FIRST_POSITION = 0  # -> (FIRST_LINE, FIRST_COLUMN)
 
-    def __init__(self, data, source, tab_size=4):
+    def __init__(self,
+                 id,
+                 data,
+                 source,  # origin of data - file path, DB schema, etc.
+                 tab_size=4,  # tab size, default is 4 if == 0 - do not consider
+                 version='1.0'):
         """
         """
+        super().__init__(id, version=version)
         self._data = data
         self._count = len(data)
         self._source = source
@@ -25,7 +31,34 @@ class Content(Base):
         self._cached_line = Content.FIRST_LINE
         self._cached_position = Content.FIRST_POSITION
         self._tab_map = None  # tab positions
-        self._tab_size = tab_size  # tab size, default is 4 if == 0 - do not consider
+        self._tab_size = tab_size
+
+    def __hash__(self):
+        """
+        """
+        result = super().__hash__() ^ hash(self._data)
+        return result
+
+    def __eq__(self, other):
+        """
+        """
+        result = (super().__eq__(other) and
+                  self._data == other.data)
+        return result
+
+    def __lt__(self, other):
+        """
+        """
+        result = (super().__lt__(other) and
+                  self._data < other.data)
+        return result
+
+    def __le__(self, other):
+        """
+        """
+        result = (super().__le__(other) and
+                  self._data <= other.data)
+        return result
 
     @property
     def data(self):
@@ -50,6 +83,11 @@ class Content(Base):
         """
         """
         return self._tab_size
+
+    def validate(self):
+        """
+        """
+        return True
 
     def build_line_map(self):
         """

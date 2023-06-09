@@ -3,12 +3,10 @@
 # UI Lab Inc. Arthur Amshukov
 #
 import os
-import struct
 import unittest
 from art.framework.core.flags import Flags
 from art.framework.core.logger import Logger
 from art.framework.core.text import Text
-from art.framework.core.domain_helper import DomainHelper
 
 
 class Test(unittest.TestCase):

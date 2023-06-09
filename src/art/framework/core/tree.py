@@ -12,7 +12,6 @@ from art.framework.core.visitable import Visitable
 class Tree(Entity, Visitable):
     """
     """
-
     def __init__(self,
                  id,
                  label='',
@@ -157,7 +156,7 @@ class Tree(Entity, Visitable):
     def validate(self):
         """
         """
-        pass
+        return True
 
     def accept(self, visitor, *args, **kwargs):
         """

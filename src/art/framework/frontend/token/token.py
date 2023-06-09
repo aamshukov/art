@@ -3,7 +3,6 @@
 # UI Lab Inc. Arthur Amshukov
 #
 """ Token """
-from abc import abstractmethod
 from art.framework.core.value import Value
 from art.framework.core.flags import Flags
 from art.framework.frontend.token.token_kind import TokenKind
@@ -12,26 +11,23 @@ from art.framework.frontend.token.token_kind import TokenKind
 class Token(Value):
     """
     """
-
     def __init__(self, kind, source=None, version='1.0'):
         """
         """
         super().__init__(version)
         self._kind = kind  # type of lexeme
-        self._offset = -1  # offset in context (absolute address)
+        self._offset = 0  # offset in context (absolute address)
         self._length = 0  # length of lexeme
         self._literal = ''  # string or char literal (if unicode - always decoded), numeric value
         self._source = source  # lexical analyser which recognizes this lexeme, could be from different files
         self._flags = Flags.CLEAR | Flags.GENUINE
 
-    @abstractmethod
     def __hash__(self):
         """
         """
         result = super().__hash__() ^ hash(self._kind.value)
         return result
 
-    @abstractmethod
     def __eq__(self, other):
         """
         """
@@ -39,7 +35,6 @@ class Token(Value):
                   self._kind.value == other.kind.value)
         return result
 
-    @abstractmethod
     def __lt__(self, other):
         """
         """
@@ -47,7 +42,6 @@ class Token(Value):
                   self._kind.value < other.kind.value)
         return result
 
-    @abstractmethod
     def __le__(self, other):
         """
         """
@@ -58,7 +52,7 @@ class Token(Value):
     def validate(self):
         """
         """
-        pass
+        return True
 
     @property
     def kind(self):
@@ -78,11 +72,23 @@ class Token(Value):
         """
         return self._offset
 
+    @offset.setter
+    def offset(self, offset):
+        """
+        """
+        self._offset = offset
+
     @property
     def length(self):
         """
         """
         return self._length
+
+    @length.setter
+    def length(self, length):
+        """
+        """
+        self._length = length
 
     @property
     def literal(self):
@@ -128,7 +134,7 @@ class Token(Value):
         """
         """
         self._kind = TokenKind.UNKNOWN
-        self._offset = -1
+        self._offset = 0
         self._length = 0
         self._literal = ''
         self._source = None

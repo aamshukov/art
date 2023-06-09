@@ -10,7 +10,6 @@ from art.framework.core.base import Base
 class Visitor(Base):
     """
     """
-
     @abstractmethod
     def visit(self, visitable, *args, **kwargs):
         """

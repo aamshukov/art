@@ -9,7 +9,6 @@ from art.framework.frontend.token.token_kind import TokenKind
 class FsaState(Vertex):
     """
     """
-
     def __init__(self,
                  id,
                  label='',
@@ -24,3 +23,9 @@ class FsaState(Vertex):
         """
         """
         return self.value
+
+    @property
+    def transitions(self):
+        """
+        """
+        return self.edges

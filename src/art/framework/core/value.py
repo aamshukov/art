@@ -11,7 +11,6 @@ from art.framework.core.equatable import Equatable
 class Value(Equatable):
     """
     """
-
     def __init__(self, version='1.0'):
         """
         """
@@ -52,4 +51,4 @@ class Value(Equatable):
     def validate(self):
         """
         """
-        pass
+        return True

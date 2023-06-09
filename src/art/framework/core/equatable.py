@@ -10,7 +10,6 @@ from art.framework.core.base import Base
 class Equatable(Base):
     """
     """
-
     @abstractmethod
     def __hash__(self):
         """

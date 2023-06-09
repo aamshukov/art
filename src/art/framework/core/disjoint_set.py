@@ -11,7 +11,6 @@ from art.framework.core.base import Base
 class DisjointSet(Base):
     """
     """
-
     def __init__(self, elements):
         """
         """

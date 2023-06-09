@@ -10,7 +10,6 @@ from art.framework.core.value import Value
 class Entity(Value):
     """
     """
-
     def __init__(self, id, version='1.0'):
         """
         """
@@ -57,4 +56,4 @@ class Entity(Value):
     def validate(self):
         """
         """
-        pass
+        return True

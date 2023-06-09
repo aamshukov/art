@@ -157,7 +157,7 @@ class Vertex(Entity, Visitable):
     def validate(self):
         """
         """
-        pass
+        return True
 
     def accept(self, visitor, *args, **kwargs):
         """

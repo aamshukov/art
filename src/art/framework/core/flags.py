@@ -12,6 +12,7 @@ class Flags(Flag):
     CLEAR = auto()
     DIRTY = auto()
     PROCESSED = auto()
+    COMPLETED = auto()
     VISITED = auto()
     MARKED = auto()
     DELETED = auto()

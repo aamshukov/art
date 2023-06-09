@@ -2,20 +2,21 @@
 # UI Lab Inc. Arthur Amshukov
 #
 """ FSA """
+import os
+from art.framework.core.text import Text
 from art.framework.core.graph import Graph
 
 
 class Fsa(Graph):
     """
     """
-
     def __init__(self,
                  id,
                  label='',
                  version='1.0'):
         """
         """
-        super().__init__(id, label, version=version)
+        super().__init__(id, label, digraph=True, version=version)
         self._start_state = None
         self._final_states = list()
 
@@ -32,6 +33,12 @@ class Fsa(Graph):
         self._start_state = state
 
     @property
+    def states(self):
+        """
+        """
+        return self.vertices
+
+    @property
     def final_states(self):
         """
         """
@@ -40,7 +47,7 @@ class Fsa(Graph):
     def add_final_state(self, state):
         """
         """
-        assert self.is_final_state(state), "State already exists in final states."
+        assert not self.is_final_state(state), "State already exists in final states."
         self._final_states.append(state)
 
     def is_start_state(self, id):
@@ -63,6 +70,12 @@ class Fsa(Graph):
         """
         self.remove_vertex(state)
 
+    @property
+    def transitions(self):
+        """
+        """
+        return self.edges
+
     def add_transition(self, start_state, end_state, predicate):
         """
         """
@@ -72,6 +85,20 @@ class Fsa(Graph):
         """
         """
         self.remove_edge(transition)
+
+    @staticmethod
+    def empty_predicate():
+        """
+        """
+        return ''
+
+    @staticmethod
+    def is_epsilon_transition(predicate):
+        return Text.equal(predicate, Text.epsilon())
+
+    @staticmethod
+    def epsilon_transition():
+        return Text.epsilon()
 
     def combine(self, fsas):
         """
@@ -100,6 +127,39 @@ class Fsa(Graph):
 
     def generate_graphviz_content(self, path):
         """
-        Generates Graphviz content into file.
+        Generates Graphviz content.
         """
-        pass
+        assert path is not None, "Invalid argument 'path'."
+
+        def get_state_label(_state):
+            return f'"{_state.label}_{_state.id}_{_state.token}"'
+
+        indent = '    '
+        linesep = '\n'
+        with open(path, 'wt') as stream:
+            stream.write(f"digraph FSA{linesep}")
+            stream.write(f"{{{linesep}")
+            if self.final_states:
+                stream.write(f"{indent}node [shape = doublecircle];{linesep}")
+                line = indent
+                for state in self.final_states:
+                    line += f"{get_state_label(state)} "
+                line += f";{linesep}"
+                stream.write(line)
+            stream.write(f"{indent}node [shape = circle];{linesep}")
+            stream.write(f"{indent}rankdir = LR;{linesep}")
+            line = indent
+            for state in self.states.values():
+                line += f"{get_state_label(state)} "
+            line += f";{linesep}"
+            stream.write(line)
+            for transition in self.transitions.values():
+                line = indent
+                start_state, end_state = transition.uv
+                line += f"{get_state_label(start_state)} -> {get_state_label(end_state)}"
+                predicate = ''
+                if transition.value:
+                    predicate = transition.value
+                line += f' [label = "{predicate}"];{linesep}'
+                stream.write(line)
+            stream.write(f"}}")

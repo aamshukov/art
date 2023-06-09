@@ -7,13 +7,12 @@
 
 def singleton(класс):
     """
-    Singleton decorator
+    Singleton decorator.
     """
     class Decorator(класс):
         """
         Decorator
         """
-
         def __init__(self, *args, **kwargs):
             """
             """
@@ -31,9 +30,8 @@ def singleton(класс):
 
     class Instance:
         """
-        Instance
+        Instance.
         """
-
         def __init__(self):
             """
             """

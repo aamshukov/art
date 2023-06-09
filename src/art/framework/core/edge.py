@@ -10,7 +10,6 @@ from art.framework.core.entity import Entity
 class Edge(Entity):
     """
     """
-
     def __init__(self,
                  id,
                  endpoints,
@@ -113,4 +112,4 @@ class Edge(Entity):
     def validate(self):
         """
         """
-        pass
+        return True

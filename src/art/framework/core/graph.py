@@ -11,7 +11,6 @@ from art.framework.core.edge import Edge
 class Graph(Entity):
     """
     """
-
     def __init__(self,
                  id=0,
                  label='',
@@ -185,4 +184,4 @@ class Graph(Entity):
     def validate(self):
         """
         """
-        pass
+        return True
