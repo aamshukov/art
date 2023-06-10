@@ -87,43 +87,43 @@ class TokenKind(IntEnum):
 
     TYPE = auto()
 
-    # #
-    # :
-    # .
-    # ..
-    # ...
-    # ,
-    # [
-    # ]
-    # (
-    # )
-    # {
-    # }
-    #
-    # +
-    # -
-    # *
-    # /
+    SHEBANG = auto()  #
+    SEMICOLON = auto()  # ;
+    COLON = auto()  # :
+    DOT = auto()  # .
+    DOT_DOT = auto()  # ..
+    DOT_DOT_DOT = auto()  # ...
+    COMMA = auto()  # ,
+    OPEN_SQUARE_BRACKET = auto()  # [
+    CLOSE_SQUARE_BRACKET = auto()  # ]
+    OPEN_PAREN = auto()  # (
+    CLOSE_PAREN = auto()  # )
+    OPEN_CURLY_BRACKET = auto()  # {
+    CLOSE_CURLY_BRACKET = auto()  # }
+    OPEN_ANGLE_BRACKET = auto()  # <
+    CLOSE_ANGLE_BRACKET = auto()  # >
+    PLUS = auto()  # +
+    MINUS = auto()  # -
+    MULTIPLICATION = auto()  # *
+    DIVISION = auto()  # /
     # >>
     # <<
-    # =
-    # ==
-    # !=
-    # <
-    # <=
-    # >
-    GT_EQ = auto()  # >=
+    EQUAL = auto()  # ==
+    NOT_EQUAL = auto()  # !=
+    LESS_THAN = auto()  # <
+    LESS_EQUAL = auto()  # <=
+    GREATER_THAN = auto()  # >
+    GREATER_EQUAL = auto()  # >=
     SPACESHIP = auto()  # <=>
     AMPERSAND = auto()  # &
-    # &&
-    # |
-    # ||
-    # ^
-    # !
-    #
-    # =
-    # +=
-    # -=
+    AMPERSAND_AMPERSAND = auto() # &&
+    BAR = auto()  # |
+    BAR_BAR = auto()  # ||
+    XOR = auto()  # ^
+    NOT_T = auto()  # !
+    ASSIGNMENT = auto()  # =
+    ASSIGNMENT_PLUS = auto()  # +=
+    ASSIGNMENT_MINUS = auto()  # -=
     # *=
     # /=
     # >>=

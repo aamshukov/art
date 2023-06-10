@@ -5,6 +5,7 @@
 """ Domain helper """
 import os
 import sys
+import struct
 from art.framework.core.base import Base
 
 
@@ -75,3 +76,15 @@ class DomainHelper(Base):
         """
         """
         return string.rjust(size, filler)
+
+    @staticmethod
+    def epsilon():
+        """
+        """
+        return 2.2204460492503131e-016
+
+    @staticmethod
+    def real_numbers_equal(real1, real2):
+        """
+        """
+        return abs(real1 - real2) <= DomainHelper.epsilon()

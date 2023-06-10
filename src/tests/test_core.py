@@ -4,6 +4,8 @@
 #
 import os
 import unittest
+
+from art.framework.core.domain_helper import DomainHelper
 from art.framework.core.flags import Flags
 from art.framework.core.logger import Logger
 from art.framework.core.text import Text
@@ -88,6 +90,15 @@ class Test(unittest.TestCase):
         kind = Text.get_string_kind('သည်')
         print(kind)
         # assert kind == Text.PyUnicodeObject.PyUnicode_2BYTE_KIND
+
+    def test_epsilon_success(self):
+        assert DomainHelper.real_numbers_equal(0.0, 0.0)
+        assert DomainHelper.real_numbers_equal(DomainHelper.epsilon(), DomainHelper.epsilon())
+        assert DomainHelper.real_numbers_equal(0.1, 0.1)
+        assert not DomainHelper.real_numbers_equal(0.0000001, 0.00010001)
+        assert DomainHelper.real_numbers_equal(47264780.00027800001, 47264780.00027800001)
+        assert DomainHelper.real_numbers_equal(47264780E+27, 47264780E+27)
+        assert DomainHelper.real_numbers_equal(47264780E-28, 47264780E-27)
 
 
 if __name__ == '__main__':

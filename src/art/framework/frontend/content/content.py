@@ -36,28 +36,33 @@ class Content(Entity):
     def __hash__(self):
         """
         """
-        result = super().__hash__() ^ hash(self._data)
+        result = (super().__hash__() ^
+                  hash(self._data) ^
+                  hash(self._source))
         return result
 
     def __eq__(self, other):
         """
         """
         result = (super().__eq__(other) and
-                  self._data == other.data)
+                  self._data == other.data and
+                  self._source == other.source)
         return result
 
     def __lt__(self, other):
         """
         """
         result = (super().__lt__(other) and
-                  self._data < other.data)
+                  self._data < other.data and
+                  self._source < other.source)
         return result
 
     def __le__(self, other):
         """
         """
         result = (super().__le__(other) and
-                  self._data <= other.data)
+                  self._data <= other.data and
+                  self._source <= other.source)
         return result
 
     @property

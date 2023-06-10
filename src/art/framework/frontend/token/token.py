@@ -18,41 +18,53 @@ class Token(Value):
         self._kind = kind  # type of lexeme
         self._offset = 0  # offset in context (absolute address)
         self._length = 0  # length of lexeme
-        self._literal = ''  # string or char literal (if unicode - always decoded), numeric value
+        self._literal = ''  # string or char literal (if unicode - always decoded), numeric value, etc.
         self._source = source  # lexical analyser which recognizes this lexeme, could be from different files
         self._flags = Flags.CLEAR | Flags.GENUINE
 
     def __hash__(self):
         """
         """
-        result = super().__hash__() ^ hash(self._kind.value)
+        result = (super().__hash__() ^
+                  hash(self._kind) ^
+                  hash(self._offset) ^
+                  hash(self._length) ^
+                  hash(self._literal) ^
+                  hash(self._source))
         return result
 
     def __eq__(self, other):
         """
         """
         result = (super().__eq__(other) and
-                  self._kind.value == other.kind.value)
+                  self._kind == other.kind and
+                  self._offset == other.offset and
+                  self._length == other.length and
+                  self._literal == other.literal and
+                  self._source == other.source)
         return result
 
     def __lt__(self, other):
         """
         """
         result = (super().__lt__(other) and
-                  self._kind.value < other.kind.value)
+                  self._kind < other.kind and
+                  self._offset < other.offset and
+                  self._length < other.length and
+                  self._literal < other.literal and
+                  self._source < other.source)
         return result
 
     def __le__(self, other):
         """
         """
         result = (super().__le__(other) and
-                  self._kind.value <= other.kind.value)
+                  self._kind <= other.kind and
+                  self._offset <= other.offset and
+                  self._length <= other.length and
+                  self._literal <= other.literal and
+                  self._source <= other.source)
         return result
-
-    def validate(self):
-        """
-        """
-        return True
 
     @property
     def kind(self):
@@ -96,6 +108,12 @@ class Token(Value):
         """
         return self._literal
 
+    @literal.setter
+    def literal(self, literal):
+        """
+        """
+        self._literal = literal
+
     @property
     def source(self):
         """
@@ -119,6 +137,11 @@ class Token(Value):
         """
         """
         self._flags = flags
+
+    def validate(self):
+        """
+        """
+        return True
 
     def accept(self, token):
         """

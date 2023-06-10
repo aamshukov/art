@@ -1,7 +1,7 @@
 ﻿# -*- encoding: utf-8 -*-
 # UI Lab Inc. Arthur Amshukov
 #
-""" Vertex """
+""" Tree """
 from art.framework.core.flags import Flags
 from art.framework.core.colors import Colors
 from art.framework.core.text import Text
@@ -15,8 +15,8 @@ class Tree(Entity, Visitable):
     def __init__(self,
                  id,
                  label='',
-                 value=None,        # vertex specific value
-                 attributes=None,   # vertex specific attributes
+                 value=None,
+                 attributes=None,
                  flags=Flags.CLEAR,
                  color=Colors.UNKNOWN,
                  papa=None,
@@ -45,6 +45,7 @@ class Tree(Entity, Visitable):
         """
         result = super().__hash__()
         result ^= hash(self._label)
+        result ^= hash(self._value)
         return result
 
     def __eq__(self, other):

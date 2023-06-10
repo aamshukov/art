@@ -3,6 +3,7 @@
 #
 """ Lexical Analyzer """
 from collections import deque
+from abc import abstractmethod
 from art.framework.core.entity import Entity
 from art.framework.core.flags import Flags
 from art.framework.frontend.statistics.statistics import Statistics
@@ -65,6 +66,18 @@ class LexicalAnalyzer(Entity):
         return self._token
 
     @property
+    def tokens(self):
+        """
+        """
+        return self._tokens
+
+    @property
+    def prev_token(self):
+        """
+        """
+        return self._prev_token
+
+    @property
     def content(self):
         """
         """
@@ -78,12 +91,12 @@ class LexicalAnalyzer(Entity):
     def eol(self):
         """
         """
-        return self._token == TokenKind.EOL
+        return self._token.kind == TokenKind.EOL
 
     def eos(self):
         """
         """
-        return self._token == TokenKind.EOS
+        return self._token.kind == TokenKind.EOS
 
     def next_lexeme(self):
         """
@@ -111,16 +124,19 @@ class LexicalAnalyzer(Entity):
             self._content_position = self._end_content
         self._token.offset = self._lexeme_position - self._start_content
         self._token.length = self._content_position - self._lexeme_position
-        self._token.flags = Flags.modify_flags(self._token.flags, Flags.CONTEXTUAL.VISITED, Flags.CLEAR)
+        self._token.literal = self._content.data[self._token.offset: self._token.offset + self._token.length]
         self._token.source = self._content.id
+        self._token.flags = Flags.modify_flags(self._token.flags, Flags.CONTEXTUAL.VISITED, Flags.CLEAR)
         if update_stats:
             Statistics().update_stats(self._token)
 
+    @abstractmethod
     def next_lexeme_impl(self):
         """
         """
+        raise NotImplemented(self.next_lexeme_impl.__qualname__)
 
-    def lookahead_lexemes(self):
+    def lookahead_lexeme(self):
         """
         """
         if self.eos():
