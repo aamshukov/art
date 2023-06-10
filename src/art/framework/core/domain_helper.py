@@ -81,7 +81,7 @@ class DomainHelper(Base):
     def epsilon():
         """
         """
-        return 2.2204460492503131e-016
+        return sys.float_info.epsilon
 
     @staticmethod
     def real_numbers_equal(real1, real2):
