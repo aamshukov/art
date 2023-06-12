@@ -152,6 +152,9 @@ class Test(unittest.TestCase):
     def test_eol_success(self):
         assert Text.eol('\n')
         assert Text.eol('\r')
+        assert Text.eol(chr(0x0085))
+        assert Text.eol(chr(0x2028))
+        assert Text.eol(chr(0x2029))
 
     def test_eos_success(self):
         assert Text.eos(chr(0x0004))

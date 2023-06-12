@@ -230,7 +230,12 @@ class Text(Base):
     def eol(ch):
         """
         """
-        return ch == '\n' or ch == '\r'
+        match ch:
+            case '\n' | '\r':
+                return True
+            case _:
+                codepoint = ord(ch)
+                return codepoint == 0x0085 or codepoint == 0x2028 or codepoint == 0x2029
 
     @staticmethod
     def eos(ch):
