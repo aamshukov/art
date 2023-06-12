@@ -165,7 +165,7 @@ class Text(Base):
         """
         """
         return (Text.letter(ch) or
-                Text.number(ch) or
+                Text.decimal_digit_number(ch) or
                 Text.underscore(ch) or
                 Text.dollar_sign(ch) or
                 Text.letter_number(ch) or
@@ -193,7 +193,18 @@ class Text(Base):
                         return False
 
     @staticmethod
-    def number(ch):
+    def octal_digit_number(ch):
+        """
+        Only considering ASCII table when use octal numbers during lexical analyze.
+        """
+        match ch:
+            case '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7':
+                return True
+            case _:
+                return False
+
+    @staticmethod
+    def decimal_digit_number(ch):
         """
         """
         match ch:
@@ -201,6 +212,21 @@ class Text(Base):
                 return True
             case _:
                 return unicodedata.category(ch) == 'Nd'
+
+    @staticmethod
+    def hexadecimal_digit_number(ch):
+        """
+        """
+        match ch:
+            case '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9':
+                return True
+            case _:
+                codepoint = ord(ch)
+                if (0x0066 >= codepoint >= 0x0041 and (codepoint <= 0x0046 or codepoint >= 0x0061)) or \
+                   (0xFF21 <= codepoint <= 0xFF46 and (codepoint <= 0xFF26 or codepoint >= 0XFF41)):
+                    return True
+                else:
+                    return unicodedata.category(ch) == 'Nd'
 
     @staticmethod
     def letter_number(ch):
@@ -224,7 +250,11 @@ class Text(Base):
     def whitespace(ch):
         """
         """
-        return ch == ' ' or ch == '\t' or ch == '\f'
+        match ch:
+            case ' ' | '\t' | '\f':
+                return True
+            case _:
+                return unicodedata.category(ch) == 'Zs'
 
     @staticmethod
     def eol(ch):

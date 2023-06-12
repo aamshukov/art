@@ -117,14 +117,35 @@ class Test(unittest.TestCase):
         assert Text.letter('益')
         assert Text.letter('什')
 
-    def test_number_success(self):
-        assert Text.number('0')
-        assert Text.number('1')
-        assert Text.number('5')
-        assert Text.number('४')
-        assert Text.number('३')
-        assert Text.number('௫')
-        assert Text.number('៥')
+    def test_decimal_digit_number_success(self):
+        assert Text.decimal_digit_number('0')
+        assert Text.decimal_digit_number('1')
+        assert Text.decimal_digit_number('5')
+        assert Text.decimal_digit_number('४')
+        assert Text.decimal_digit_number('३')
+        assert Text.decimal_digit_number('௫')
+        assert Text.decimal_digit_number('៥')
+
+    def test_hexadecimal_digit_number_success(self):
+        assert Text.hexadecimal_digit_number('0')
+        assert Text.hexadecimal_digit_number('1')
+        assert Text.hexadecimal_digit_number('5')
+        assert Text.hexadecimal_digit_number('a')
+        assert Text.hexadecimal_digit_number('b')
+        assert Text.hexadecimal_digit_number('c')
+        assert Text.hexadecimal_digit_number('d')
+        assert Text.hexadecimal_digit_number('e')
+        assert Text.hexadecimal_digit_number('f')
+        assert Text.hexadecimal_digit_number('A')
+        assert Text.hexadecimal_digit_number('B')
+        assert Text.hexadecimal_digit_number('C')
+        assert Text.hexadecimal_digit_number('D')
+        assert Text.hexadecimal_digit_number('E')
+        assert Text.hexadecimal_digit_number('F')
+        assert Text.hexadecimal_digit_number('४')
+        assert Text.hexadecimal_digit_number('३')
+        assert Text.hexadecimal_digit_number('௫')
+        assert Text.hexadecimal_digit_number('៥')
 
     def test_letter_number_success(self):
         assert Text.letter_number('ᛯ')
@@ -148,6 +169,9 @@ class Test(unittest.TestCase):
         assert Text.whitespace(' ')
         assert Text.whitespace('\t')
         assert Text.whitespace('\f')
+        assert Text.whitespace(chr(0x00A0))
+        assert Text.whitespace(chr(0x205F))
+        assert Text.whitespace(chr(0x2009))
 
     def test_eol_success(self):
         assert Text.eol('\n')
