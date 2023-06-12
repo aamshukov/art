@@ -93,12 +93,18 @@ class Fsa(Graph):
         return ''
 
     @staticmethod
+    def epsilon():
+        """
+        """
+        return 'ε'
+
+    @staticmethod
     def is_epsilon_transition(predicate):
-        return Text.equal(predicate, Text.epsilon())
+        return Text.equal(predicate, Fsa.epsilon())
 
     @staticmethod
     def epsilon_transition():
-        return Text.epsilon()
+        return Fsa.epsilon()
 
     def combine(self, fsas):
         """
