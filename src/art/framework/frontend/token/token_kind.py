@@ -132,3 +132,5 @@ class TokenKind(IntEnum):
     # |=
     # ^=
     #
+
+    ERRONEOUS = auto()

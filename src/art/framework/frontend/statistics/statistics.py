@@ -4,7 +4,6 @@
 #
 """ Statistics """
 from collections import defaultdict
-from art.framework.core.singleton import singleton
 from art.framework.core.base import Base
 from art.framework.frontend.token.token_kind import TokenKind
 
@@ -13,7 +12,6 @@ NUMBER_OF_KEYWORDS = 'number_of_keywords'
 NUMBER_OF_IDENTIFIERS = 'number_of_identifiers'
 
 
-@singleton
 class Statistics(Base):
     """
     """
@@ -32,6 +30,7 @@ class Statistics(Base):
                 self._quantities[NUMBER_OF_IDENTIFIERS] += 1
             case TokenKind.CASE | TokenKind.BOOLEAN:
                 self._quantities[NUMBER_OF_KEYWORDS] += 1
+        print(token)
 
     @property
     def quantities(self):

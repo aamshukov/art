@@ -16,11 +16,12 @@ class Test(unittest.TestCase):
         super(Test, self).__init__(*args, **kwargs)
 
     def test_statistics(self):
-        Statistics().update_stats(Token(TokenKind.IDENTIFIER))
-        Statistics().update_stats(Token(TokenKind.BOOLEAN))
-        assert Statistics().quantities[NUMBER_OF_LEXEMES] == 2
-        assert Statistics().quantities[NUMBER_OF_KEYWORDS] == 1
-        assert Statistics().quantities[NUMBER_OF_IDENTIFIERS] == 1
+        statistics = Statistics()
+        statistics.update_stats(Token(TokenKind.IDENTIFIER))
+        statistics.update_stats(Token(TokenKind.BOOLEAN))
+        assert statistics.quantities[NUMBER_OF_LEXEMES] == 2
+        assert statistics.quantities[NUMBER_OF_KEYWORDS] == 1
+        assert statistics.quantities[NUMBER_OF_IDENTIFIERS] == 1
 
 
 if __name__ == '__main__':

@@ -2,11 +2,9 @@
 # UI Lab Inc. Arthur Amshukov
 #
 """ Lexical Analyzer """
+from copy import deepcopy
 from collections import deque
-from abc import abstractmethod
 from art.framework.core.entity import Entity
-from art.framework.core.flags import Flags
-from art.framework.frontend.statistics.statistics import Statistics
 from art.framework.frontend.token.token import Token
 from art.framework.frontend.token.token_kind import TokenKind
 
@@ -16,48 +14,39 @@ class LexicalAnalyzer(Entity):
     """
     def __init__(self,
                  id,
-                 content,
+                 tokenizer,
+                 statistics,
                  version='1.0'):
         """
         """
         super().__init__(id,  # master lexer, id = 0
                          version=version)
-        self._content = content  # loaded content
-        self._start_content = 0  # beginning of content
-        self._end_content = self._start_content + self._content.count  # end of content, sentinel
-        self._content_position = self._start_content  # current position in content
-        self._lexeme_position = self._start_content  # beginning position of lexeme in content
+        self._tokenizer = tokenizer
         self._token = Token(TokenKind.UNKNOWN)  # current lexeme
-        self._tokens = deque()  # queue of current and lookahead lexemes
-        self._prev_token = self._token  # previous lexeme
-        self._snapshots = deque()  # stack of backtracking snapshots - positions
+        self._tokens = deque()  # queue of lookahead (cached) lexemes
+        self._prev_token = deepcopy(self._token)  # previous lexeme
+        self._statistics = statistics
 
     def __hash__(self):
         """
         """
-        result = super().__hash__() ^ hash(self._token)
+        result = super().__hash__()
         return result
 
     def __eq__(self, other):
         """
         """
-        result = (super().__eq__(other) and
-                  self._token == other.token)
-        return result
+        return super().__eq__(other)
 
     def __lt__(self, other):
         """
         """
-        result = (super().__lt__(other) and
-                  self._token < other.token)
-        return result
+        return super().__lt__(other)
 
     def __le__(self, other):
         """
         """
-        result = (super().__le__(other) and
-                  self._token <= other.token)
-        return result
+        return super().__le__(other)
 
     @property
     def token(self):
@@ -66,27 +55,10 @@ class LexicalAnalyzer(Entity):
         return self._token
 
     @property
-    def tokens(self):
-        """
-        """
-        return self._tokens
-
-    @property
     def prev_token(self):
         """
         """
         return self._prev_token
-
-    @property
-    def content(self):
-        """
-        """
-        return self._content
-
-    def validate(self):
-        """
-        """
-        return True
 
     def eol(self):
         """
@@ -98,82 +70,39 @@ class LexicalAnalyzer(Entity):
         """
         return self._token.kind == TokenKind.EOS
 
+    def validate(self):
+        """
+        """
+        return True
+
     def next_lexeme(self):
         """
         """
-        if not self.eos():
-            self._prev_token = self._token
-            if self._tokens:
-                self._token = self._tokens.popleft()
-                self._content_position = self._start_content + self._token.offset
-            else:
-                self.prolog()
-                self.next_lexeme_impl()
-                self.epilog()
-
-    def prolog(self):
-        """
-        """
-        self._token.reset()
-        self._lexeme_position = self._content_position
-
-    def epilog(self, update_stats=True):
-        """
-        """
-        if self._content_position > self._end_content:
-            self._content_position = self._end_content
-        self._token.offset = self._lexeme_position - self._start_content
-        self._token.length = self._content_position - self._lexeme_position
-        self._token.literal = self._content.data[self._token.offset: self._token.offset + self._token.length]
-        self._token.source = self._content.id
-        self._token.flags = Flags.modify_flags(self._token.flags, Flags.CONTEXTUAL.VISITED, Flags.CLEAR)
-        if update_stats:
-            Statistics().update_stats(self._token)
-
-    @abstractmethod
-    def next_lexeme_impl(self):
-        """
-        """
-        raise NotImplemented(self.next_lexeme_impl.__qualname__)
+        self._prev_token = deepcopy(self._token)
+        if self._tokens:
+            self._token = self._tokens.popleft()
+        else:
+            self._token = self._tokenizer.next_lexeme()
+        self._statistics.update_stats(self._token)
+        return self._token
 
     def lookahead_lexeme(self):
         """
         """
-        if self.eos():
-            result = self._token
-        else:
-            # push state
-            cached_position = self._content_position
-            cached_token = self._token
-            # update state based on the last collected tokens
-            if self._tokens:
-                token = self._tokens[len(self._tokens) - 1]
-                self._content_position = self._start_content + token.offset + token.length
-            # get lexeme
-            self.prolog()
-            self.next_lexeme_impl()
-            self.epilog(update_stats=False)
-            # save new token
-            if not self.eos() or (self._tokens and self._tokens[len(self._tokens) - 1].kind != TokenKind.EOS):
-                self._tokens.append(self._token)
-            # pop state
-            self._content_position = cached_position
-            self._token = cached_token
-            # collect result
-            result = self._tokens[len(self._tokens) - 1]
-        return result
+        token = self._tokenizer.next_lexeme()
+        self._tokens.append(token)
+        return token
 
     def take_snapshot(self):
         """
+        Snapshot the current content position for backtracking.
+        Usually called by parsers.
         """
-        self._snapshots.append(self._content_position)
+        self._tokenizer.take_snapshot()
 
     def rewind_to_snapshot(self):
         """
-        Backtrack
+        Restore the last saved content position for backtracking.
+        Usually called by parsers.
         """
-        if self._snapshots:
-            self._content_position = self._snapshots.pop()
-            self._token.reset()
-            self._prev_token.reset()
-            self._tokens.clear()
+        self._tokenizer.rewind_to_snapshot()

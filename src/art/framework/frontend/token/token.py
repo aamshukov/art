@@ -11,7 +11,7 @@ from art.framework.frontend.token.token_kind import TokenKind
 class Token(Value):
     """
     """
-    def __init__(self, kind, source=None, version='1.0'):
+    def __init__(self, kind, source='', version='1.0'):
         """
         """
         super().__init__(version)
@@ -21,6 +21,14 @@ class Token(Value):
         self._literal = ''  # string or char literal (if unicode - always decoded), numeric value, etc.
         self._source = source  # lexical analyser which recognizes this lexeme, could be from different files
         self._flags = Flags.CLEAR | Flags.GENUINE
+
+    def __repr__(self):
+        """
+        """
+        return f"{self._kind.name.ljust(16)}: '{self._literal}', {self._offset}," \
+               f"{self._length}, '{self._source}', {self._flags}, {self.version}"
+
+    __str__ = __repr__
 
     def __hash__(self):
         """
@@ -160,5 +168,5 @@ class Token(Value):
         self._offset = 0
         self._length = 0
         self._literal = ''
-        self._source = None
+        self._source = ''
         self._flags = Flags.CLEAR | Flags.GENUINE

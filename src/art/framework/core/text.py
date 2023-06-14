@@ -14,6 +14,18 @@ from art.framework.core.base import Base
 class Text(Base):
     """
     """
+    # http://www.unicode.org/glossary/#high_surrogate_code_unit
+    HIGH_SURROGATE_START = 0x0000D800
+    HIGH_SURROGATE_END = 0x0000DBFF
+
+    # http://www.unicode.org/glossary/#low_surrogate_code_unit
+    LOW_SURROGATE_START = 0x0000DC00
+    LOW_SURROGATE_END = 0x0000DFFF
+
+    # http://www.unicode.org/glossary/#supplementary_code_point
+    SUPPLEMENTARY_CODE_POINT_START = 0x010000
+    SUPPLEMENTARY_CODE_POINT_END = 0x10FFFF
+
     @staticmethod
     def equal(lhs, rhs, case_insensitive=False, normalization_form='NFKC'):
         """
@@ -133,10 +145,37 @@ class Text(Base):
         return result
 
     @staticmethod
+    def make_codepoint(high_surrogate_code_unit, low_surrogate_code_unit):
+        """
+        https://learn.microsoft.com/en-us/dotnet/standard/base-types/character-encoding-introduction
+        """
+        return (Text.SUPPLEMENTARY_CODE_POINT_START +
+                ((high_surrogate_code_unit - Text.HIGH_SURROGATE_START) * 0x0400 +
+                 (low_surrogate_code_unit - Text.LOW_SURROGATE_START)))
+
+    @staticmethod
+    def high_surrogate(code_unit):
+        """
+        """
+        return Text.HIGH_SURROGATE_START <= code_unit <= Text.HIGH_SURROGATE_END
+
+    @staticmethod
+    def low_surrogate(code_unit):
+        """
+        """
+        return Text.LOW_SURROGATE_START <= code_unit <= Text.LOW_SURROGATE_END
+
+    @staticmethod
     def bad_codepoint():
         """
         """
         return 0x0F000002
+
+    @staticmethod
+    def eos_codepoint():
+        """
+        """
+        return 0x0000001A
 
     @staticmethod
     def epsilon_codepoint(codepoint):
@@ -193,7 +232,7 @@ class Text(Base):
                         return False
 
     @staticmethod
-    def octal_digit_number(ch):
+    def octal_digit(ch):
         """
         Only considering ASCII table when use octal numbers during lexical analyze.
         """
@@ -214,16 +253,17 @@ class Text(Base):
                 return unicodedata.category(ch) == 'Nd'
 
     @staticmethod
-    def hexadecimal_digit_number(ch):
+    def hexadecimal_digit(ch):
         """
         """
         match ch:
-            case '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9':
+            case ('0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' |
+                  'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'a' | 'b' | 'c' | 'd' | 'e' | 'f'):
                 return True
             case _:
                 codepoint = ord(ch)
-                if (0x0066 >= codepoint >= 0x0041 and (codepoint <= 0x0046 or codepoint >= 0x0061)) or \
-                   (0xFF21 <= codepoint <= 0xFF46 and (codepoint <= 0xFF26 or codepoint >= 0XFF41)):
+                # if (0x0066 >= codepoint >= 0x0041 and (codepoint <= 0x0046 or codepoint >= 0x0061)) or \
+                if 0xFF21 <= codepoint <= 0xFF46 and (codepoint <= 0xFF26 or codepoint >= 0XFF41):
                     return True
                 else:
                     return unicodedata.category(ch) == 'Nd'
@@ -272,7 +312,7 @@ class Text(Base):
         """
         """
         codepoint = ord(ch)
-        return codepoint == 0x0004 or codepoint == 0x2404
+        return codepoint == 0x001A or codepoint == 0x0004 or codepoint == 0x2404
 
     @staticmethod
     def underscore(ch):
@@ -311,44 +351,207 @@ class Text(Base):
         """
         Left Parenthesis (
         """
-        return ch == '(' or '⁽' or '₍' or '﹙' or '（' or '︵'
+        return ch == '(' or ch == '（' or ch == '﹙' or ch == '₍' or ch == '⁽' or ch == '︵'
 
     @staticmethod
     def right_parenthesis(ch):
         """
         Right Parenthesis )
         """
-        return ch == ')' or '⁾' or '₎' or '﹚' or '）' or '︶'
+        return ch == ')' or ch == '）' or ch == '﹚' or ch == '₎' or ch == '⁾' or ch == '︶'
 
-    """
-    Left Square Bracket             [
-    Right Square Bracket            ]
-    Left Curly Bracket              {
-    Right Curly Bracket             }
-    Plus Sign                       +
-    Hyphen-Minus                    -
-    Asterisk (Mul)                  *
-    Solidus (Div) (Forward slash)   /
-    Reverse Solidus (Back slash)    \
-    Equals Sign                     =
-    Less-Than Sign                  <
-    Greater-Than Sign               >
-    Full Stop (Dot)                 .
-    Colon                           :
-    Comma                           ,
-    Semicolon                       ;
-    Vertical Line (Bar)             |
-    Grave Accent                    `
-    Tilde                           ~
-    Apostrophe                      '
-    Exclamation Mark                !
-    Commercial At                   @
-    Number Sign                     #
-        Dollar Sign                     $
-    Percent Sign                    %
-    Circumflex Accent (Xor)         ^
-    Ampersand                       &
-        Low Line (Underscore)           _
-    Quotation Mark                  "
-    Question Mark                   ?
-    """
+    @staticmethod
+    def left_square_bracket(ch):
+        """
+        Left Square Bracket [
+        """
+        return ch == '[' or ch == '［' or ch == '﹇'
+
+    @staticmethod
+    def right_square_bracket(ch):
+        """
+        Right Square Bracket ]
+        """
+        return ch == ']' or ch == '］' or ch == '﹈'
+
+    @staticmethod
+    def left_curly_bracket(ch):
+        """
+        Left Curly Bracket {
+        """
+        return ch == '{' or ch == '｛' or ch == '﹛' or ch == '︷'
+
+    @staticmethod
+    def right_curly_bracket(ch):
+        """
+        Right Curly Bracket }
+        """
+        return ch == '}' or ch == '｝' or ch == '﹜' or ch == '︸'
+
+    @staticmethod
+    def plus_sign(ch):
+        """
+        Plus Sign +
+        """
+        return ch == '+' or ch == '＋' or ch == '﹢' or ch == '﬩' or ch == '₊' or ch == '⁺'
+
+    @staticmethod
+    def hyphen_minus(ch):
+        """
+        Hyphen-Minus -
+        """
+        return ch == '-' or ch == '－' or ch == '﹣'
+
+    @staticmethod
+    def asterisk(ch):
+        """
+        Asterisk (Mul) *
+        """
+        return ch == '*' or ch == '＊' or ch == '﹡'
+
+    @staticmethod
+    def forward_slash(ch):
+        """
+        Solidus (Div) (Forward slash) /
+        """
+        return ch == '/' or ch == '／'
+
+    @staticmethod
+    def back_slash(ch):
+        """
+        Reverse Solidus (Back slash) \
+        """
+        return ch == '\\' or ch == '＼' or ch == '﹨'
+
+    @staticmethod
+    def equals_sign(ch):
+        """
+        Equals Sign =
+        """
+        return ch == '=' or ch == '＝' or ch == '﹦' or ch == '₌' or ch == '⁼'
+
+    @staticmethod
+    def less_than_sign(ch):
+        """
+        Less-Than Sign <
+        """
+        return ch == '<' or ch == '＜' or ch == '﹤'
+
+    @staticmethod
+    def greater_than_sign(ch):
+        """
+        Greater-Than Sign >
+        """
+        return ch == '>' or ch == '＞' or ch == '﹥'
+
+    @staticmethod
+    def dot(ch):
+        """
+        Full Stop (Dot) .
+        """
+        return ch == '.' or ch == '．' or ch == '﹒'
+
+    @staticmethod
+    def colon(ch):
+        """
+        Colon :
+        """
+        return ch == ':' or ch == '：' or ch == '﹕' or ch == '︓'
+
+    @staticmethod
+    def comma(ch):
+        """
+        Comma ,
+        """
+        return ch == ',' or ch == '，' or ch == '﹐' or ch == '︐'
+
+    @staticmethod
+    def semicolon(ch):
+        """
+        Semicolon ;
+        """
+        return ch == ';' or ch == '；' or ch == '﹔' or ch == '︔'
+
+    @staticmethod
+    def vertical_line(ch):
+        """
+        Vertical Line (Bar) |
+        """
+        return ch == '|' or ch == '｜'
+
+    @staticmethod
+    def grave_accent(ch):
+        """
+        Grave Accent `
+        """
+        return ch == '`' or ch == '｀' or ch == '`'
+
+    @staticmethod
+    def tilde(ch):
+        """
+        Tilde ~
+        """
+        return ch == '~' or ch == '～'
+
+    @staticmethod
+    def apostrophe(ch):
+        """
+        Apostrophe '
+        """
+        return ch == '\'' or ch == '＇'
+
+    @staticmethod
+    def exclamation_mark(ch):
+        """
+        Exclamation Mark !
+        """
+        return ch == '!' or ch == '！' or ch == '︕' or ch == '﹗'
+
+    @staticmethod
+    def question_mark(ch):
+        """
+        Question Mark ?
+        """
+        return ch == '?' or ch == '？' or ch == '︖' or ch == '﹖'
+
+    @staticmethod
+    def quotation_mark(ch):
+        """
+        Quotation Mark "
+        """
+        return ch == '"' or ch == '＂'
+
+    @staticmethod
+    def commercial_at(ch):
+        """
+        Commercial At @
+        """
+        return ch == '@' or ch == '＠' or ch == '﹫'
+
+    @staticmethod
+    def number_sign(ch):
+        """
+        Number Sign #
+        """
+        return ch == '#' or ch == '＃' or ch == '﹟'
+
+    @staticmethod
+    def percent_sign(ch):
+        """
+        Percent Sign %
+        """
+        return ch == '%' or ch == '％' or ch == '﹪'
+
+    @staticmethod
+    def circumflex_accent(ch):
+        """
+        Circumflex Accent (Xor) ^
+        """
+        return ch == '^' or ch == '＾'
+
+    @staticmethod
+    def ampersand(ch):
+        """
+        Ampersand &
+        """
+        return ch == '&' or ch == '＆' or ch == '﹠'
