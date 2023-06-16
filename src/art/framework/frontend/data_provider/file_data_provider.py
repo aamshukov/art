@@ -4,6 +4,7 @@
 #
 """ File data provider """
 import os
+from art.framework.core.text import Text
 from art.framework.frontend.data_provider.data_provider import DataProvider
 
 
@@ -15,7 +16,7 @@ class FileDataProvider(DataProvider):
         """
         self._source = source
 
-    def load(self):
+    def load(self, to_codepoints=False):
         """
         https://docs.python.org/3/library/codecs.html#encodings-and-unicode
         """
@@ -40,8 +41,12 @@ class FileDataProvider(DataProvider):
                 else:
                     encoding = 'UTF-16LE'
                 offset = 2
-        result = ''
+        text = ''
         with open(self._source, 'rt', encoding=encoding, newline=os.linesep) as stream:
             stream.seek(offset, os.SEEK_SET)
-            result = stream.read()
+            text = stream.read()
+        if to_codepoints:
+            result = Text.string_to_codepoints(text)
+        else:
+            result = text
         return result

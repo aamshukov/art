@@ -26,10 +26,13 @@ class Tokenizer(Entity):
         self._content = content  # loaded content
         self._start_content = 0  # beginning of content
         self._end_content = self._start_content + self._content.count  # end of content, sentinel
-        self._content_position = self._start_content  # current position in content
+        self._content_position = self._start_content - 1  # current position in content
         self._lexeme_position = self._start_content  # beginning position of lexeme in content
         self._token = Token(TokenKind.UNKNOWN)  # current lexeme
         self._snapshots = deque()  # stack of backtracking snapshots - positions
+        self._unicode_backslash_count = 0  # tracks how many '\' has been observed
+        self._codepoint = Text.eos_codepoint()
+        self.next_codepoint()
 
     def __hash__(self):
         """
@@ -53,34 +56,122 @@ class Tokenizer(Entity):
         return super().__le__(other)
 
     @property
+    def codepoint(self):
+        """
+        """
+        return self._codepoint
+
+    @property
     def content(self):
         """
         """
         return self._content
 
-    def advance_codepoint(self):
+    def calculate_codepoint(self, content_position, n):
         """
+        Return True if sequence of digits is correct.
         """
-        if self._content_position < self._end_content:
-            result = self._content[self._content_position]
-            self._content_position += 1
-        else:
-            result = Text.eos_codepoint()
-        return result
+        k = 0
+        result = 0
+        valid = True
+        for k in range(n):
+            if content_position == self._end_content:
+                # report error as invalid unicode escape sequence, invalid length
+                result = 0
+                valid = False
+                break
+            codepoint = self._content.data[content_position]
+            if Text.hexadecimal_digit(codepoint):
+                result = (result << 4) | Text.ascii_number(ord(codepoint))  # ??
+                content_position += 1
+            else:
+                # report error as invalid unicode escape sequence
+                result = 0
+                valid = False
+                break
+        return valid, result, content_position
 
-    def revoke_codepoint(self):
+    def consume_unicode_escape(self, mode, content_position, check_for_surrogates=True):
         """
+        Parce unicode escape(s):
+            '\'uHexDigitHexDigitHexDigitHexDigit - up to 0xFFFF
+            '\'uHexDigitHexDigitHexDigitHexDigit
+            '\'uHexDigitHexDigitHexDigitHexDigit - up to 0x10FFFF with surrogates
+            '\'UHexDigitHexDigitHexDigitHexDigitHexDigitHexDigitHexDigitHexDigit - codepoint
+        At this point current position points to '\\'.
         """
-        if self._content_position > self._start_content:
-            self._content_position -= 1
-        result = self._content[self._content_position]
-        return result
+        result = Text.bad_codepoint()
+        content_position = content_position + 1  # skip '\\'
+        while (content_position < self._end_content and  # consume (squash) unicode escape prefixes as in Java
+               Text.unicode_escape_prefix(self._content.data[content_position])):
+            content_position += 1
+        valid, codepoint, content_position = self.calculate_codepoint(content_position, 4 if mode == 'u' else 8)
+        if valid:
+            if mode == 'u':
+                if check_for_surrogates:
+                    if Text.high_surrogate(codepoint):
+                        if Text.unicode_escape_prefix(self.peek_codepoint()):
+                            high_surrogate = codepoint
+                            low_surrogate, content_position = self.consume_unicode_escape(mode,
+                                                                                          content_position,
+                                                                                          check_for_surrogates=False)
+                            if Text.low_surrogate(low_surrogate):
+                                result = Text.make_codepoint(high_surrogate, low_surrogate)
+                            else:
+                                # report error as invalid unicode escape sequence, invalid low surrogate
+                                pass
+                        else:
+                            # report error as invalid unicode escape sequence, missing low surrogate
+                            pass
+                    else:
+                        if Text.ascii(codepoint) or not Text.low_surrogate(codepoint):
+                            result = codepoint
+                            content_position -= 1
+                        else:
+                            # report error as invalid unicode escape sequence, invalid high surrogate
+                            pass
+                else:
+                    result = codepoint
+                    content_position -= 1
+            else:  # mode == U
+                result = codepoint
+                content_position -= 1
+        else:
+            # report error as invalid unicode escape sequence, invalid length
+            pass
+        return chr(result) if check_for_surrogates else result, content_position  # ??
+
+    def next_codepoint(self):
+        """
+        Content is represented as string with 'virtual' codepoints.
+        To deal with genuine codepoints content must be loaded with to_codepoints=True.
+        """
+        self._content_position += 1
+        if self._content_position < self._end_content:
+            self._codepoint = self._content.data[self._content_position]
+            if Text.back_slash(self._codepoint):
+                if self._unicode_backslash_count % 2 == 0:  # '\' might start unicode escape sequence
+                    prefix = self.peek_codepoint()          # check for single '\': ..._count = 0, 2, etc.
+                    if Text.unicode_escape_prefix(prefix):
+                        self._codepoint, self._content_position = self.consume_unicode_escape(prefix,
+                                                                                              self._content_position)
+                    else:
+                        self._unicode_backslash_count += 1
+                else:
+                    self._unicode_backslash_count += 1  # single '\'
+            else:
+                self._unicode_backslash_count = 0
+        else:
+            self._codepoint = Text.eos_codepoint()
+        if self._content_position > self._end_content:
+            self._content_position = self._end_content
+        return self._codepoint
 
     def peek_codepoint(self):
         """
         """
         if self._content_position + 1 < self._end_content:
-            result = self._content[self._content_position + 1]
+            result = self._content.data[self._content_position + 1]
         else:
             result = Text.eos_codepoint()
         return result

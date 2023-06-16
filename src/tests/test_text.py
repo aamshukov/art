@@ -117,14 +117,14 @@ class Test(unittest.TestCase):
         assert Text.letter('益')
         assert Text.letter('什')
 
-    def test_decimal_digit_number_success(self):
-        assert Text.decimal_digit_number('0')
-        assert Text.decimal_digit_number('1')
-        assert Text.decimal_digit_number('5')
-        assert Text.decimal_digit_number('४')
-        assert Text.decimal_digit_number('३')
-        assert Text.decimal_digit_number('௫')
-        assert Text.decimal_digit_number('៥')
+    def test_decimal_digit_success(self):
+        assert Text.decimal_digit('0')
+        assert Text.decimal_digit('1')
+        assert Text.decimal_digit('5')
+        assert Text.decimal_digit('४')
+        assert Text.decimal_digit('३')
+        assert Text.decimal_digit('௫')
+        assert Text.decimal_digit('៥')
 
     def test_hexadecimal_digit_number_success(self):
         assert Text.hexadecimal_digit('0')

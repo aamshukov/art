@@ -335,6 +335,15 @@ class Test(unittest.TestCase):
         assert(content.get_line(93) == 0)
         assert(content.get_line(94) == 1)
 
+    def test_content_codepoints_success(self):
+        dp = StringDataProvider('Lin\te 1\n\nLi\t\t\tne 3\n\nLin\t\t\t\te5')  # line map has 5 entries
+        data = dp.load(to_codepoints=True)
+        assert len(data) == 29
+        assert type(data) is list
+        assert type(data[0]) is int
+        content = Content(0, data, '')
+        assert len(data) == content.count
+
 
 if __name__ == '__main__':
     """

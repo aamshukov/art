@@ -3,6 +3,7 @@
 # UI Lab Inc. Arthur Amshukov
 #
 """ String data provider """
+from art.framework.core.text import Text
 from art.framework.frontend.data_provider.data_provider import DataProvider
 
 
@@ -18,7 +19,10 @@ class StringDataProvider(DataProvider):
         else:
             self._data = data
 
-    def load(self):
+    def load(self, to_codepoints=False):
         """
         """
-        return self._data
+        if to_codepoints:
+            return Text.string_to_codepoints(self._data)
+        else:
+            return self._data

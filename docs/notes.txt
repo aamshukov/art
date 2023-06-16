@@ -1,0 +1,430 @@
+endianness_map = {
+    '>': 'big',
+    '<': 'little',
+    '=': sys.byteorder,
+    '|': 'not applicable',
+}
+
+
+https://martinheinz.dev/blog/32
+class Person:
+    def __init__(self, **kwargs):
+        self.__dict__.update(**kwargs)
+
+class Person:
+    def __init__(self, **kwargs):
+        vars(self).update(**kwargs)  # Alternatively use `vars()`
+The snippet above demonstrates usage of self.__dict__ which is a dictionary which stores all the attributes of class (unless __slots__ is declared)
+
+
+
+https://stackoverflow.com/questions/5268404/what-is-the-fastest-way-to-check-if-a-class-has-a-function-defined
+invert_op = getattr(self, "invert_op", None)
+if callable(invert_op):
+    invert_op(self.path.parent_op)
+
+
+
+https://stackoverflow.com/questions/5910703/how-to-get-all-methods-of-a-python-class-with-given-decorator
+
+
+
+
+#sys.path.append(os.path.abspath('src'))
+#sys.path.append(os.path.abspath('adt'))
+#sys.path.append(os.path.abspath('core'))
+#sys.path.append(os.path.abspath('patterns'))
+#sys.path.append(os.path.abspath('algorithms'))
+
+
+import importlib
+ modnames = ["os", "sys", "math"]
+ for lib in modnames:
+     globals()[lib] = importlib.import_module(lib)
+
+
+
+# How to merge two dictionaries
+# in Python 3.5+
+>>> x = {'a': 1, 'b': 2}
+>>> y = {'b': 3, 'c': 4}
+>>> z = {**x, **y}
+>>> z
+{'c': 4, 'a': 1, 'b': 3}
+
+
+
+# Different ways to test multiple
+# flags at once in Python
+x, y, z = 0, 1, 0
+
+if x == 1 or y == 1 or z == 1:
+    print('passed')
+
+if 1 in (x, y, z):
+    print('passed')
+
+# These only test for truthiness:
+if x or y or z:
+    print('passed')
+
+if any((x, y, z)):
+    print('passed')
+
+
+
+
+
+    @staticmethod
+    def collect_predecessors(vertex, graph):
+        """
+        """
+        assert vertex is not None, "Invalid argument 'vertex'"
+        assert vertex.id in graph.vertices, f"Missing vertex: {vertex}"
+        result = list()
+        if graph.digraph:
+            pass
+        else:
+            edges = graph.get_edges(vertex)
+            for edge in edges:
+                vertex_u = edge.endpoints[0]
+                vertex_v = edge.endpoints[1]
+                if vertex == vertex_v:  # incoming edge
+                    result.append(vertex_u)
+        return result
+
+
+
+
+# How to sort a Python dict by value
+# (== get a representation sorted by value)
+
+>>> xs = {'a': 4, 'b': 3, 'c': 2, 'd': 1}
+
+>>> sorted(xs.items(), key=lambda x: x[1])
+[('d', 1), ('c', 2), ('b', 3), ('a', 4)]
+
+# Or:
+
+>>> import operator
+>>> sorted(xs.items(), key=operator.itemgetter(1))
+[('d', 1), ('c', 2), ('b', 3), ('a', 4)]
+
+
+
+
+        collected_vertices = list()
+        dfs_visitor = DfsVisitor(graph)
+        for vertex in graph.vertices.values():
+            if (vertex.flags & Flags.VISITED) != Flags.VISITED:
+                v = dfs_visitor.visit(vertex, callback=lambda v: collected_vertices.append(v))
+                collected_vertices.append(next(v))
+        assert collected_vertices == [v1, v2, v3]
+
+
+
+
+
+# The get() method on dicts
+# and its "default" argument
+name_for_userid = {
+    382: "Alice",
+    590: "Bob",
+    951: "Dilbert",
+}
+
+def greeting(userid):
+    return "Hi %s!" % name_for_userid.get(userid, "there")
+
+>>> greeting(382)
+"Hi Alice!"
+>>> greeting(333333)
+"Hi there!"
+
+
+
+
+
+            for vertex in graph.vertices.values():
+                if (vertex.flags & Flags.VISITED) != Flags.VISITED:
+                    for v in GraphAlgorithms.dfs(vertex):
+                        collected_vertices.append(v)
+            assert len(collected_vertices) == len(vertices)
+
+
+
+
+reverse list
+[result[k] for k in range(len(result)-1, -1, -1)]
+
+
+
+
+        for i in range(len(self._vertices)):
+            result.append([0 for i in range(len(self._vertices))])
+        for edge in self._edges.values():
+            result[edge.endpoints[0].id][edge.endpoints[1].id] = edge.value if edge.value else 1
+
+
+
+https://realpython.com/primer-on-python-decorators/
+import functools
+
+def debug(func):
+    """Print the function signature and return value"""
+    @functools.wraps(func)
+    def wrapper_debug(*args, **kwargs):
+        args_repr = [repr(a) for a in args]                      # 1
+        kwargs_repr = [f"{k}={v!r}" for k, v in kwargs.items()]  # 2
+        signature = ", ".join(args_repr + kwargs_repr)           # 3
+        print(f"Calling {func.__name__}({signature})")
+        value = func(*args, **kwargs)
+        print(f"{func.__name__!r} returned {value!r}")           # 4
+        return value
+    return wrapper_debug
+
+import math
+from decorators import debug
+
+# Apply a decorator to a standard library function
+math.factorial = debug(math.factorial)
+
+def approximate_e(terms=18):
+    return sum(1 / math.factorial(n) for n in range(terms))
+
+
+
+
+
+
+        def dfs(node):
+            stack.append(node)
+            nodes.append(node)
+            for kid in node.kids:
+                dfs(kid)
+                nodes.append(node)
+            stack.pop()
+
+        dfs(tree)
+
+
+
+
+
+
+
+    @property
+    def leaf(self):
+        return self.degree == 1 or self.degree == 0
+
+
+
+
+2D array:
+a = [[0 for column in range(columns)] for row in range(rows)]
+a = [[0] * cols for _ in range(rows)]
+
+
+
+import heapq
+pqueue = list()  # priority queue
+heapq.heappush(pqueue, (10, 'v2'))
+heapq.heappush(pqueue, (10, 'v1'))
+heapq.heappush(pqueue, (0, 'v3'))
+value, vertex = heapq.heappop(pqueue)
+value, vertex
+
+
+
+
+https://github.com/abarnert/treestuff/blob/master/treestuff.py
+def postorder(node, children_func):
+    for child in children_func(node):
+        yield from postorder(child, children_func)
+    yield node
+
+# ... or iteratively:
+
+def preorder(node, children_func):
+    s = [node]
+    while s:
+        node = s.pop()
+        yield node
+        s.extend(reversed(list(children_func(node))))
+
+# ... and of course it works just as well for BFS as fro DFS:
+
+def levelorder(node, children_func):
+    q = collections.deque([node])
+    while q:
+        node = q.popleft()
+        yield node
+        q.extend(children_func(node))
+
+
+
+
+
+        ss = SuffixArray.concatenate_strings(['abca', 'bcad', 'daca'])
+
+
+
+        # full_size = core_size + sum(map(len, keys))
+
+
+мерджить словари
+cities_us = {'New York City': 'US', 'Los Angeles': 'US'}
+cities_uk = {'London': 'UK', 'Birmingham': 'UK'}
+cities = cities_us|cities_uk
+print(cities)
+
+
+A = [1, 2, 3]
+B = (4, 5, 6)
+C = {7, 8, 9}
+L = [*A, *B, *C]
+print(L)
+
+
+
+
+
+import itertools
+from typing import Iterable
+
+def pairwise(iterable: Iterable):
+    """Iterate over elements two by two.
+
+    s -> (s0,s1), (s1,s2), (s2, s3), ...
+    """
+    a, b = itertools.tee(iterable)
+    next(b, None)
+    return zip(a, b)
+
+def iter_slice(iterable: bytes, n: int):
+    """Yield slices of size n and says if each slice is the last one.
+
+    s -> (b'123', False), (b'45', True)
+    """
+    start = 0
+    stop = start + n
+    final_offset = len(iterable)
+
+    while True:
+        if start >= final_offset:
+            break
+
+        rv = iterable[start:stop]
+        start = stop
+        stop = start + n
+        yield rv, start >= final_offset
+
+
+
+
+    def split_entries(self) -> list:
+        """Split the entries in half.
+
+        Keep the lower part in the node and return the upper one.
+        """
+        len_entries = len(self.entries)
+        rv = self.entries[len_entries//2:]
+        self.entries = self.entries[:len_entries//2]
+        assert len(self.entries) + len(rv) == len_entries
+        return rv
+
+
+
+
+
+
+
+def literal_patterns(subject):
+    match subject:
+        case 1:
+            print("The subject matches with 1")
+        case 1.0:
+            print("The subject matches with 1.0")
+        case 2+3j:
+            print(f"The real and imaginary parts are 2 and 3 respectively.")
+        case "Masashi Kishimoto":
+            print(f"Masashi Kishimoto is the author of manga series which was first published in 1999.")
+        case None:
+            print("The subject matches with None")
+        case True:
+            print("The subject matches with True")
+
+
+def capture_patterns(subject):
+
+    match subject:
+        case [a,]:
+            print(f"Collection has only one entry: {a}")
+        case (a, b):
+            print(f"Find flowrate for volume {a}litres and time {b}secs")
+        case value:
+            print(f"{value} is the value of subject")
+
+
+
+def wildcard_patterns(subject):
+
+    match subject:
+        case (1,_,1):
+            print(f"{subject} is a palindrome collection")
+        case (_,_):
+            print(f"{subject} is a collection of 2")
+        case _:
+            print("Unknown Match")
+
+
+
+def as_patterns(subject):
+
+    match subject:
+        case "Kg" as mass:
+            print(f"SI unit for mass is {mass}")
+        case "N" as a force:
+            print(f"SI unit for force is {force}")
+
+
+def or_patterns(subject):
+
+    match subject:
+        case "RED" | "YELLOW" | "BLUE" as p_colour:
+            print(f"{p_colour} is one of the primary colours")
+        case colour:
+            print(f"{colour} is not one of the primary colours")
+
+
+
+def guard(subject):
+
+    match subject:
+        case int(number) if number % 2:
+            print(f"{number} is an odd integer")
+        case int(number):
+            print(f"{number} is an even integer")
+        case element:
+            print(f"{element} is not an integer")
+
+
+
+
+
+
+    # def revoke_codepoint(self):
+    #     """
+    #     """
+    #     if self._content_position > self._start_content:
+    #         self._content_position -= 1
+    #     result = self._content[self._content_position]
+    #     return result
+
+
+
+
+        self._unicode = False  # true if the last obtained codepoint from unicode-escape
+        self._unicode_length = 0  # length of unicode codepoint
+
+

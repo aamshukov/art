@@ -3,6 +3,7 @@
 # UI Lab Inc. Arthur Amshukov
 #
 """ String extensions """
+import sys
 import ctypes
 import functools
 import random
@@ -145,6 +146,44 @@ class Text(Base):
         return result
 
     @staticmethod
+    def assemble_codepoint_le(b0, b1, b2, b3):
+        """
+        """
+        v  = (b0 << 0)  & 0x000000FF  # noqa
+        v |= (b1 << 8)  & 0x0000FF00  # noqa
+        v |= (b2 << 16) & 0x00FF0000  # noqa
+        v |= (b3 << 24) & 0xFF000000  # noqa
+        return v
+
+    @staticmethod
+    def assemble_codepoint_be(b0, b1, b2, b3):
+        """
+        """
+        v  = (b0 << 24) & 0xFF000000  # noqa
+        v |= (b1 << 16) & 0x00FF0000  # noqa
+        v |= (b2 << 8)  & 0x0000FF00  # noqa
+        v |= (b3 << 0)  & 0x000000FF  # noqa
+        return v
+
+    @staticmethod
+    def string_to_codepoints(text):
+        """
+        """
+        suffix = 'le' if sys.byteorder == "little" else 'be'
+        data = text.encode(f'UTF-32{suffix}')
+        assert len(data) % 4 == 0, "Invalid unicode data"
+        assembler = Text.assemble_codepoint_le if suffix == 'le' else Text.assemble_codepoint_be
+        codepoints = [0] * (len(data) // 4)
+        i = 0
+        for k in range(0, len(codepoints), 4):
+            codepoints[i] = assembler(data[k + 0],
+                                      data[k + 1],
+                                      data[k + 2],
+                                      data[k + 3])
+            i += 1
+        return codepoints
+
+    @staticmethod
     def make_codepoint(high_surrogate_code_unit, low_surrogate_code_unit):
         """
         https://learn.microsoft.com/en-us/dotnet/standard/base-types/character-encoding-introduction
@@ -169,13 +208,7 @@ class Text(Base):
     def bad_codepoint():
         """
         """
-        return 0x0F000002
-
-    @staticmethod
-    def eos_codepoint():
-        """
-        """
-        return 0x0000001A
+        return 0xFFFD
 
     @staticmethod
     def epsilon_codepoint(codepoint):
@@ -204,7 +237,7 @@ class Text(Base):
         """
         """
         return (Text.letter(ch) or
-                Text.decimal_digit_number(ch) or
+                Text.decimal_digit(ch) or
                 Text.underscore(ch) or
                 Text.dollar_sign(ch) or
                 Text.letter_number(ch) or
@@ -243,7 +276,7 @@ class Text(Base):
                 return False
 
     @staticmethod
-    def decimal_digit_number(ch):
+    def decimal_digit(ch):
         """
         """
         match ch:
@@ -267,6 +300,24 @@ class Text(Base):
                     return True
                 else:
                     return unicodedata.category(ch) == 'Nd'
+
+    ASCII_NUMBERS = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 0, 0, 0, 0, 0,
+                     0, 0xA, 0xB, 0xC, 0xD, 0xE, 0xF, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                     0, 0, 0, 0, 0, 0xa, 0xb, 0xc, 0xd, 0xe, 0xf, 0, 0,0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                     0, 0, 0, 0, 0, 0, 0]
+
+    @staticmethod
+    def ascii_number(digit):
+        """
+        """
+        return Text.ASCII_NUMBERS[digit]
+
+    @staticmethod
+    def ascii(codepoint):
+        """
+        """
+        return codepoint <= 0x7F
 
     @staticmethod
     def letter_number(ch):
@@ -310,9 +361,17 @@ class Text(Base):
     @staticmethod
     def eos(ch):
         """
+        End Of Transmission.
         """
         codepoint = ord(ch)
-        return codepoint == 0x001A or codepoint == 0x0004 or codepoint == 0x2404
+        return codepoint == 0x0004 or codepoint == 0x2404
+
+    @staticmethod
+    def eos_codepoint():
+        """
+        End Of Transmission codepoint.
+        """
+        return 0x2404
 
     @staticmethod
     def underscore(ch):
@@ -555,3 +614,10 @@ class Text(Base):
         Ampersand &
         """
         return ch == '&' or ch == '＆' or ch == '﹠'
+
+    @staticmethod
+    def unicode_escape_prefix(ch):
+        """
+        u or U.
+        """
+        return ch == 'u' or ch == 'U'
