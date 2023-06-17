@@ -16,6 +16,7 @@ class LexicalAnalyzer(Entity):
                  id,
                  tokenizer,
                  statistics,
+                 diagnostics,
                  version='1.0'):
         """
         """
@@ -26,6 +27,7 @@ class LexicalAnalyzer(Entity):
         self._tokens = deque()  # queue of lookahead (cached) lexemes
         self._prev_token = deepcopy(self._token)  # previous lexeme
         self._statistics = statistics
+        self._diagnostics = diagnostics
 
     def __hash__(self):
         """

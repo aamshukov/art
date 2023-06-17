@@ -19,13 +19,14 @@ class Status(Base):
     ERROR_MASK       = 0x0100_0000_0000_0000  # noqa
     FATAL_ERROR_MASK = 0x1000_0000_0000_0000  # noqa
 
-    SUCCESS             = 1 | SUCCESS_MASK      # noqa
-    INFO                = 2 | INFO_MASK         # noqa
-    WARNING             = 3 | WARNING_MASK      # noqa
-    ERROR               = 0 | ERROR_MASK        # noqa
-    FATAL_ERROR         = 0 | FATAL_ERROR_MASK  # noqa
-    INVALID_LITERAL     = 128 | ERROR_MASK      # noqa
-    STATUS_DEPRECATED   = 129 | WARNING_MASK    # noqa
+    SUCCESS                 = 1 | SUCCESS_MASK      # noqa
+    INFO                    = 2 | INFO_MASK         # noqa
+    WARNING                 = 3 | WARNING_MASK      # noqa
+    ERROR                   = 0 | ERROR_MASK        # noqa
+    FATAL_ERROR             = 0 | FATAL_ERROR_MASK  # noqa
+    INVALID_LITERAL         = 128 | ERROR_MASK      # noqa
+    STATUS_DEPRECATED       = 129 | WARNING_MASK    # noqa
+    INVALID_UNICODE_ESCAPE  = 130 | ERROR_MASK      # noqa
 
     def __init__(self,
                  text,  # description

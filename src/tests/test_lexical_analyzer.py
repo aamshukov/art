@@ -4,6 +4,7 @@
 #
 import unittest
 from art.framework.core.text import Text
+from art.framework.core.diagnostics import Diagnostics
 from art.framework.frontend.data_provider.string_data_provider import StringDataProvider
 from art.framework.frontend.content.content import Content
 from art.framework.frontend.statistics.statistics import Statistics
@@ -16,7 +17,7 @@ from art.framework.frontend.token.tokenizer import Tokenizer
 class Test(unittest.TestCase):
     class TestTokenizer(Tokenizer):
         def __init__(self, id, content, version='1.0'):
-            super().__init__(id, content, version=version)
+            super().__init__(id, content, Statistics(), Diagnostics(), version=version)
             self._k = 0
 
         def inc_k(self):
@@ -69,7 +70,11 @@ class Test(unittest.TestCase):
 
     class TestLexicalAnalyzer(LexicalAnalyzer):
         def __init__(self, id, tokenizer, version='1.0'):
-            super().__init__(id, tokenizer, Statistics(), version=version)
+            super().__init__(id,
+                             tokenizer,
+                             Statistics(),
+                             Diagnostics(),
+                             version=version)
 
     def __init__(self, *args, **kwargs):
         """

@@ -7,6 +7,7 @@ from collections import deque
 from abc import abstractmethod
 from art.framework.core.entity import Entity
 from art.framework.core.flags import Flags
+from art.framework.core.status import Status
 from art.framework.core.text import Text
 from art.framework.frontend.token.token import Token
 from art.framework.frontend.token.token_kind import TokenKind
@@ -18,6 +19,8 @@ class Tokenizer(Entity):
     def __init__(self,
                  id,
                  content,
+                 statistics,
+                 diagnostics,
                  version='1.0'):
         """
         """
@@ -32,7 +35,9 @@ class Tokenizer(Entity):
         self._snapshots = deque()  # stack of backtracking snapshots - positions
         self._unicode_backslash_count = 0  # tracks how many '\' has been observed
         self._codepoint = Text.eos_codepoint()
-        self.next_codepoint()
+        self._statistics = statistics
+        self._diagnostics = diagnostics
+        self.next_codepoint()  #
 
     def __hash__(self):
         """
@@ -76,16 +81,22 @@ class Tokenizer(Entity):
         valid = True
         for k in range(n):
             if content_position == self._end_content:
-                # report error as invalid unicode escape sequence, invalid length
                 result = 0
                 valid = False
+                self._diagnostics.add(Status(f'Invalid unicode escape sequence length at'
+                                             f'{self.content.get_location(content_position)}',
+                                             'tokenizer',
+                                             Status.INVALID_UNICODE_ESCAPE))
                 break
             codepoint = self._content.data[content_position]
             if Text.hexadecimal_digit(codepoint):
                 result = (result << 4) | Text.ascii_number(ord(codepoint))  # ??
                 content_position += 1
             else:
-                # report error as invalid unicode escape sequence
+                self._diagnostics.add(Status(f'Invalid unicode escape sequence (digits) at'
+                                             f'{self.content.get_location(content_position)}',
+                                             'tokenizer',
+                                             Status.INVALID_UNICODE_ESCAPE))
                 result = 0
                 valid = False
                 break
@@ -118,27 +129,30 @@ class Tokenizer(Entity):
                             if Text.low_surrogate(low_surrogate):
                                 result = Text.make_codepoint(high_surrogate, low_surrogate)
                             else:
-                                # report error as invalid unicode escape sequence, invalid low surrogate
-                                pass
+                                self._diagnostics.add(Status(f'Invalid unicode escape sequence, invalid low surrogate '
+                                                             f'at {self.content.get_location(content_position)}',
+                                                             'tokenizer',
+                                                             Status.INVALID_UNICODE_ESCAPE))
                         else:
-                            # report error as invalid unicode escape sequence, missing low surrogate
-                            pass
+                            self._diagnostics.add(Status(f'Invalid unicode escape sequence, missing low surrogate '
+                                                         f'at {self.content.get_location(content_position)}',
+                                                         'tokenizer',
+                                                         Status.INVALID_UNICODE_ESCAPE))
                     else:
                         if Text.ascii(codepoint) or not Text.low_surrogate(codepoint):
                             result = codepoint
                             content_position -= 1
                         else:
-                            # report error as invalid unicode escape sequence, invalid high surrogate
-                            pass
+                            self._diagnostics.add(Status(f'Invalid unicode escape sequence, invalid high surrogate '
+                                                         f'at {self.content.get_location(content_position)}',
+                                                         'tokenizer',
+                                                         Status.INVALID_UNICODE_ESCAPE))
                 else:
                     result = codepoint
                     content_position -= 1
             else:  # mode == U
                 result = codepoint
                 content_position -= 1
-        else:
-            # report error as invalid unicode escape sequence, invalid length
-            pass
         return chr(result) if check_for_surrogates else result, content_position  # ??
 
     def next_codepoint(self):

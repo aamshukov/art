@@ -156,7 +156,7 @@ class Content(Entity):
     def get_column(self, position):
         """
         """
-        assert position < self._count, "Position out of range."
+        # assert position < self._count, "Position out of range."
         line_start = self._line_map[self.get_line(position) - Content.FIRST_LINE]
         column = 0
         if self._tab_size > 0:  # consider tabs
@@ -169,3 +169,10 @@ class Content(Entity):
             for k in range(line_start, position):
                 column += 1
         return column + Content.FIRST_COLUMN
+
+    def get_location(self, position):
+        """
+        """
+        line = self.get_line(position)
+        column = self.get_column(position)
+        return f'{line}:{column}'

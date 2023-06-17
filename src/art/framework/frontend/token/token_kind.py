@@ -81,7 +81,8 @@ class TokenKind(IntEnum):
     NOT = auto()
     NEG = auto()
 
-    FN = auto()
+    FUNCTION = auto()
+    PROCEDURE = auto()
     LAZY = auto()
     NOOP = auto()
 
