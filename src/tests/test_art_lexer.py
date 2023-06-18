@@ -45,11 +45,56 @@ class Test(unittest.TestCase):
         statistics = Statistics()
         tokenizer = ArtTokenizer(0, content, statistics, diagnostics)
         tokenizer.skip_whitespace()
+        assert tokenizer.codepoint == Text.eos_codepoint()
         dp = StringDataProvider(' ')
         data = dp.load()
         content = Content(0, data, '')
         tokenizer = ArtTokenizer(0, content, statistics, diagnostics)
         tokenizer.skip_whitespace()
+        assert tokenizer.codepoint == Text.eos_codepoint()
+        dp = StringDataProvider('  ')
+        data = dp.load()
+        content = Content(0, data, '')
+        tokenizer = ArtTokenizer(0, content, statistics, diagnostics)
+        tokenizer.skip_whitespace()
+        dp = StringDataProvider('A ')
+        data = dp.load()
+        content = Content(0, data, '')
+        tokenizer = ArtTokenizer(0, content, statistics, diagnostics)
+        tokenizer.skip_whitespace()
+        assert tokenizer.character == 'A'
+        tokenizer.skip_whitespace()
+        dp = StringDataProvider('AB ')
+        data = dp.load()
+        content = Content(0, data, '')
+        tokenizer = ArtTokenizer(0, content, statistics, diagnostics)
+        tokenizer.skip_whitespace()
+        assert tokenizer.character == 'A'
+        tokenizer.skip_whitespace()
+        assert tokenizer.character == 'A'
+        tokenizer.next_lexeme()
+        tokenizer.skip_whitespace()
+        # assert tokenizer.codepoint == Text.eos_codepoint() ??
+        # dp = StringDataProvider(' A  သည်  B  C 🐍 သည်    ')
+        # data = dp.load()
+        # content = Content(0, data, '')
+        # tokenizer = ArtTokenizer(0, content, statistics, diagnostics)
+        # tokenizer.skip_whitespace()
+        # assert tokenizer.character == 'A'
+        # tokenizer.skip_whitespace()
+        # assert tokenizer.character == 'သ'
+        # tokenizer.skip_whitespace()
+        # assert tokenizer.character == 'B'
+        # tokenizer.skip_whitespace()
+        # assert tokenizer.character == 'C'
+        # tokenizer.skip_whitespace()
+        # assert tokenizer.character == '🐍'
+        # tokenizer.skip_whitespace()
+        # assert tokenizer.character == 'သ'
+        # tokenizer.skip_whitespace()
+        # assert tokenizer.codepoint == Text.eos_codepoint()
+        # tokenizer.skip_whitespace()
+        # assert tokenizer.codepoint == Text.eos_codepoint()
 
     def test_identifier_start_success(self):
         assert ArtTokenizer.identifier_start(ord('a'))

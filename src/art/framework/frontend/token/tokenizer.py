@@ -226,7 +226,8 @@ class Tokenizer(Entity):
             self._content_position = self._end_content
         self._token.offset = self._lexeme_position - self._start_content
         self._token.length = self._content_position - self._lexeme_position
-        self._token.literal = self._content.data[self._token.offset: self._token.offset + self._token.length]
+        self._token.literal = ''.join(chr(codepoint) for codepoint in
+                                      self._content.data[self._token.offset: self._token.offset + self._token.length])
         self._token.source = self._content.id
         self._token.flags = Flags.modify_flags(self._token.flags, Flags.CONTEXTUAL.VISITED, Flags.CLEAR)
 

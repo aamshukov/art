@@ -12,6 +12,7 @@ from art.framework.frontend.token.token import Token
 from art.framework.frontend.token.token_kind import TokenKind
 from art.framework.frontend.lexical_analyzer.lexical_analyzer import LexicalAnalyzer
 from art.framework.frontend.token.tokenizer import Tokenizer
+from tests.__init__ import data_equal
 
 
 class Test(unittest.TestCase):
@@ -88,10 +89,10 @@ class Test(unittest.TestCase):
         assert len(data) == 1
         content = Content(0, data, '')
         assert len(data) == content.count
-        assert Text.equal(data, content.data)
+        assert data == content.data
         tokenizer = Test.TestTokenizer(0, content)
         lexer = Test.TestLexicalAnalyzer(0, tokenizer)
-        assert Text.equal(content.data, tokenizer.content.data)
+        assert content.data == tokenizer.content.data
         assert content == tokenizer.content
 
     def test_lexical_analyzer_tokens_success(self):

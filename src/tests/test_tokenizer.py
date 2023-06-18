@@ -11,7 +11,6 @@ from art.framework.frontend.statistics.statistics import Statistics
 from art.framework.frontend.token.token import Token
 from art.framework.frontend.token.token_kind import TokenKind
 from art.framework.frontend.token.tokenizer import Tokenizer
-from tests.__init__ import data_equal
 
 
 class Test(unittest.TestCase):
