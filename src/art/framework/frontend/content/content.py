@@ -109,6 +109,42 @@ class Content(Entity):
             k += 1
             while True:
                 ch = d[i]
+                if (ch == 0x0000000D or  # '\r'
+                        ch == 0x0000000A):  # '\n'
+                    if ((ch == 0x0000000D and (i + 1) < n and d[i + 1] == 0x0000000A) or
+                       (ch == 0x0000000A and (i + 1) < n and d[i + 1] == 0x0000000D)):
+                        i += 2
+                    else:
+                        i += 1
+                    break
+                elif t and ch == 0x00000009:  # '\t'
+                    tab_map[i] = True  # i is column
+                i += 1
+                if i >= n:
+                    break
+        if self._line_map is not None:
+            self._line_map.clear()
+        self._line_map = [line_map[j] for j in range(k)]
+        if t:
+            if self._tab_map is not None:
+                self._tab_map.clear()
+            self._tab_map = tab_map.copy()
+
+    def build_char_line_map(self):
+        """
+        """
+        k = 0
+        i = 0
+        n = self._count
+        d = self._data
+        t = self._tab_size > 0  # consider tabs if tab size > 0
+        line_map = [0] * n
+        tab_map = [False] * (n if t else 0)
+        while i < n:
+            line_map[k] = i
+            k += 1
+            while True:
+                ch = d[i]
                 if ch == '\r' or ch == '\n':
                     if (ch == '\r' and (i + 1) < n and d[i + 1] == '\n') or \
                        (ch == '\n' and (i + 1) < n and d[i + 1] == '\r'):

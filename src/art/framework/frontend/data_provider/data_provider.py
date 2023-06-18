@@ -11,7 +11,7 @@ class DataProvider(Base):
     """
     """
     @abstractmethod
-    def load(self, to_codepoints=False):
+    def load(self, to_codepoints=True):
         """
         """
         raise NotImplemented(self.load.__qualname__)

@@ -16,7 +16,7 @@ class FileDataProvider(DataProvider):
         """
         self._source = source
 
-    def load(self, to_codepoints=False):
+    def load(self, to_codepoints=True):
         """
         https://docs.python.org/3/library/codecs.html#encodings-and-unicode
         """

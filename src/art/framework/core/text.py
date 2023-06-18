@@ -15,6 +15,8 @@ from art.framework.core.base import Base
 class Text(Base):
     """
     """
+    BAD_CODEPOINT = 0x0000FFFD
+
     # http://www.unicode.org/glossary/#high_surrogate_code_unit
     HIGH_SURROGATE_START = 0x0000D800
     HIGH_SURROGATE_END = 0x0000DBFF
@@ -24,15 +26,15 @@ class Text(Base):
     LOW_SURROGATE_END = 0x0000DFFF
 
     # http://www.unicode.org/glossary/#supplementary_code_point
-    SUPPLEMENTARY_CODE_POINT_START = 0x010000
-    SUPPLEMENTARY_CODE_POINT_END = 0x10FFFF
+    SUPPLEMENTARY_CODE_POINT_START = 0x00010000
+    SUPPLEMENTARY_CODE_POINT_END = 0x0010FFFF
 
     @staticmethod
     def equal(lhs, rhs, case_insensitive=False, normalization_form='NFKC'):
         """
         """
-        assert lhs is not None
-        assert rhs is not None
+        assert lhs is not None, 'Invalid LHS.'
+        assert rhs is not None, 'Invalid RHS.'
         nfc = functools.partial(unicodedata.normalize, normalization_form)
         if case_insensitive:
             return nfc(lhs).casefold() == nfc(rhs).casefold()
@@ -43,8 +45,8 @@ class Text(Base):
     def compare(lhs, rhs, case_insensitive=False, normalization_form='NFKC'):
         """
         """
-        assert lhs is not None
-        assert rhs is not None
+        assert lhs is not None, 'Invalid LHS.'
+        assert rhs is not None, 'Invalid RHS.'
         nfc = functools.partial(unicodedata.normalize, normalization_form)
         if case_insensitive:
             lhs, rhs = nfc(lhs).casefold(), nfc(rhs).casefold()
@@ -146,6 +148,12 @@ class Text(Base):
         return result
 
     @staticmethod
+    def convert_to_character(codepoint):
+        """
+        """
+        return chr(codepoint)
+
+    @staticmethod
     def assemble_codepoint_le(b0, b1, b2, b3):
         """
         """
@@ -175,7 +183,7 @@ class Text(Base):
         assembler = Text.assemble_codepoint_le if suffix == 'le' else Text.assemble_codepoint_be
         codepoints = [0] * (len(data) // 4)
         i = 0
-        for k in range(0, len(codepoints), 4):
+        for k in range(0, len(data), 4):
             codepoints[i] = assembler(data[k + 0],
                                       data[k + 1],
                                       data[k + 2],
@@ -189,7 +197,7 @@ class Text(Base):
         https://learn.microsoft.com/en-us/dotnet/standard/base-types/character-encoding-introduction
         """
         return (Text.SUPPLEMENTARY_CODE_POINT_START +
-                ((high_surrogate_code_unit - Text.HIGH_SURROGATE_START) * 0x0400 +
+                ((high_surrogate_code_unit - Text.HIGH_SURROGATE_START) * 0x00000400 +
                  (low_surrogate_code_unit - Text.LOW_SURROGATE_START)))
 
     @staticmethod
@@ -205,101 +213,63 @@ class Text(Base):
         return Text.LOW_SURROGATE_START <= code_unit <= Text.LOW_SURROGATE_END
 
     @staticmethod
-    def bad_codepoint():
+    def letter(codepoint):
         """
         """
-        return 0xFFFD
+        result = ((0x00000041 <= codepoint <= 0x0000005A) or
+                  (0x00000061 <= codepoint <= 0x0000007A))
+        if not result:
+            ch = Text.convert_to_character(codepoint)
+            category = unicodedata.category(ch)
+            match category:
+                case 'Lu' | 'Ll' | 'Lt' | 'Lm' | 'Lo':
+                    result = True
+                case _:
+                    result = False
+        return result
 
     @staticmethod
-    def epsilon_codepoint(codepoint):
+    def letter_number(codepoint):
         """
         """
-        return codepoint == 0x000003B5
+        ch = Text.convert_to_character(codepoint)
+        return unicodedata.category(ch) == 'Nl'
 
     @staticmethod
-    def epsilon(ch):
+    def octal_digit(codepoint):
         """
+        Only considering ASCII table and 0xFF10 - 0xFF17
+        when use octal numbers during lexical analyze.
         """
-        return ch == 'ε'
+        result = ((0x00000030 <= codepoint <= 0x00000037) or
+                  (0x0000FF10 <= codepoint <= 0x0000FF17))
+        return result
 
     @staticmethod
-    def identifier_start(ch):
+    def decimal_digit(codepoint):
         """
         """
-        return (Text.letter(ch) or
-                Text.underscore(ch) or
-                Text.dollar_sign(ch) or
-                Text.currency_sign(ch) or
-                Text.connector_punctuation(ch))
+        result = ((0x00000030 <= codepoint <= 0x00000039) or
+                  (0x0000FF10 <= codepoint <= 0x0000FF19))
+        if not result:
+            ch = Text.convert_to_character(codepoint)
+            result = unicodedata.category(ch) == 'Nd'
+        return result
 
     @staticmethod
-    def identifier_part(ch):
+    def hexadecimal_digit(codepoint):
         """
         """
-        return (Text.letter(ch) or
-                Text.decimal_digit(ch) or
-                Text.underscore(ch) or
-                Text.dollar_sign(ch) or
-                Text.letter_number(ch) or
-                Text.currency_sign(ch) or
-                Text.connector_punctuation(ch) or
-                Text.spacing_mark(ch) or
-                Text.non_spacing_mark(ch))
-
-    @staticmethod
-    def letter(ch):
-        """
-        """
-        match ch:
-            case ('A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G' | 'H' | 'I' | 'J' | 'K' | 'L' | 'M' |
-                  'N' | 'O' | 'P' | 'Q' | 'R' | 'S' | 'T' | 'U' | 'V' | 'W' | 'X' | 'Y' | 'Z' |
-                  'a' | 'b' | 'c' | 'd' | 'e' | 'f' | 'g' | 'h' | 'i' | 'j' | 'k' | 'l' | 'm' |
-                  'n' | 'o' | 'p' | 'q' | 'r' | 's' | 't' | 'u' | 'v' | 'w' | 'x' | 'y' | 'z'):
-                return True
-            case _:
-                category = unicodedata.category(ch)
-                match category:
-                    case 'Lu' | 'Ll' | 'Lt' | 'Lm' | 'Lo':
-                        return True
-                    case _:
-                        return False
-
-    @staticmethod
-    def octal_digit(ch):
-        """
-        Only considering ASCII table when use octal numbers during lexical analyze.
-        """
-        match ch:
-            case '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7':
-                return True
-            case _:
-                return False
-
-    @staticmethod
-    def decimal_digit(ch):
-        """
-        """
-        match ch:
-            case '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9':
-                return True
-            case _:
-                return unicodedata.category(ch) == 'Nd'
-
-    @staticmethod
-    def hexadecimal_digit(ch):
-        """
-        """
-        match ch:
-            case ('0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' |
-                  'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'a' | 'b' | 'c' | 'd' | 'e' | 'f'):
-                return True
-            case _:
-                codepoint = ord(ch)
-                # if (0x0066 >= codepoint >= 0x0041 and (codepoint <= 0x0046 or codepoint >= 0x0061)) or \
-                if 0xFF21 <= codepoint <= 0xFF46 and (codepoint <= 0xFF26 or codepoint >= 0XFF41):
-                    return True
-                else:
-                    return unicodedata.category(ch) == 'Nd'
+        result = ((0x00000030 <= codepoint <= 0x00000039) or
+                  (0x00000041 <= codepoint <= 0x00000046) or
+                  (0x00000061 <= codepoint <= 0x00000066) or
+                  (0x0000FF10 <= codepoint <= 0x0000FF19) or
+                  (0x0000FF21 <= codepoint <= 0x0000FF26) or
+                  (0x0000FF41 <= codepoint <= 0x0000FF46))
+        if not result:
+            ch = Text.convert_to_character(codepoint)
+            result = unicodedata.category(ch) == 'Nd'
+        return result
 
     ASCII_NUMBERS = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 0, 0, 0, 0, 0,
@@ -317,307 +287,380 @@ class Text(Base):
     def ascii(codepoint):
         """
         """
-        return codepoint <= 0x7F
+        return codepoint <= 0x0000007F
 
     @staticmethod
-    def letter_number(ch):
+    def spacing_mark(codepoint):
         """
         """
-        return unicodedata.category(ch) == 'Nl'
-
-    @staticmethod
-    def spacing_mark(ch):
-        """
-        """
+        ch = Text.convert_to_character(codepoint)
         return unicodedata.category(ch) == 'Mc'
 
     @staticmethod
-    def non_spacing_mark(ch):
+    def non_spacing_mark(codepoint):
         """
         """
+        ch = Text.convert_to_character(codepoint)
         return unicodedata.category(ch) == 'Mn'
 
     @staticmethod
-    def whitespace(ch):
+    def whitespace(codepoint):
         """
         """
-        match ch:
-            case ' ' | '\t' | '\f':
+        match codepoint:
+            case (0x00000020 |  # ' '
+                  0x00000009 |  # '\t'
+                  0x0000000C):  # '\f'
                 return True
             case _:
+                ch = Text.convert_to_character(codepoint)
                 return unicodedata.category(ch) == 'Zs'
 
     @staticmethod
-    def eol(ch):
+    def eol(codepoint):
         """
         """
-        match ch:
-            case '\n' | '\r':
-                return True
-            case _:
-                codepoint = ord(ch)
-                return codepoint == 0x0085 or codepoint == 0x2028 or codepoint == 0x2029
+        return (codepoint == 0x0000000A or  # '\n'
+                codepoint == 0x0000000D or  # '\r'
+                codepoint == 0x00000085 or
+                codepoint == 0x00002028 or
+                codepoint == 0x00002029)
 
     @staticmethod
-    def eos(ch):
+    def eos(codepoint):
         """
-        End Of Transmission.
+        Return true if codepoint is End Of Transmission.
         """
-        codepoint = ord(ch)
-        return codepoint == 0x0004 or codepoint == 0x2404
+        return codepoint == 0x00000004 or codepoint == 0x00002404
 
     @staticmethod
     def eos_codepoint():
         """
-        End Of Transmission codepoint.
+        Return End Of Transmission (EOT) codepoint.
         """
         return 0x2404
 
     @staticmethod
-    def underscore(ch):
+    def underscore(codepoint):
         """
         Low Line (Underscore) _
         """
-        match ch:
+        match codepoint:
             case '_':
                 return True
             case _:
+                ch = Text.convert_to_character(codepoint)
                 return unicodedata.category(ch) == 'Pc'
 
     @staticmethod
-    def connector_punctuation(ch):
+    def connector_punctuation(codepoint):
         """
         Connector Punctuation
         """
+        ch = Text.convert_to_character(codepoint)
         return unicodedata.category(ch) == 'Pc'
 
     @staticmethod
-    def dollar_sign(ch):
+    def dollar_sign(codepoint):
         """
         Dollar Sign $
         """
-        return ch == '$'
+        return (codepoint == 0x00000024 or  # '$'
+                codepoint == 0x0000FF04 or  # '＄'
+                codepoint == 0x0000FE69)    # '﹩'
 
     @staticmethod
-    def currency_sign(ch):
+    def currency_sign(codepoint):
         """
         Currency Sign
         """
+        ch = Text.convert_to_character(codepoint)
         return unicodedata.category(ch) == 'Sc'
 
     @staticmethod
-    def left_parenthesis(ch):
+    def left_parenthesis(codepoint):
         """
         Left Parenthesis (
         """
-        return ch == '(' or ch == '（' or ch == '﹙' or ch == '₍' or ch == '⁽' or ch == '︵'
+        return (codepoint == 0x00000028 or  # '('
+                codepoint == 0x0000FF08 or  # '（'
+                codepoint == 0x0000FE59 or  # '﹙'
+                codepoint == 0x0000208D or  # '₍'
+                codepoint == 0x0000207D or  # '⁽'
+                codepoint == 0x0000FE35)    # '︵'
 
     @staticmethod
-    def right_parenthesis(ch):
+    def right_parenthesis(codepoint):
         """
         Right Parenthesis )
         """
-        return ch == ')' or ch == '）' or ch == '﹚' or ch == '₎' or ch == '⁾' or ch == '︶'
+        return (codepoint == 0x00000029 or  # ')'
+                codepoint == 0x0000FF09 or  # '）'
+                codepoint == 0x0000FE5A or  # '﹚'
+                codepoint == 0x0000208E or  # '₎'
+                codepoint == 0x0000207E or  # '⁾'
+                codepoint == 0x0000FE36)    # '︶'
 
     @staticmethod
-    def left_square_bracket(ch):
+    def left_square_bracket(codepoint):
         """
         Left Square Bracket [
         """
-        return ch == '[' or ch == '［' or ch == '﹇'
+        return (codepoint == 0x0000005B or  # '['
+                codepoint == 0x0000FF3B or  # '［'
+                codepoint == 0x0000FE47)    # '﹇'
 
     @staticmethod
-    def right_square_bracket(ch):
+    def right_square_bracket(codepoint):
         """
         Right Square Bracket ]
         """
-        return ch == ']' or ch == '］' or ch == '﹈'
+        return (codepoint == 0x0000005D or  # ']'
+                codepoint == 0x0000FF3D or  # '］'
+                codepoint == 0x0000FE48)    # '﹈'
 
     @staticmethod
-    def left_curly_bracket(ch):
+    def left_curly_bracket(codepoint):
         """
         Left Curly Bracket {
         """
-        return ch == '{' or ch == '｛' or ch == '﹛' or ch == '︷'
+        return (codepoint == 0x0000007B or  # '{'
+                codepoint == 0x0000FF5B or  # '｛'
+                codepoint == 0x0000FE5B or  # '﹛'
+                codepoint == 0x0000FE37)    # '︷'
 
     @staticmethod
-    def right_curly_bracket(ch):
+    def right_curly_bracket(codepoint):
         """
         Right Curly Bracket }
         """
-        return ch == '}' or ch == '｝' or ch == '﹜' or ch == '︸'
+        return (codepoint == 0x0000007D or  # '}'
+                codepoint == 0x0000FF5D or  # '｝'
+                codepoint == 0x0000FE5C or  # '﹜'
+                codepoint == 0x0000FE38)    # '︸'
 
     @staticmethod
-    def plus_sign(ch):
+    def plus_sign(codepoint):
         """
         Plus Sign +
         """
-        return ch == '+' or ch == '＋' or ch == '﹢' or ch == '﬩' or ch == '₊' or ch == '⁺'
+        return (codepoint == 0x0000002B or  # '+'
+                codepoint == 0x0000FF0B or  # '＋'
+                codepoint == 0x0000FE62 or  # '﹢'
+                codepoint == 0x0000FB29 or  # '﬩'
+                codepoint == 0x0000208A or  # '₊'
+                codepoint == 0x0000207A)    # '⁺'
 
     @staticmethod
-    def hyphen_minus(ch):
+    def hyphen_minus(codepoint):
         """
         Hyphen-Minus -
         """
-        return ch == '-' or ch == '－' or ch == '﹣'
+        return (codepoint == 0x0000002D or  # '-'
+                codepoint == 0x0000FF0D or  # '－'
+                codepoint == 0x0000FE63)    # '﹣'
 
     @staticmethod
-    def asterisk(ch):
+    def asterisk(codepoint):
         """
         Asterisk (Mul) *
         """
-        return ch == '*' or ch == '＊' or ch == '﹡'
+        return (codepoint == 0x0000002A or  # '*'
+                codepoint == 0x0000FF0A or  # '＊'
+                codepoint == 0x0000FE61)    # '﹡'
 
     @staticmethod
-    def forward_slash(ch):
+    def forward_slash(codepoint):
         """
         Solidus (Div) (Forward slash) /
         """
-        return ch == '/' or ch == '／'
+        return (codepoint == 0x0000002F or  # '/'
+                codepoint == 0x0000FF0F)    # '／'
 
     @staticmethod
-    def back_slash(ch):
+    def back_slash(codepoint):
         """
         Reverse Solidus (Back slash) \
         """
-        return ch == '\\' or ch == '＼' or ch == '﹨'
+        return (codepoint == 0x0000005C or  # '\\'
+                codepoint == 0x0000FF3C or  # '＼'
+                codepoint == 0x0000FE68)    # '﹨'
 
     @staticmethod
-    def equals_sign(ch):
+    def equals_sign(codepoint):
         """
         Equals Sign =
         """
-        return ch == '=' or ch == '＝' or ch == '﹦' or ch == '₌' or ch == '⁼'
+        return (codepoint == 0x0000003D or  # '='
+                codepoint == 0x0000FF1D or  # '＝'
+                codepoint == 0x0000FE66 or  # '﹦'
+                codepoint == 0x0000208C or  # '₌'
+                codepoint == 0x0000207C)    # '⁼'
 
     @staticmethod
-    def less_than_sign(ch):
+    def less_than_sign(codepoint):
         """
         Less-Than Sign <
         """
-        return ch == '<' or ch == '＜' or ch == '﹤'
+        return (codepoint == 0x0000003C or  # '<'
+                codepoint == 0x0000FF1C or  # '＜'
+                codepoint == 0x0000FE64)    # '﹤'
 
     @staticmethod
-    def greater_than_sign(ch):
+    def greater_than_sign(codepoint):
         """
         Greater-Than Sign >
         """
-        return ch == '>' or ch == '＞' or ch == '﹥'
+        return (codepoint == 0x0000003E or  # '>'
+                codepoint == 0x0000FF1E or  # '＞'
+                codepoint == 0x0000FE65)    # '﹥'
 
     @staticmethod
-    def dot(ch):
+    def dot(codepoint):
         """
         Full Stop (Dot) .
         """
-        return ch == '.' or ch == '．' or ch == '﹒'
+        return (codepoint == 0x0000002E or  # '.'
+                codepoint == 0x0000FF0E or  # '．'
+                codepoint == 0x0000FE52)    # '﹒'
 
     @staticmethod
-    def colon(ch):
+    def colon(codepoint):
         """
         Colon :
         """
-        return ch == ':' or ch == '：' or ch == '﹕' or ch == '︓'
+        return (codepoint == 0x0000003A or  # ':'
+                codepoint == 0x0000FF1A or  # '：'
+                codepoint == 0x0000FE55 or  # '﹕'
+                codepoint == 0x0000FE13)    # '︓'
 
     @staticmethod
-    def comma(ch):
+    def comma(codepoint):
         """
         Comma ,
         """
-        return ch == ',' or ch == '，' or ch == '﹐' or ch == '︐'
+        return (codepoint == 0x0000002C or  # ','
+                codepoint == 0x0000FF0C or  # '，'
+                codepoint == 0x0000FE50 or  # '﹐'
+                codepoint == 0x0000FE10)    # '︐'
 
     @staticmethod
-    def semicolon(ch):
+    def semicolon(codepoint):
         """
         Semicolon ;
         """
-        return ch == ';' or ch == '；' or ch == '﹔' or ch == '︔'
+        return (codepoint == 0x0000003B or  # ';'
+                codepoint == 0x0000FF1B or  # '；'
+                codepoint == 0x0000FE54 or  # '﹔'
+                codepoint == 0x0000FE14)    # '︔'
 
     @staticmethod
-    def vertical_line(ch):
+    def vertical_line(codepoint):
         """
         Vertical Line (Bar) |
         """
-        return ch == '|' or ch == '｜'
+        return (codepoint == 0x0000007C or  # '|'
+                codepoint == 0x0000FF5C)    # '｜'
 
     @staticmethod
-    def grave_accent(ch):
+    def grave_accent(codepoint):
         """
         Grave Accent `
         """
-        return ch == '`' or ch == '｀' or ch == '`'
+        return (codepoint == 0x00000060 or  # '`'
+                codepoint == 0x0000FF40)    # '｀'
 
     @staticmethod
-    def tilde(ch):
+    def tilde(codepoint):
         """
         Tilde ~
         """
-        return ch == '~' or ch == '～'
+        return (codepoint == 0x0000007E or  # '~'
+                codepoint == 0x0000FF5E)    # '～'
 
     @staticmethod
-    def apostrophe(ch):
+    def apostrophe(codepoint):
         """
         Apostrophe '
         """
-        return ch == '\'' or ch == '＇'
+        return (codepoint == 0x00000027 or  # '\''
+                codepoint == 0x0000FF07)    # '＇'
 
     @staticmethod
-    def exclamation_mark(ch):
+    def exclamation_mark(codepoint):
         """
         Exclamation Mark !
         """
-        return ch == '!' or ch == '！' or ch == '︕' or ch == '﹗'
+        return (codepoint == 0x00000021 or  # '!'
+                codepoint == 0x0000FF01 or  # '！'
+                codepoint == 0x0000FE15 or  # '︕'
+                codepoint == 0x0000FE57)    # '﹗'
 
     @staticmethod
-    def question_mark(ch):
+    def question_mark(codepoint):
         """
         Question Mark ?
         """
-        return ch == '?' or ch == '？' or ch == '︖' or ch == '﹖'
+        return (codepoint == 0x0000003F or  # '?'
+                codepoint == 0x0000FF1F or  # '？'
+                codepoint == 0x0000FE16 or  # '︖'
+                codepoint == 0x0000FE56)    # '﹖'
 
     @staticmethod
-    def quotation_mark(ch):
+    def quotation_mark(codepoint):
         """
         Quotation Mark "
         """
-        return ch == '"' or ch == '＂'
+        return (codepoint == 0x00000022 or  # '"'
+                codepoint == 0x0000FF02)    # '＂'
 
     @staticmethod
-    def commercial_at(ch):
+    def commercial_at(codepoint):
         """
         Commercial At @
         """
-        return ch == '@' or ch == '＠' or ch == '﹫'
+        return (codepoint == 0x00000040 or  # '@'
+                codepoint == 0x0000FF20 or  # '＠'
+                codepoint == 0x0000FE6B)    # '﹫'
 
     @staticmethod
-    def number_sign(ch):
+    def number_sign(codepoint):
         """
         Number Sign #
         """
-        return ch == '#' or ch == '＃' or ch == '﹟'
+        return (codepoint == 0x00000023 or  # '#'
+                codepoint == 0x0000FF03 or  # '＃'
+                codepoint == 0x0000FE5F)    # '﹟'
 
     @staticmethod
-    def percent_sign(ch):
+    def percent_sign(codepoint):
         """
         Percent Sign %
         """
-        return ch == '%' or ch == '％' or ch == '﹪'
+        return (codepoint == 0x00000025 or  # '%'
+                codepoint == 0x0000FF05 or  # '％'
+                codepoint == 0x0000FE6A)    # '﹪'
 
     @staticmethod
-    def circumflex_accent(ch):
+    def circumflex_accent(codepoint):
         """
         Circumflex Accent (Xor) ^
         """
-        return ch == '^' or ch == '＾'
+        return (codepoint == 0x0000005E or  # '^'
+                codepoint == 0x0000FF3E)    # '＾'
 
     @staticmethod
-    def ampersand(ch):
+    def ampersand(codepoint):
         """
-        Ampersand &
+        Return true if codepoint is Ampersand &.
         """
-        return ch == '&' or ch == '＆' or ch == '﹠'
+        return (codepoint == 0x00000026 or  # '&'
+                codepoint == 0x0000FF06 or  # '＆'
+                codepoint == 0x0000FE60)    # '﹠'
 
     @staticmethod
-    def unicode_escape_prefix(ch):
+    def epsilon(codepoint):
         """
-        u or U.
         """
-        return ch == 'u' or ch == 'U'
+        return (codepoint == 0x000003B5 or  # 'ε'
+                codepoint == 0x0001D6C6)    # '𝛆'

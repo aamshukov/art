@@ -67,6 +67,12 @@ class Tokenizer(Entity):
         return self._codepoint
 
     @property
+    def character(self):
+        """
+        """
+        return chr(self._codepoint)
+
+    @property
     def content(self):
         """
         """
@@ -90,7 +96,7 @@ class Tokenizer(Entity):
                 break
             codepoint = self._content.data[content_position]
             if Text.hexadecimal_digit(codepoint):
-                result = (result << 4) | Text.ascii_number(ord(codepoint))  # ??
+                result = (result << 4) | Text.ascii_number(codepoint)
                 content_position += 1
             else:
                 self._diagnostics.add(Status(f'Invalid unicode escape sequence (digits) at'
@@ -102,6 +108,14 @@ class Tokenizer(Entity):
                 break
         return valid, result, content_position
 
+    @staticmethod
+    def unicode_escape_prefix(codepoint):
+        """
+        Return u or U.
+        """
+        return (codepoint == 0x00000075 or  # 'u'
+                codepoint == 0x00000055)    # 'U'
+
     def consume_unicode_escape(self, mode, content_position, check_for_surrogates=True):
         """
         Parce unicode escape(s):
@@ -111,17 +125,17 @@ class Tokenizer(Entity):
             '\'UHexDigitHexDigitHexDigitHexDigitHexDigitHexDigitHexDigitHexDigit - codepoint
         At this point current position points to '\\'.
         """
-        result = Text.bad_codepoint()
+        result = Text.BAD_CODEPOINT
         content_position = content_position + 1  # skip '\\'
         while (content_position < self._end_content and  # consume (squash) unicode escape prefixes as in Java
-               Text.unicode_escape_prefix(self._content.data[content_position])):
+               Tokenizer.unicode_escape_prefix(self._content.data[content_position])):
             content_position += 1
         valid, codepoint, content_position = self.calculate_codepoint(content_position, 4 if mode == 'u' else 8)
         if valid:
             if mode == 'u':
                 if check_for_surrogates:
                     if Text.high_surrogate(codepoint):
-                        if Text.unicode_escape_prefix(self.peek_codepoint()):
+                        if Tokenizer.unicode_escape_prefix(self.peek_codepoint()):
                             high_surrogate = codepoint
                             low_surrogate, content_position = self.consume_unicode_escape(mode,
                                                                                           content_position,
@@ -153,7 +167,7 @@ class Tokenizer(Entity):
             else:  # mode == U
                 result = codepoint
                 content_position -= 1
-        return chr(result) if check_for_surrogates else result, content_position  # ??
+        return result, content_position
 
     def next_codepoint(self):
         """
@@ -166,8 +180,9 @@ class Tokenizer(Entity):
             if Text.back_slash(self._codepoint):
                 if self._unicode_backslash_count % 2 == 0:  # '\' might start unicode escape sequence
                     prefix = self.peek_codepoint()          # check for single '\': ..._count = 0, 2, etc.
-                    if Text.unicode_escape_prefix(prefix):
-                        self._codepoint, self._content_position = self.consume_unicode_escape(prefix,
+                    if Tokenizer.unicode_escape_prefix(prefix):
+                        mode = 'u' if prefix == 0x00000075 else 'U'
+                        self._codepoint, self._content_position = self.consume_unicode_escape(mode,
                                                                                               self._content_position)
                     else:
                         self._unicode_backslash_count += 1

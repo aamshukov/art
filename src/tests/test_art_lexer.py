@@ -37,6 +37,44 @@ class Test(unittest.TestCase):
         #             pass
         assert True
 
+    def test_skip_whitespace_success(self):
+        dp = StringDataProvider('')
+        data = dp.load()
+        content = Content(0, data, '')
+        diagnostics = Diagnostics()
+        statistics = Statistics()
+        tokenizer = ArtTokenizer(0, content, statistics, diagnostics)
+        tokenizer.skip_whitespace()
+        dp = StringDataProvider(' ')
+        data = dp.load()
+        content = Content(0, data, '')
+        tokenizer = ArtTokenizer(0, content, statistics, diagnostics)
+        tokenizer.skip_whitespace()
+
+    def test_identifier_start_success(self):
+        assert ArtTokenizer.identifier_start(ord('a'))
+        assert ArtTokenizer.identifier_start(ord('_'))
+        assert ArtTokenizer.identifier_start(ord('$'))
+        assert ArtTokenizer.identifier_start(ord('﹍'))
+        assert ArtTokenizer.identifier_start(ord('Я'))
+        assert ArtTokenizer.identifier_start(ord('彡'))
+        assert ArtTokenizer.identifier_start(ord('ಠ'))
+        assert ArtTokenizer.identifier_start(ord('益'))
+        assert ArtTokenizer.identifier_start(ord('什'))
+        assert ArtTokenizer.identifier_start(ord('သ'))
+
+    def test_identifier_part_success(self):
+        assert ArtTokenizer.identifier_part(ord('a'))
+        assert ArtTokenizer.identifier_part(ord('_'))
+        assert ArtTokenizer.identifier_part(ord('$'))
+        assert ArtTokenizer.identifier_part(ord('﹍'))
+        assert ArtTokenizer.identifier_part(ord('Я'))
+        assert ArtTokenizer.identifier_part(ord('彡'))
+        assert ArtTokenizer.identifier_part(ord('ಠ'))
+        assert ArtTokenizer.identifier_part(ord('益'))
+        assert ArtTokenizer.identifier_part(ord('什'))
+        assert ArtTokenizer.identifier_part(ord('်'))
+
 
 if __name__ == '__main__':
     """

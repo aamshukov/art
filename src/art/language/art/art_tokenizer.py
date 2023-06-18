@@ -78,6 +78,36 @@ class ArtTokenizer(Tokenizer):
         """
         return self._keywords[name]
 
+    def skip_whitespace(self):
+        """
+        """
+        while Text.whitespace(self.codepoint):
+            self.next_codepoint()
+
+    @staticmethod
+    def identifier_start(codepoint):
+        """
+        """
+        return (Text.letter(codepoint) or
+                Text.underscore(codepoint) or
+                Text.dollar_sign(codepoint) or
+                Text.currency_sign(codepoint) or
+                Text.connector_punctuation(codepoint))
+
+    @staticmethod
+    def identifier_part(codepoint):
+        """
+        """
+        return (Text.letter(codepoint) or
+                Text.decimal_digit(codepoint) or
+                Text.underscore(codepoint) or
+                Text.dollar_sign(codepoint) or
+                Text.letter_number(codepoint) or
+                Text.currency_sign(codepoint) or
+                Text.connector_punctuation(codepoint) or
+                Text.spacing_mark(codepoint) or
+                Text.non_spacing_mark(codepoint))
+
     def next_lexeme_impl(self):
         """
         """

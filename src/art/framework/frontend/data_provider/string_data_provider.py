@@ -19,7 +19,7 @@ class StringDataProvider(DataProvider):
         else:
             self._data = data
 
-    def load(self, to_codepoints=False):
+    def load(self, to_codepoints=True):
         """
         """
         if to_codepoints:
