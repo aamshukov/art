@@ -15,19 +15,22 @@ from art.framework.core.base import Base
 class Text(Base):
     """
     """
+    MIN_CODE_POINT = 0x00000000
+    MAX_CODE_POINT = 0x0010FFFF
+
     BAD_CODEPOINT = 0x0000FFFD
 
     # http://www.unicode.org/glossary/#high_surrogate_code_unit
-    HIGH_SURROGATE_START = 0x0000D800
-    HIGH_SURROGATE_END = 0x0000DBFF
+    HIGH_SURROGATE_MIN = 0x0000D800
+    HIGH_SURROGATE_MAX = 0x0000DBFF
 
     # http://www.unicode.org/glossary/#low_surrogate_code_unit
-    LOW_SURROGATE_START = 0x0000DC00
-    LOW_SURROGATE_END = 0x0000DFFF
+    LOW_SURROGATE_MIN = 0x0000DC00
+    LOW_SURROGATE_MAX = 0x0000DFFF
 
     # http://www.unicode.org/glossary/#supplementary_code_point
-    SUPPLEMENTARY_CODE_POINT_START = 0x00010000
-    SUPPLEMENTARY_CODE_POINT_END = 0x0010FFFF
+    SUPPLEMENTARY_CODE_POINT_MIN = 0x00010000
+    SUPPLEMENTARY_CODE_POINT_MAX = 0x0010FFFF
 
     @staticmethod
     def equal(lhs, rhs, case_insensitive=False, normalization_form='NFKC'):
@@ -196,21 +199,34 @@ class Text(Base):
         """
         https://learn.microsoft.com/en-us/dotnet/standard/base-types/character-encoding-introduction
         """
-        return (Text.SUPPLEMENTARY_CODE_POINT_START +
-                ((high_surrogate_code_unit - Text.HIGH_SURROGATE_START) * 0x00000400 +
-                 (low_surrogate_code_unit - Text.LOW_SURROGATE_START)))
+        return (Text.SUPPLEMENTARY_CODE_POINT_MIN +
+                ((high_surrogate_code_unit - Text.HIGH_SURROGATE_MIN) * 0x00000400 +
+                 (low_surrogate_code_unit - Text.LOW_SURROGATE_MIN)))
 
     @staticmethod
     def high_surrogate(code_unit):
         """
         """
-        return Text.HIGH_SURROGATE_START <= code_unit <= Text.HIGH_SURROGATE_END
+        return Text.HIGH_SURROGATE_MIN <= code_unit <= Text.HIGH_SURROGATE_MAX
 
     @staticmethod
     def low_surrogate(code_unit):
         """
         """
-        return Text.LOW_SURROGATE_START <= code_unit <= Text.LOW_SURROGATE_END
+        return Text.LOW_SURROGATE_MIN <= code_unit <= Text.LOW_SURROGATE_MAX
+
+    @staticmethod
+    def non_character(codepoint):
+        """
+        """
+        return ((codepoint & 0x0000FFFE) == 0x0000FFFE or
+                (0x0000FDD0 <= codepoint <= 0x0000FDEF))
+
+    @staticmethod
+    def valid_codepoint(codepoint):
+        """
+        """
+        return Text.MIN_CODE_POINT <= codepoint <= Text.MAX_CODE_POINT
 
     @staticmethod
     def letter(codepoint):
@@ -234,6 +250,16 @@ class Text(Base):
         """
         ch = Text.convert_to_character(codepoint)
         return unicodedata.category(ch) == 'Nl'
+
+    @staticmethod
+    def binary_digit(codepoint):
+        """
+        Only considering ASCII table and 0xFF10 - 0xFF11
+        when use octal numbers during lexical analyze.
+        """
+        result = ((0x00000030 <= codepoint <= 0x00000031) or
+                  (0x0000FF10 <= codepoint <= 0x0000FF11))
+        return result
 
     @staticmethod
     def octal_digit(codepoint):
@@ -310,7 +336,11 @@ class Text(Base):
         match codepoint:
             case (0x00000020 |  # ' '
                   0x00000009 |  # '\t'
-                  0x0000000C):  # '\f'
+                  0x0000000B |  # '\v'
+                  0x0000000C |  # '\f'
+                  0x000000A0 |  # NO-BREAK SPACE
+                  0x0000FEFF |  # ZERO WIDTH NO-BREAK SPACE
+                  0x0000001A):  # Substitute, SUB
                 return True
             case _:
                 ch = Text.convert_to_character(codepoint)
@@ -320,16 +350,16 @@ class Text(Base):
     def eol(codepoint):
         """
         """
-        return (codepoint == 0x0000000A or  # '\n'
-                codepoint == 0x0000000D or  # '\r'
-                codepoint == 0x00000085 or
-                codepoint == 0x00002028 or
-                codepoint == 0x00002029)
+        return (codepoint == 0x0000000A or  # '\n' Line feed character
+                codepoint == 0x0000000D or  # '\r' Carriage return character
+                codepoint == 0x00000085 or  # Next line character
+                codepoint == 0x00002028 or  # Line separator character
+                codepoint == 0x00002029)    # Paragraph separator character
 
     @staticmethod
     def eos(codepoint):
         """
-        Return true if codepoint is End Of Transmission.
+        End Of Transmission
         """
         return codepoint == 0x00000004 or codepoint == 0x00002404
 
@@ -338,7 +368,7 @@ class Text(Base):
         """
         Return End Of Transmission (EOT) codepoint.
         """
-        return 0x2404
+        return 0x00002404
 
     @staticmethod
     def underscore(codepoint):
@@ -579,14 +609,6 @@ class Text(Base):
                 codepoint == 0x0000FF5E)    # '～'
 
     @staticmethod
-    def apostrophe(codepoint):
-        """
-        Apostrophe '
-        """
-        return (codepoint == 0x00000027 or  # '\''
-                codepoint == 0x0000FF07)    # '＇'
-
-    @staticmethod
     def exclamation_mark(codepoint):
         """
         Exclamation Mark !
@@ -607,9 +629,17 @@ class Text(Base):
                 codepoint == 0x0000FE56)    # '﹖'
 
     @staticmethod
+    def apostrophe(codepoint):
+        """
+        Single Quotation Mark (Apostrophe) '
+        """
+        return (codepoint == 0x00000027 or  # '\''
+                codepoint == 0x0000FF07)    # '＇'
+
+    @staticmethod
     def quotation_mark(codepoint):
         """
-        Quotation Mark "
+        Double Quotation Mark "
         """
         return (codepoint == 0x00000022 or  # '"'
                 codepoint == 0x0000FF02)    # '＂'
@@ -652,7 +682,7 @@ class Text(Base):
     @staticmethod
     def ampersand(codepoint):
         """
-        Return true if codepoint is Ampersand &.
+        Ampersand &.
         """
         return (codepoint == 0x00000026 or  # '&'
                 codepoint == 0x0000FF06 or  # '＆'

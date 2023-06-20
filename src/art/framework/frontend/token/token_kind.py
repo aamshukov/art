@@ -134,4 +134,7 @@ class TokenKind(IntEnum):
     # ^=
     #
 
+    ASYNC = auto()
+    AWAIT = auto()
+
     ERRONEOUS = auto()

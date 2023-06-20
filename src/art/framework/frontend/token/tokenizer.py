@@ -78,6 +78,12 @@ class Tokenizer(Entity):
         """
         return self._content
 
+    @property
+    def token(self):
+        """
+        """
+        return self._token
+
     def calculate_codepoint(self, content_position, n):
         """
         Return True if sequence of digits is correct.
@@ -194,6 +200,7 @@ class Tokenizer(Entity):
             self._codepoint = Text.eos_codepoint()
         if self._content_position > self._end_content:
             self._content_position = self._end_content
+        assert Text.valid_codepoint(self._codepoint)
         return self._codepoint
 
     def peek_codepoint(self):

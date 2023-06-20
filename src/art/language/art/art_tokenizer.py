@@ -2,8 +2,7 @@
 # UI Lab Inc. Arthur Amshukov
 #
 """ Art Tokenizer """
-from collections import defaultdict
-
+from collections import defaultdict, deque
 from art.framework.core.flags import Flags
 from art.framework.core.text import Text
 from art.framework.frontend.token.token import Token
@@ -24,6 +23,8 @@ class ArtTokenizer(Tokenizer):
         """
         super().__init__(id, content, statistics, diagnostics, version=version)
         self._keywords = ArtTokenizer.populate_keywords()
+        self._indents = deque()  # stack of indent
+        self._nesting_level = 0  # parentheses (() [] {}) nesting level
 
     @staticmethod
     def populate_keywords():
@@ -71,6 +72,8 @@ class ArtTokenizer(Tokenizer):
         result['lazy'] = TokenKind.LAZY
         result['noop'] = TokenKind.NOOP
         result['type'] = TokenKind.TYPE
+        result['async'] = TokenKind.ASYNC
+        result['await'] = TokenKind.AWAIT
         return result
 
     def lookup(self, name):
@@ -88,6 +91,7 @@ class ArtTokenizer(Tokenizer):
     def identifier_start(codepoint):
         """
         """
+        assert Text.valid_codepoint(codepoint)
         return (Text.letter(codepoint) or
                 Text.underscore(codepoint) or
                 Text.dollar_sign(codepoint) or
@@ -98,6 +102,7 @@ class ArtTokenizer(Tokenizer):
     def identifier_part(codepoint):
         """
         """
+        assert Text.valid_codepoint(codepoint)
         return (Text.letter(codepoint) or
                 Text.decimal_digit(codepoint) or
                 Text.underscore(codepoint) or
@@ -108,7 +113,92 @@ class ArtTokenizer(Tokenizer):
                 Text.spacing_mark(codepoint) or
                 Text.non_spacing_mark(codepoint))
 
+    def calculate_indentation(self):
+        """
+        """
+        n = 1
+        content_position = self._content_position
+        end_content = self._end_content
+        content = self._content.data
+        while (content_position < end_content and
+               content[content_position] == 0x00000020):  # ' ':
+            n += 1
+        # self._content_position = content_position
+        # self._token.kind = TokenKind.INDENT
+
     def next_lexeme_impl(self):
         """
         """
-        pass
+        codepoint = self.codepoint
+        if codepoint == 0x00000020:  # ' '
+            self.calculate_indentation()
+            if (self.token.kind != TokenKind.INDENT and
+                    self.token.kind != TokenKind.DEDENT):
+                self.skip_whitespace()
+        elif self.identifier_start(codepoint):
+            pass
+        elif (Text.binary_digit(codepoint) or
+              Text.octal_digit(codepoint) or
+              Text.decimal_digit(codepoint) or
+              Text.hexadecimal_digit(codepoint)):
+            pass
+        elif Text.left_parenthesis(codepoint):  # '('
+            self._nesting_level += 1
+        elif Text.right_parenthesis(codepoint):  # ')'
+            self._nesting_level -= 1
+        elif Text.left_square_bracket(codepoint):  # '['
+            self._nesting_level += 1
+        elif Text.right_square_bracket(codepoint):  # ']'
+            self._nesting_level -= 1
+        elif Text.left_curly_bracket(codepoint):  # '{'
+            self._nesting_level += 1
+        elif Text.right_curly_bracket(codepoint):  # '}'
+            self._nesting_level -= 1
+        elif Text.plus_sign(codepoint):  # '+'
+            pass
+        elif Text.hyphen_minus(codepoint):  # '-'
+            pass
+        elif Text.asterisk(codepoint):  # '*'
+            pass
+        elif Text.forward_slash(codepoint):  # '/'
+            pass
+        elif Text.back_slash(codepoint):  # '\\'
+            pass
+        elif Text.equals_sign(codepoint):  # '='
+            pass
+        elif Text.less_than_sign(codepoint):  # '<'
+            pass
+        elif Text.greater_than_sign(codepoint):  # '>'
+            pass
+        elif Text.dot(codepoint):  # '.'
+            pass
+        elif Text.colon(codepoint):  # ':'
+            pass
+        elif Text.comma(codepoint):  # ','
+            pass
+        elif Text.semicolon(codepoint):  # ';'
+            pass
+        elif Text.vertical_line(codepoint):  # '|'
+            pass
+        elif Text.grave_accent(codepoint):  # '`'
+            pass
+        elif Text.tilde(codepoint):  # '~'
+            pass
+        elif Text.exclamation_mark(codepoint):  # '!'
+            pass
+        elif Text.question_mark(codepoint):  # '?'
+            pass
+        elif Text.apostrophe(codepoint):  # '''
+            pass
+        elif Text.quotation_mark(codepoint):  # '"'
+            pass
+        elif Text.commercial_at(codepoint):  # '@'
+            pass
+        elif Text.number_sign(codepoint):  # '#'
+            pass
+        elif Text.percent_sign(codepoint):  # '%'
+            pass
+        elif Text.circumflex_accent(codepoint):  # '^'
+            pass
+        elif Text.ampersand(codepoint):  # '&'
+            pass

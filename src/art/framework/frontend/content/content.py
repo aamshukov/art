@@ -111,8 +111,7 @@ class Content(Entity):
                 ch = d[i]
                 if (ch == 0x0000000D or  # '\r'
                         ch == 0x0000000A):  # '\n'
-                    if ((ch == 0x0000000D and (i + 1) < n and d[i + 1] == 0x0000000A) or
-                       (ch == 0x0000000A and (i + 1) < n and d[i + 1] == 0x0000000D)):
+                    if ch == 0x0000000D and (i + 1) < n and d[i + 1] == 0x0000000A:
                         i += 2
                     else:
                         i += 1
