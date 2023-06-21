@@ -80,6 +80,12 @@ class Token(Value):
         """
         return self._kind
 
+    @kind.setter
+    def kind(self, kind):
+        """
+        """
+        self._kind = kind
+
     @property
     def name(self):
         """

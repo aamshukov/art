@@ -23,8 +23,11 @@ class ArtTokenizer(Tokenizer):
         """
         super().__init__(id, content, statistics, diagnostics, version=version)
         self._keywords = ArtTokenizer.populate_keywords()
-        self._indents = deque()  # stack of indent
         self._nesting_level = 0  # parentheses (() [] {}) nesting level
+        self._beginning_of_line = True
+        self._pending_indents = 0  # indents (if > 0) or dedents (if < 0) - from Python source code
+        self._indents = deque()  # stack of indent, off-side rule support, Peter Landin
+        self._indents.append(0)
 
     @staticmethod
     def populate_keywords():
@@ -86,6 +89,7 @@ class ArtTokenizer(Tokenizer):
         """
         while Text.whitespace(self.codepoint):
             self.next_codepoint()
+        self._token.kind = TokenKind.WS
 
     @staticmethod
     def identifier_start(codepoint):
@@ -113,30 +117,61 @@ class ArtTokenizer(Tokenizer):
                 Text.spacing_mark(codepoint) or
                 Text.non_spacing_mark(codepoint))
 
-    def calculate_indentation(self):
+    def scan_identifier(self):
         """
         """
-        n = 1
+        self.next_codepoint()
+        while self.identifier_part(self.codepoint):
+            self.next_codepoint()
+        self._token.kind = self.lookup(self._token.literal)
+
+    def process_indentation(self):
+        """
+        """
+        indent = 1
         content_position = self._content_position
         end_content = self._end_content
         content = self._content.data
         while (content_position < end_content and
                content[content_position] == 0x00000020):  # ' ':
-            n += 1
-        # self._content_position = content_position
-        # self._token.kind = TokenKind.INDENT
+            indent += 1
+        ignore = (content[content_position] == 0x00000023 or  # if comment
+                  content[content_position] == 0x0000000A)    # or blank line
+        self._beginning_of_line = False
+        if not ignore and self._nesting_level == 0:
+            if indent == self._indents[0]:
+                pass
+            elif indent > self._indents[0]:
+                self._pending_indents += 1
+                self._indents.append(indent)
+            else:  # indent == self._indents[0]
+                while self._indents and indent < self._indents[0]:
+                    self._pending_indents -= 1
+                    self._indents.popleft()
+        if self._pending_indents != 0:
+            if self._pending_indents > 0:
+                self._pending_indents -= 1
+                self._token.kind = TokenKind.INDENT
+            else:
+                self._pending_indents += 1
+                self._token.kind = TokenKind.DEDENT
+            self._content_position = content_position
 
     def next_lexeme_impl(self):
         """
         """
+        if self._beginning_of_line:
+            self.process_indentation()
+            if (self._token.kind == TokenKind.INDENT or
+                    self._token.kind == TokenKind.DEDENT):
+                return
         codepoint = self.codepoint
-        if codepoint == 0x00000020:  # ' '
-            self.calculate_indentation()
-            if (self.token.kind != TokenKind.INDENT and
-                    self.token.kind != TokenKind.DEDENT):
-                self.skip_whitespace()
+        if codepoint == Text.eos_codepoint():
+            self._token.kind = TokenKind.EOS
+        elif codepoint == Text.whitespace(codepoint):
+            self.skip_whitespace()
         elif self.identifier_start(codepoint):
-            pass
+            self.scan_identifier()
         elif (Text.binary_digit(codepoint) or
               Text.octal_digit(codepoint) or
               Text.decimal_digit(codepoint) or
@@ -163,7 +198,8 @@ class ArtTokenizer(Tokenizer):
         elif Text.forward_slash(codepoint):  # '/'
             pass
         elif Text.back_slash(codepoint):  # '\\'
-            pass
+            if self.lookahead_codepoint() == 'n':  # special case for indent
+                self._beginning_of_line = True
         elif Text.equals_sign(codepoint):  # '='
             pass
         elif Text.less_than_sign(codepoint):  # '<'

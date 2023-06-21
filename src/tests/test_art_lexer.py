@@ -22,7 +22,7 @@ class Test(unittest.TestCase):
         super(Test, self).__init__(*args, **kwargs)
 
     def test_lexical_analyzer_success(self):
-        dp = StringDataProvider('a')
+        dp = StringDataProvider('a b')
         data = dp.load()
         content = Content(0, data, '')
         diagnostics = Diagnostics()
@@ -31,12 +31,16 @@ class Test(unittest.TestCase):
         lexer = LexicalAnalyzer(0, tokenizer, statistics, diagnostics)
         k = 0
         while not lexer.eos():
+            lexer.next_lexeme()
             token = lexer.token
             match k:
                 case 0:
-                    pass
-            lexer.next_lexeme()
-            break
+                    assert token.kind == TokenKind.IDENTIFIER
+                case 1:
+                    assert token.kind == TokenKind.WS
+                case 2:
+                    assert token.kind == TokenKind.IDENTIFIER
+            k += 1
         assert True
 
     def test_skip_whitespace_success(self):
