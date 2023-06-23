@@ -84,6 +84,7 @@ class Test(unittest.TestCase):
         assert chr(Text.make_codepoint(0xD83D, 0xDE01)) == '😁'
         assert Text.make_codepoint(0xD83D, 0xDC0D) == 0x0001F40D
         assert chr(Text.make_codepoint(0xD83D, 0xDC0D)) == '🐍'
+        ''
 
     def test_high_surrogate_success(self):
         assert Text.high_surrogate(0xD83D)
@@ -349,6 +350,87 @@ class Test(unittest.TestCase):
     def test_epsilon_success(self):
         assert Text.epsilon(ord('ε'))
         assert Text.epsilon(ord('𝛆'))
+
+    def test_emoji_success(self):
+        assert Text.emoji(ord('⌛'))
+        assert Text.emoji(ord('⛳'))
+        assert not Text.emoji(0x0001F1FB)
+        assert Text.emoji(0x0001F52F)
+        assert Text.emoji(0x0001F389)
+        assert Text.emoji(0x0000274E)
+        assert not Text.emoji(9220)
+
+    def test_find_block_success(self):
+        assert Text.find_block(0x00000000) == 0
+        assert Text.find_block(0x00000005) == 0
+        assert Text.find_block(0x00000080) == 1
+        assert Text.find_block(0x00000091) == 1
+        assert Text.find_block(0x00000600) == 12
+        assert Text.find_block(0x00000626) == 12
+        assert Text.find_block(0x00000C00) == 28
+        assert Text.find_block(0x00000C56) == 28
+        assert Text.find_block(0x00002C80) == 98
+        assert Text.find_block(0x00002CF1) == 98
+        assert Text.find_block(0x00002D00) == 99
+        assert Text.find_block(0x00010200) == 171
+        assert Text.find_block(0x00010201) == 171
+        assert Text.find_block(0x00030000 - 2) == 368
+        assert Text.find_block(0x00030000 - 1) == 368
+        assert Text.find_block(0x00030000) == 369
+        assert Text.find_block(0x00030000 + 1) == 369
+        assert Text.find_block(0x00030000 + 2) == 369
+        assert Text.find_block(0x00031350 - 1) == 369
+        assert Text.find_block(0x00031350) == 370
+        assert Text.find_block(0x000E0100) == 374
+        assert Text.find_block(0x000E01AA) == 374
+        assert Text.find_block(0x000F0000) == 376
+        assert Text.find_block(0x000F0ABF) == 376
+        assert Text.find_block(0x00100000) == 377
+
+    def test_get_block_range_success(self):
+        assert Text.get_block_range(0x00000000) == (0x00000000, 0x00000080 - 1)
+        assert Text.get_block_range(0x00000005) == (0x00000000, 0x00000080 - 1)
+        assert Text.get_block_range(0x00000080) == (0x00000080, 0x00000100 - 1)
+        assert Text.get_block_range(0x00000091) == (0x00000080, 0x00000100 - 1)
+        assert Text.get_block_range(0x00000600) == (0x00000600, 0x00000700 - 1)
+        assert Text.get_block_range(0x00000626) == (0x00000600, 0x00000700 - 1)
+        assert Text.get_block_range(0x00000C00) == (0x00000C00, 0x00000C80 - 1)
+        assert Text.get_block_range(0x00000C56) == (0x00000C00, 0x00000C80 - 1)
+        assert Text.get_block_range(0x00002C80) == (0x00002C80, 0x00002D00 - 1)
+        assert Text.get_block_range(0x00002CF1) == (0x00002C80, 0x00002D00 - 1)
+        assert Text.get_block_range(0x00002D00) == (0x00002D00, 0x00002D30 - 1)
+        assert Text.get_block_range(0x00010200) == (0x00010200, 0x00010280 - 1)
+        assert Text.get_block_range(0x00010201) == (0x00010200, 0x00010280 - 1)
+        assert Text.get_block_range(0x00030000 - 2) == (0x0002FA20, 0x00030000 - 1)
+        assert Text.get_block_range(0x00030000 - 1) == (0x0002FA20, 0x00030000 - 1)
+        assert Text.get_block_range(0x00030000) == (0x00030000, 0x00031350 - 1)
+        assert Text.get_block_range(0x00030000 + 1) == (0x00030000, 0x00031350 - 1)
+        assert Text.get_block_range(0x00030000 + 2) == (0x00030000, 0x00031350 - 1)
+        assert Text.get_block_range(0x00031350 - 1) == (0x00030000, 0x00031350 - 1)
+        assert Text.get_block_range(0x00031350) == (0x00031350, 0x000323B0 - 1)
+        assert Text.get_block_range(0x000E0100) == (0x000E0100, 0x000E01F0 - 1)
+        assert Text.get_block_range(0x000E01AA) == (0x000E0100, 0x000E01F0 - 1)
+        assert Text.get_block_range(0x000F0000) == (0x000F0000, 0x00100000 - 1)
+        assert Text.get_block_range(0x000F0ABF) == (0x000F0000, 0x00100000 - 1)
+        assert Text.get_block_range(0x00100000) == (0x00100000, Text.MAX_CODE_POINT)
+
+    def test_pictographs_success(self):
+        assert Text.pictographs(ord('🐍'))
+        assert not Text.pictographs(ord('⛵'))
+        assert not Text.pictographs(ord('⭕'))
+        assert not Text.pictographs(ord('✅'))
+
+    def test_miscellaneous_symbols_success(self):
+        assert not Text.miscellaneous_symbols(ord('🐍'))
+        assert Text.miscellaneous_symbols(ord('⛵'))
+        assert not Text.miscellaneous_symbols(ord('⭕'))
+        assert not Text.miscellaneous_symbols(ord('✅'))
+
+    def test_dingbats_success(self):
+        assert not Text.dingbats(ord('🐍'))
+        assert not Text.dingbats(ord('⛵'))
+        assert not Text.dingbats(ord('⭕'))
+        assert Text.dingbats(ord('✅'))
 
 
 if __name__ == '__main__':

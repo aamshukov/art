@@ -34,7 +34,7 @@ class ArtTokenizer(Tokenizer):
         """
         Populate keywords dictionary of string:TokenKind.
         """
-        result = defaultdict(lambda: TokenKind.IDENTIFIER)
+        result = dict()
         result['integer'] = TokenKind.INTEGER
         result['real'] = TokenKind.REAL
         result['string'] = TokenKind.STRING
@@ -82,11 +82,17 @@ class ArtTokenizer(Tokenizer):
     def lookup(self, name):
         """
         """
-        return self._keywords[name]
+        if name in self._keywords:
+            return self._keywords[name]
+        else:
+            return TokenKind.IDENTIFIER
 
-    def skip_whitespace(self):
+    def consume_whitespaces(self):
         """
+        Usually called from tokenizer and the position already at WS,
+        it means in any case return TokenKind.WS.
         """
+        self.next_codepoint()
         while Text.whitespace(self.codepoint):
             self.next_codepoint()
         self._token.kind = TokenKind.WS
@@ -100,7 +106,12 @@ class ArtTokenizer(Tokenizer):
                 Text.underscore(codepoint) or
                 Text.dollar_sign(codepoint) or
                 Text.currency_sign(codepoint) or
-                Text.connector_punctuation(codepoint))
+                Text.connector_punctuation(codepoint) or
+                # ?? Text.other_symbol(codepoint) or
+                Text.pictographs(codepoint) or
+                Text.miscellaneous_symbols(codepoint) or
+                Text.dingbats(codepoint) or
+                Text.emoji(codepoint))
 
     @staticmethod
     def identifier_part(codepoint):
@@ -110,12 +121,17 @@ class ArtTokenizer(Tokenizer):
         return (Text.letter(codepoint) or
                 Text.decimal_digit(codepoint) or
                 Text.underscore(codepoint) or
-                Text.dollar_sign(codepoint) or
                 Text.letter_number(codepoint) or
+                Text.dollar_sign(codepoint) or
                 Text.currency_sign(codepoint) or
                 Text.connector_punctuation(codepoint) or
                 Text.spacing_mark(codepoint) or
-                Text.non_spacing_mark(codepoint))
+                Text.non_spacing_mark(codepoint) or
+                # ?? Text.other_symbol(codepoint) or
+                Text.pictographs(codepoint) or
+                Text.miscellaneous_symbols(codepoint) or
+                Text.dingbats(codepoint) or
+                Text.emoji(codepoint))
 
     def scan_identifier(self):
         """
@@ -123,39 +139,37 @@ class ArtTokenizer(Tokenizer):
         self.next_codepoint()
         while self.identifier_part(self.codepoint):
             self.next_codepoint()
-        self._token.kind = self.lookup(self._token.literal)
+        self._token.kind = TokenKind.IDENTIFIER
 
     def process_indentation(self):
         """
         """
-        indent = 1
-        content_position = self._content_position
-        end_content = self._end_content
-        content = self._content.data
-        while (content_position < end_content and
-               content[content_position] == 0x00000020):  # ' ':
-            indent += 1
-        ignore = (content[content_position] == 0x00000023 or  # if comment
-                  content[content_position] == 0x0000000A)    # or blank line
         self._beginning_of_line = False
-        if not ignore and self._nesting_level == 0:
-            if indent == self._indents[0]:
-                pass
-            elif indent > self._indents[0]:
-                self._pending_indents += 1
-                self._indents.append(indent)
-            else:  # indent == self._indents[0]
-                while self._indents and indent < self._indents[0]:
+        if self._content_position < self._end_content:
+            indent = 0
+            while (self._content_position < self._end_content and
+                   self.codepoint == 0x00000020):  # ' ':
+                self.next_codepoint()
+                indent += 1
+            ignore = ((indent == 0 and self.codepoint == 0x0000000A) or  # blank line
+                      self.codepoint == 0x00000023)  # comment
+            if not ignore and self._nesting_level == 0:
+                if indent == self._indents[0]:
+                    pass
+                elif indent > self._indents[0]:
+                    self._pending_indents += 1
+                    self._indents.append(indent)
+                else:  # indent == self._indents[0]
+                    while self._indents and indent < self._indents[0]:
+                        self._pending_indents -= 1
+                        self._indents.popleft()
+            if self._pending_indents != 0:
+                if self._pending_indents > 0:
                     self._pending_indents -= 1
-                    self._indents.popleft()
-        if self._pending_indents != 0:
-            if self._pending_indents > 0:
-                self._pending_indents -= 1
-                self._token.kind = TokenKind.INDENT
-            else:
-                self._pending_indents += 1
-                self._token.kind = TokenKind.DEDENT
-            self._content_position = content_position
+                    self._token.kind = TokenKind.INDENT
+                else:
+                    self._pending_indents += 1
+                    self._token.kind = TokenKind.DEDENT
 
     def next_lexeme_impl(self):
         """
@@ -168,8 +182,8 @@ class ArtTokenizer(Tokenizer):
         codepoint = self.codepoint
         if codepoint == Text.eos_codepoint():
             self._token.kind = TokenKind.EOS
-        elif codepoint == Text.whitespace(codepoint):
-            self.skip_whitespace()
+        elif Text.whitespace(codepoint):
+            self.consume_whitespaces()
         elif self.identifier_start(codepoint):
             self.scan_identifier()
         elif (Text.binary_digit(codepoint) or
@@ -238,3 +252,10 @@ class ArtTokenizer(Tokenizer):
             pass
         elif Text.ampersand(codepoint):  # '&'
             pass
+
+    def epilog(self):
+        """
+        """
+        super().epilog()
+        if self._token.kind == TokenKind.IDENTIFIER:  # check if it is keyword
+            self._token.kind = self.lookup(self._token.literal)

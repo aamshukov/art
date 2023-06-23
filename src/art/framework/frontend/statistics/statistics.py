@@ -30,7 +30,7 @@ class Statistics(Base):
                 self._quantities[NUMBER_OF_IDENTIFIERS] += 1
             case TokenKind.CASE | TokenKind.BOOLEAN:
                 self._quantities[NUMBER_OF_KEYWORDS] += 1
-        print(token)
+        # ?? print(token)
 
     @property
     def quantities(self):

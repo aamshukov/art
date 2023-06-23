@@ -21,86 +21,23 @@ class Test(unittest.TestCase):
         """
         super(Test, self).__init__(*args, **kwargs)
 
-    def test_lexical_analyzer_success(self):
-        dp = StringDataProvider('a b')
+    @staticmethod
+    def get_lexer(program):
+        dp = StringDataProvider(program)
         data = dp.load()
         content = Content(0, data, '')
         diagnostics = Diagnostics()
         statistics = Statistics()
         tokenizer = ArtTokenizer(0, content, statistics, diagnostics)
         lexer = LexicalAnalyzer(0, tokenizer, statistics, diagnostics)
-        k = 0
-        while not lexer.eos():
-            lexer.next_lexeme()
-            token = lexer.token
-            match k:
-                case 0:
-                    assert token.kind == TokenKind.IDENTIFIER
-                case 1:
-                    assert token.kind == TokenKind.WS
-                case 2:
-                    assert token.kind == TokenKind.IDENTIFIER
-            k += 1
-        assert True
+        return lexer
 
-    def test_skip_whitespace_success(self):
-        dp = StringDataProvider('')
-        data = dp.load()
-        content = Content(0, data, '')
-        diagnostics = Diagnostics()
-        statistics = Statistics()
-        tokenizer = ArtTokenizer(0, content, statistics, diagnostics)
-        tokenizer.skip_whitespace()
-        assert tokenizer.codepoint == Text.eos_codepoint()
-        dp = StringDataProvider(' ')
-        data = dp.load()
-        content = Content(0, data, '')
-        tokenizer = ArtTokenizer(0, content, statistics, diagnostics)
-        tokenizer.skip_whitespace()
-        assert tokenizer.codepoint == Text.eos_codepoint()
-        dp = StringDataProvider('  ')
-        data = dp.load()
-        content = Content(0, data, '')
-        tokenizer = ArtTokenizer(0, content, statistics, diagnostics)
-        tokenizer.skip_whitespace()
-        dp = StringDataProvider('A ')
-        data = dp.load()
-        content = Content(0, data, '')
-        tokenizer = ArtTokenizer(0, content, statistics, diagnostics)
-        tokenizer.skip_whitespace()
-        assert tokenizer.character == 'A'
-        tokenizer.skip_whitespace()
-        dp = StringDataProvider('AB ')
-        data = dp.load()
-        content = Content(0, data, '')
-        tokenizer = ArtTokenizer(0, content, statistics, diagnostics)
-        tokenizer.skip_whitespace()
-        assert tokenizer.character == 'A'
-        tokenizer.skip_whitespace()
-        assert tokenizer.character == 'A'
-        tokenizer.next_lexeme()
-        tokenizer.skip_whitespace()
-        # assert tokenizer.codepoint == Text.eos_codepoint() ??
-        # dp = StringDataProvider(' A  သည်  B  C 🐍 သည်    ')
-        # data = dp.load()
-        # content = Content(0, data, '')
-        # tokenizer = ArtTokenizer(0, content, statistics, diagnostics)
-        # tokenizer.skip_whitespace()
-        # assert tokenizer.character == 'A'
-        # tokenizer.skip_whitespace()
-        # assert tokenizer.character == 'သ'
-        # tokenizer.skip_whitespace()
-        # assert tokenizer.character == 'B'
-        # tokenizer.skip_whitespace()
-        # assert tokenizer.character == 'C'
-        # tokenizer.skip_whitespace()
-        # assert tokenizer.character == '🐍'
-        # tokenizer.skip_whitespace()
-        # assert tokenizer.character == 'သ'
-        # tokenizer.skip_whitespace()
-        # assert tokenizer.codepoint == Text.eos_codepoint()
-        # tokenizer.skip_whitespace()
-        # assert tokenizer.codepoint == Text.eos_codepoint()
+    @staticmethod
+    def evaluate(program, tokens):
+        lexer = Test.get_lexer(program)
+        for k, token in enumerate(tokens):
+            lexer.next_lexeme()
+            assert lexer.token.kind == TokenKind(token)
 
     def test_identifier_start_success(self):
         assert ArtTokenizer.identifier_start(ord('a'))
@@ -125,6 +62,55 @@ class Test(unittest.TestCase):
         assert ArtTokenizer.identifier_part(ord('益'))
         assert ArtTokenizer.identifier_part(ord('什'))
         assert ArtTokenizer.identifier_part(ord('်'))
+
+    def test_lexical_analyzer_1_success(self):
+        tokens = [TokenKind.EOS]
+        Test.evaluate('', tokens)
+
+    def test_lexical_analyzer_2_success(self):
+        tokens = [TokenKind.IDENTIFIER,
+                  TokenKind.EOS]
+        Test.evaluate('a', tokens)
+
+    def test_lexical_analyzer_3_success(self):
+        tokens = [TokenKind.IDENTIFIER,
+                  TokenKind.WS,
+                  TokenKind.IDENTIFIER,
+                  TokenKind.WS,
+                  TokenKind.EOS]
+        Test.evaluate('a  b ', tokens)
+
+    def test_lexical_analyzer_4_success(self):
+        tokens = [TokenKind.IDENTIFIER,
+                  TokenKind.WS,
+                  TokenKind.IDENTIFIER,
+                  TokenKind.WS,
+                  TokenKind.IDENTIFIER,
+                  TokenKind.EOS]
+        Test.evaluate('abc dcf ef', tokens)
+
+    def test_lexical_analyzer_5_success(self):
+        tokens = [TokenKind.INDENT,
+                  TokenKind.IDENTIFIER,
+                  TokenKind.WS,
+                  TokenKind.IDENTIFIER,
+                  TokenKind.WS,
+                  TokenKind.INTEGER,
+                  TokenKind.WS,
+                  TokenKind.IDENTIFIER,
+                  TokenKind.WS,
+                  TokenKind.IDENTIFIER,
+                  TokenKind.WS,
+                  TokenKind.IDENTIFIER,
+                  TokenKind.WS,
+                  TokenKind.IDENTIFIER,
+                  TokenKind.WS,
+                  TokenKind.IDENTIFIER,
+                  TokenKind.WS,
+                  TokenKind.IDENTIFIER,
+                  TokenKind.WS,
+                  TokenKind.EOS]
+        Test.evaluate('  A   冬   integer ⌛ သည်  B  C 🐍 သည်   ', tokens)
 
 
 if __name__ == '__main__':
