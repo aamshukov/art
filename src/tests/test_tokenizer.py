@@ -36,7 +36,7 @@ class Test(unittest.TestCase):
         tokenizer = Test.TestTokenizer(0, content)
         codepoint = tokenizer.codepoint
         assert codepoint == Text.eos_codepoint()
-        codepoint = tokenizer.next_codepoint()
+        codepoint = tokenizer.advance()
         assert codepoint == Text.eos_codepoint()
 
     def test_next_codepoint_a_success(self):
@@ -51,7 +51,7 @@ class Test(unittest.TestCase):
         codepoint = tokenizer.codepoint
         assert codepoint == ord('A')
         assert tokenizer.character == 'A'
-        codepoint = tokenizer.next_codepoint()
+        codepoint = tokenizer.advance()
         assert codepoint == Text.eos_codepoint()
 
     def test_next_codepoint_ab_success(self):
@@ -65,10 +65,10 @@ class Test(unittest.TestCase):
         codepoint = tokenizer.codepoint
         assert codepoint == ord('A')
         assert tokenizer.character == 'A'
-        codepoint = tokenizer.next_codepoint()
+        codepoint = tokenizer.advance()
         assert codepoint == ord('B')
         assert tokenizer.character == 'B'
-        codepoint = tokenizer.next_codepoint()
+        codepoint = tokenizer.advance()
         assert codepoint == Text.eos_codepoint()
 
     def test_next_codepoint_snake_success(self):
@@ -82,7 +82,7 @@ class Test(unittest.TestCase):
         codepoint = tokenizer.codepoint
         assert codepoint == ord('🐍')
         assert tokenizer.character == '🐍'
-        codepoint = tokenizer.next_codepoint()
+        codepoint = tokenizer.advance()
         assert codepoint == Text.eos_codepoint()
 
     def test_next_codepoint_smile_snake_success(self):
@@ -95,9 +95,9 @@ class Test(unittest.TestCase):
         tokenizer = Test.TestTokenizer(0, content)
         codepoint = tokenizer.codepoint
         assert codepoint == ord('😁')
-        codepoint = tokenizer.next_codepoint()
+        codepoint = tokenizer.advance()
         assert codepoint == ord('🐍')
-        codepoint = tokenizer.next_codepoint()
+        codepoint = tokenizer.advance()
         assert codepoint == Text.eos_codepoint()
 
     def test_unicode_escape_u_success(self):
@@ -110,7 +110,7 @@ class Test(unittest.TestCase):
         tokenizer = Test.TestTokenizer(0, content)
         codepoint = tokenizer.codepoint
         assert codepoint == ord('🐍')
-        codepoint = tokenizer.next_codepoint()
+        codepoint = tokenizer.advance()
         assert codepoint == Text.eos_codepoint()
         dp = StringDataProvider(r'\uuD83D\uuuuDC0D')
         data = dp.load()
@@ -121,7 +121,7 @@ class Test(unittest.TestCase):
         tokenizer = Test.TestTokenizer(0, content)
         codepoint = tokenizer.codepoint
         assert codepoint == ord('🐍')
-        codepoint = tokenizer.next_codepoint()
+        codepoint = tokenizer.advance()
         assert codepoint == Text.eos_codepoint()
 
     def test_unicode_escape_u_slashes_success(self):
@@ -134,11 +134,11 @@ class Test(unittest.TestCase):
         tokenizer = Test.TestTokenizer(0, content)
         codepoint = tokenizer.codepoint
         assert codepoint == ord('\\')
-        codepoint = tokenizer.next_codepoint()
+        codepoint = tokenizer.advance()
         assert codepoint == ord('\\')
-        codepoint = tokenizer.next_codepoint()
+        codepoint = tokenizer.advance()
         assert codepoint == ord('🐍')
-        codepoint = tokenizer.next_codepoint()
+        codepoint = tokenizer.advance()
         assert codepoint == Text.eos_codepoint()
         dp = StringDataProvider(r'\uD83D\\\uDC0D')
         data = dp.load()
@@ -147,13 +147,13 @@ class Test(unittest.TestCase):
         tokenizer = Test.TestTokenizer(0, content)
         codepoint = tokenizer.codepoint
         assert codepoint == ord('�')
-        codepoint = tokenizer.next_codepoint()
+        codepoint = tokenizer.advance()
         assert codepoint == ord('\\')
-        codepoint = tokenizer.next_codepoint()
+        codepoint = tokenizer.advance()
         assert codepoint == ord('\\')
-        codepoint = tokenizer.next_codepoint()
+        codepoint = tokenizer.advance()
         assert codepoint == ord('�')
-        codepoint = tokenizer.next_codepoint()
+        codepoint = tokenizer.advance()
         assert codepoint == Text.eos_codepoint()
 
     def test_unicode_escape_u_broken_success(self):
@@ -164,13 +164,13 @@ class Test(unittest.TestCase):
         tokenizer = Test.TestTokenizer(0, content)
         codepoint = tokenizer.codepoint
         assert codepoint == ord('�')
-        codepoint = tokenizer.next_codepoint()
+        codepoint = tokenizer.advance()
         assert codepoint == ord('A')
-        codepoint = tokenizer.next_codepoint()
+        codepoint = tokenizer.advance()
         assert codepoint == ord('\\')
-        codepoint = tokenizer.next_codepoint()
+        codepoint = tokenizer.advance()
         assert codepoint == ord('\\')
-        codepoint = tokenizer.next_codepoint()
+        codepoint = tokenizer.advance()
         assert codepoint == Text.eos_codepoint()
         dp = StringDataProvider(r'\uD83DA\uDC0D')
         data = dp.load()
@@ -179,11 +179,11 @@ class Test(unittest.TestCase):
         tokenizer = Test.TestTokenizer(0, content)
         codepoint = tokenizer.codepoint
         assert codepoint == ord('�')
-        codepoint = tokenizer.next_codepoint()
+        codepoint = tokenizer.advance()
         assert codepoint == ord('A')
-        codepoint = tokenizer.next_codepoint()
+        codepoint = tokenizer.advance()
         assert codepoint == ord('�')
-        codepoint = tokenizer.next_codepoint()
+        codepoint = tokenizer.advance()
         assert codepoint == Text.eos_codepoint()
         dp = StringDataProvider(r'\uD8\uDC0D')
         data = dp.load()
@@ -199,9 +199,9 @@ class Test(unittest.TestCase):
         tokenizer = Test.TestTokenizer(0, content)
         codepoint = tokenizer.codepoint
         assert codepoint == ord('�')
-        codepoint = tokenizer.next_codepoint()
+        codepoint = tokenizer.advance()
         assert codepoint == ord('�')
-        codepoint = tokenizer.next_codepoint()
+        codepoint = tokenizer.advance()
         assert codepoint == Text.eos_codepoint()
         dp = StringDataProvider(r'\u\uDC0D')
         data = dp.load()
@@ -210,11 +210,11 @@ class Test(unittest.TestCase):
         tokenizer = Test.TestTokenizer(0, content)
         codepoint = tokenizer.codepoint
         assert codepoint == ord('�')
-        codepoint = tokenizer.next_codepoint()
+        codepoint = tokenizer.advance()
         assert codepoint == ord('�')
-        codepoint = tokenizer.next_codepoint()
+        codepoint = tokenizer.advance()
         assert codepoint == Text.eos_codepoint()
-        codepoint = tokenizer.next_codepoint()
+        codepoint = tokenizer.advance()
         assert codepoint == Text.eos_codepoint()
         dp = StringDataProvider(r'\\uDC0D')
         data = dp.load()
@@ -223,19 +223,19 @@ class Test(unittest.TestCase):
         tokenizer = Test.TestTokenizer(0, content)
         codepoint = tokenizer.codepoint
         assert codepoint == ord('\\')
-        codepoint = tokenizer.next_codepoint()
+        codepoint = tokenizer.advance()
         assert codepoint == ord('\\')
-        codepoint = tokenizer.next_codepoint()
+        codepoint = tokenizer.advance()
         assert codepoint == ord('u')
-        codepoint = tokenizer.next_codepoint()
+        codepoint = tokenizer.advance()
         assert codepoint == ord('D')
-        codepoint = tokenizer.next_codepoint()
+        codepoint = tokenizer.advance()
         assert codepoint == ord('C')
-        codepoint = tokenizer.next_codepoint()
+        codepoint = tokenizer.advance()
         assert codepoint == ord('0')
-        codepoint = tokenizer.next_codepoint()
+        codepoint = tokenizer.advance()
         assert codepoint == ord('D')
-        codepoint = tokenizer.next_codepoint()
+        codepoint = tokenizer.advance()
         assert codepoint == Text.eos_codepoint()
         dp = StringDataProvider(r'\uDC0D')
         data = dp.load()
@@ -244,7 +244,7 @@ class Test(unittest.TestCase):
         tokenizer = Test.TestTokenizer(0, content)
         codepoint = tokenizer.codepoint
         assert codepoint == ord('�')
-        codepoint = tokenizer.next_codepoint()
+        codepoint = tokenizer.advance()
         assert codepoint == Text.eos_codepoint()
         dp = StringDataProvider(r'\uDC0')
         data = dp.load()
@@ -253,7 +253,7 @@ class Test(unittest.TestCase):
         tokenizer = Test.TestTokenizer(0, content)
         codepoint = tokenizer.codepoint
         assert codepoint == ord('�')
-        codepoint = tokenizer.next_codepoint()
+        codepoint = tokenizer.advance()
         assert codepoint == Text.eos_codepoint()
         dp = StringDataProvider(r'\uDC')
         data = dp.load()
@@ -262,7 +262,7 @@ class Test(unittest.TestCase):
         tokenizer = Test.TestTokenizer(0, content)
         codepoint = tokenizer.codepoint
         assert codepoint == ord('�')
-        codepoint = tokenizer.next_codepoint()
+        codepoint = tokenizer.advance()
         assert codepoint == Text.eos_codepoint()
         dp = StringDataProvider(r'\uD')
         data = dp.load()
@@ -271,7 +271,7 @@ class Test(unittest.TestCase):
         tokenizer = Test.TestTokenizer(0, content)
         codepoint = tokenizer.codepoint
         assert codepoint == ord('�')
-        codepoint = tokenizer.next_codepoint()
+        codepoint = tokenizer.advance()
         assert codepoint == Text.eos_codepoint()
         dp = StringDataProvider(r'\u')
         data = dp.load()
@@ -280,7 +280,7 @@ class Test(unittest.TestCase):
         tokenizer = Test.TestTokenizer(0, content)
         codepoint = tokenizer.codepoint
         assert codepoint == ord('�')
-        codepoint = tokenizer.next_codepoint()
+        codepoint = tokenizer.advance()
         assert codepoint == Text.eos_codepoint()
         dp = StringDataProvider(r'\\')
         data = dp.load()
@@ -289,9 +289,9 @@ class Test(unittest.TestCase):
         tokenizer = Test.TestTokenizer(0, content)
         codepoint = tokenizer.codepoint
         assert codepoint == ord('\\')
-        codepoint = tokenizer.next_codepoint()
+        codepoint = tokenizer.advance()
         assert codepoint == ord('\\')
-        codepoint = tokenizer.next_codepoint()
+        codepoint = tokenizer.advance()
         assert codepoint == Text.eos_codepoint()
 
     def test_unicode_escape_U_success(self):
@@ -304,11 +304,11 @@ class Test(unittest.TestCase):
         tokenizer = Test.TestTokenizer(0, content)
         codepoint = tokenizer.codepoint
         assert codepoint == ord('\\')
-        codepoint = tokenizer.next_codepoint()
+        codepoint = tokenizer.advance()
         assert codepoint == ord('\\')
-        codepoint = tokenizer.next_codepoint()
+        codepoint = tokenizer.advance()
         assert codepoint == ord('🐍')
-        codepoint = tokenizer.next_codepoint()
+        codepoint = tokenizer.advance()
         assert codepoint == Text.eos_codepoint()
         dp = StringDataProvider(r'\U0001F40')
         data = dp.load()
@@ -317,7 +317,7 @@ class Test(unittest.TestCase):
         tokenizer = Test.TestTokenizer(0, content)
         codepoint = tokenizer.codepoint
         assert codepoint == ord('�')
-        codepoint = tokenizer.next_codepoint()
+        codepoint = tokenizer.advance()
         assert codepoint == Text.eos_codepoint()
 
     def test_unicode_escape_U_full_success(self):
@@ -330,39 +330,39 @@ class Test(unittest.TestCase):
         tokenizer = Test.TestTokenizer(0, content)
         codepoint = tokenizer.codepoint
         assert codepoint == ord('a')
-        codepoint = tokenizer.next_codepoint()
+        codepoint = tokenizer.advance()
         assert codepoint == ord('b')
-        codepoint = tokenizer.next_codepoint()
+        codepoint = tokenizer.advance()
         assert codepoint == ord('c')
-        codepoint = tokenizer.next_codepoint()
+        codepoint = tokenizer.advance()
         assert codepoint == ord('🐍')
-        codepoint = tokenizer.next_codepoint()
+        codepoint = tokenizer.advance()
         assert codepoint == ord('သ')
-        codepoint = tokenizer.next_codepoint()
+        codepoint = tokenizer.advance()
         assert codepoint == ord('န')
-        codepoint = tokenizer.next_codepoint()
+        codepoint = tokenizer.advance()
         assert codepoint == ord('彡')
-        codepoint = tokenizer.next_codepoint()
+        codepoint = tokenizer.advance()
         assert codepoint == ord('x')
-        codepoint = tokenizer.next_codepoint()
+        codepoint = tokenizer.advance()
         assert codepoint == ord('y')
-        codepoint = tokenizer.next_codepoint()
+        codepoint = tokenizer.advance()
         assert codepoint == ord('z')
-        codepoint = tokenizer.next_codepoint()
+        codepoint = tokenizer.advance()
         assert codepoint == ord('你')
-        codepoint = tokenizer.next_codepoint()
+        codepoint = tokenizer.advance()
         assert codepoint == ord('叫')
-        codepoint = tokenizer.next_codepoint()
+        codepoint = tokenizer.advance()
         assert codepoint == ord('什')
-        codepoint = tokenizer.next_codepoint()
+        codepoint = tokenizer.advance()
         assert codepoint == ord('么')
-        codepoint = tokenizer.next_codepoint()
+        codepoint = tokenizer.advance()
         assert codepoint == ord('名')
-        codepoint = tokenizer.next_codepoint()
+        codepoint = tokenizer.advance()
         assert codepoint == ord('字')
-        codepoint = tokenizer.next_codepoint()
+        codepoint = tokenizer.advance()
         assert codepoint == ord('Я')
-        codepoint = tokenizer.next_codepoint()
+        codepoint = tokenizer.advance()
         assert codepoint == Text.eos_codepoint()
 
     def test_unicode_escaped_U_success(self):
@@ -385,7 +385,7 @@ class Test(unittest.TestCase):
         codepoint = tokenizer.codepoint
         assert codepoint == ord(string[0])
         for k in range(1, len(string)):
-            codepoint = tokenizer.next_codepoint()
+            codepoint = tokenizer.advance()
             print(k)
             assert codepoint == ord(string[k])
 
@@ -400,8 +400,8 @@ class Test(unittest.TestCase):
         tokenizer = Test.TestTokenizer(0, content)
         codepoint = tokenizer.codepoint
         assert codepoint != ord('�')
-        while tokenizer.next_codepoint() != Text.eos_codepoint():
-            codepoint = tokenizer.next_codepoint()
+        while tokenizer.advance() != Text.eos_codepoint():
+            codepoint = tokenizer.advance()
             assert codepoint != ord('�')
         assert True
 
@@ -416,8 +416,8 @@ class Test(unittest.TestCase):
         tokenizer = Test.TestTokenizer(0, content)
         codepoint = tokenizer.codepoint
         assert codepoint != ord('�')
-        while tokenizer.next_codepoint() != Text.eos_codepoint():
-            codepoint = tokenizer.next_codepoint()
+        while tokenizer.advance() != Text.eos_codepoint():
+            codepoint = tokenizer.advance()
             assert codepoint != ord('�')
         assert True
 
@@ -440,7 +440,7 @@ class Test(unittest.TestCase):
         codepoint = tokenizer.codepoint
         assert codepoint == ord(string[0])
         for k in range(1, len(string)):
-            codepoint = tokenizer.next_codepoint()
+            codepoint = tokenizer.advance()
             assert codepoint == ord(string[k])
 
     def test_next_codepoint_U_emoji_success(self):
@@ -463,7 +463,7 @@ class Test(unittest.TestCase):
         codepoint = tokenizer.codepoint
         assert codepoint == ord(string[0])
         for k in range(1, len(string)):
-            codepoint = tokenizer.next_codepoint()
+            codepoint = tokenizer.advance()
             assert codepoint == ord(string[k])
 
 

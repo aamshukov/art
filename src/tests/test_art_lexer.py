@@ -112,6 +112,45 @@ class Test(unittest.TestCase):
                   TokenKind.EOS]
         Test.evaluate('  A   冬   integer ⌛ သည်  B  C 🐍 သည်   ', tokens)
 
+    def test_lexical_analyzer_indentation_1_success(self):
+        tokens = [TokenKind.IDENTIFIER,
+                  TokenKind.WS,
+                  TokenKind.IDENTIFIER,
+                  TokenKind.WS,
+                  TokenKind.IDENTIFIER,
+                  TokenKind.WS,
+                  TokenKind.INTEGER,
+                  TokenKind.WS,
+                  TokenKind.IDENTIFIER,
+                  TokenKind.WS,
+                  TokenKind.IDENTIFIER,
+                  TokenKind.WS,
+                  TokenKind.IDENTIFIER,
+                  TokenKind.WS,
+                  TokenKind.IDENTIFIER,
+                  TokenKind.WS,
+                  TokenKind.IDENTIFIER,
+                  TokenKind.WS,
+                  TokenKind.IDENTIFIER,
+                  TokenKind.WS,
+                  TokenKind.EOS]
+        program = """
+        def foo()
+
+            a1
+
+
+                 a2
+                     a3
+                         a4
+                         a5
+                 a6
+                 a7
+        
+            a8
+        """
+        Test.evaluate(program, tokens)
+
 
 if __name__ == '__main__':
     """

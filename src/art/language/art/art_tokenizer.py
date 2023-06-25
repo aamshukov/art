@@ -92,9 +92,9 @@ class ArtTokenizer(Tokenizer):
         Usually called from tokenizer and the position already at WS,
         it means in any case return TokenKind.WS.
         """
-        self.next_codepoint()
+        self.advance()
         while Text.whitespace(self.codepoint):
-            self.next_codepoint()
+            self.advance()
         self._token.kind = TokenKind.WS
 
     @staticmethod
@@ -136,9 +136,9 @@ class ArtTokenizer(Tokenizer):
     def scan_identifier(self):
         """
         """
-        self.next_codepoint()
+        self.advance()
         while self.identifier_part(self.codepoint):
-            self.next_codepoint()
+            self.advance()
         self._token.kind = TokenKind.IDENTIFIER
 
     def process_indentation(self):
@@ -149,9 +149,9 @@ class ArtTokenizer(Tokenizer):
             indent = 0
             while (self._content_position < self._end_content and
                    self.codepoint == 0x00000020):  # ' ':
-                self.next_codepoint()
+                self.advance()
                 indent += 1
-            ignore = ((indent == 0 and self.codepoint == 0x0000000A) or  # blank line
+            ignore = ((indent == 0 and Text.eol(self.codepoint)) or  # blank line
                       self.codepoint == 0x00000023)  # comment
             if not ignore and self._nesting_level == 0:
                 if indent == self._indents[0]:
@@ -193,16 +193,22 @@ class ArtTokenizer(Tokenizer):
             pass
         elif Text.left_parenthesis(codepoint):  # '('
             self._nesting_level += 1
+            self.advance()
         elif Text.right_parenthesis(codepoint):  # ')'
             self._nesting_level -= 1
+            self.advance()
         elif Text.left_square_bracket(codepoint):  # '['
             self._nesting_level += 1
+            self.advance()
         elif Text.right_square_bracket(codepoint):  # ']'
             self._nesting_level -= 1
+            self.advance()
         elif Text.left_curly_bracket(codepoint):  # '{'
             self._nesting_level += 1
+            self.advance()
         elif Text.right_curly_bracket(codepoint):  # '}'
             self._nesting_level -= 1
+            self.advance()
         elif Text.plus_sign(codepoint):  # '+'
             pass
         elif Text.hyphen_minus(codepoint):  # '-'
@@ -211,9 +217,18 @@ class ArtTokenizer(Tokenizer):
             pass
         elif Text.forward_slash(codepoint):  # '/'
             pass
+        elif self._codepoint == 0x0000000D:  # fast path for \r\n
+            self.advance()
+            if self._codepoint == 0x0000000A:  # if \r\n
+                self.advance()
+            self._beginning_of_line = True
+            self._token.kind = TokenKind.EOL
+        elif Text.eol(codepoint):
+            self.advance()
+            self._beginning_of_line = True
+            self._token.kind = TokenKind.EOL
         elif Text.back_slash(codepoint):  # '\\'
-            if self.lookahead_codepoint() == 'n':  # special case for indent
-                self._beginning_of_line = True
+            pass
         elif Text.equals_sign(codepoint):  # '='
             pass
         elif Text.less_than_sign(codepoint):  # '<'

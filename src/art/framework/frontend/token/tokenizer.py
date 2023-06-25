@@ -37,7 +37,7 @@ class Tokenizer(Entity):
         self._codepoint = Text.eos_codepoint()
         self._statistics = statistics
         self._diagnostics = diagnostics
-        self.next_codepoint()  #
+        self.advance()  #
 
     def __hash__(self):
         """
@@ -144,7 +144,7 @@ class Tokenizer(Entity):
         if valid:
             if mode == 'u':
                 if Text.high_surrogate(codepoint):
-                    if Tokenizer.unicode_escape_prefix(self.lookahead_codepoint_at(content_position)):
+                    if Tokenizer.unicode_escape_prefix(self.peek_at(content_position)):
                         high_surrogate = codepoint
                         content_position = squash_unicode_prefixes(content_position + 1)  # +1, skip '\\'
                         valid, low_surrogate, content_position = self.calculate_codepoint(content_position,
@@ -173,7 +173,7 @@ class Tokenizer(Entity):
                 result = codepoint
         return result, content_position - 1
 
-    def next_codepoint(self):
+    def advance(self):
         """
         Content is represented as string with 'virtual' codepoints.
         To deal with genuine codepoints content must be loaded with to_codepoints=True.
@@ -183,7 +183,7 @@ class Tokenizer(Entity):
             self._codepoint = self._content.data[self._content_position]
             if Text.back_slash(self._codepoint):
                 if self._unicode_backslash_count % 2 == 0:  # '\' might start unicode escape sequence
-                    prefix = self.lookahead_codepoint()          # check for single '\': ..._count = 0, 2, etc.
+                    prefix = self.peek()          # check for single '\': ..._count = 0, 2, etc.
                     if Tokenizer.unicode_escape_prefix(prefix):
                         mode = 'u' if prefix == 0x00000075 else 'U'
                         self._codepoint, self._content_position =\
@@ -201,8 +201,9 @@ class Tokenizer(Entity):
         assert Text.valid_codepoint(self._codepoint)
         return self._codepoint
 
-    def lookahead_codepoint(self):
+    def peek(self):
         """
+        Lookahead codepoint.
         """
         if self._content_position + 1 < self._end_content:
             result = self._content.data[self._content_position + 1]
@@ -210,8 +211,9 @@ class Tokenizer(Entity):
             result = Text.eos_codepoint()
         return result
 
-    def lookahead_codepoint_at(self, content_position):
+    def peek_at(self, content_position):
         """
+        Lookahead codepoint at.
         """
         if content_position + 1 < self._end_content:
             result = self._content.data[content_position + 1]
