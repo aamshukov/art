@@ -62,6 +62,7 @@ class Vertex(Entity, Visitable):
         """
         """
         result = (super().__lt__(other) and
+                  Text.compare(self._label, other.label) < 0 and
                   self._value < other.value)
         return result
 
@@ -69,6 +70,7 @@ class Vertex(Entity, Visitable):
         """
         """
         result = (super().__le__(other) and
+                  Text.compare(self._label, other.label) <= 0 and
                   self._value <= other.value)
         return result
 

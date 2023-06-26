@@ -33,13 +33,13 @@ class Value(Equatable):
     def __lt__(self, other):
         """
         """
-        return self._version < other.version
+        return Text.compare(self._version, other.version) < 0
 
     @abstractmethod
     def __le__(self, other):
         """
         """
-        return self._version <= other.version
+        return Text.compare(self._version, other.version) <= 0
 
     @property
     def version(self):

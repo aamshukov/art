@@ -3,6 +3,7 @@
 # UI Lab Inc. Arthur Amshukov
 #
 """ Token """
+from art.framework.core.text import Text
 from art.framework.core.value import Value
 from art.framework.core.flags import Flags
 from art.framework.frontend.token.token_kind import TokenKind
@@ -48,7 +49,7 @@ class Token(Value):
                   self._kind == other.kind and
                   self._offset == other.offset and
                   self._length == other.length and
-                  self._literal == other.literal and
+                  Text.equal(self._literal, other.literal) and
                   self._source == other.source)
         return result
 
@@ -59,7 +60,7 @@ class Token(Value):
                   self._kind < other.kind and
                   self._offset < other.offset and
                   self._length < other.length and
-                  self._literal < other.literal and
+                  Text.compare(self._literal, other.literal) < 0 and
                   self._source < other.source)
         return result
 
@@ -70,7 +71,7 @@ class Token(Value):
                   self._kind <= other.kind and
                   self._offset <= other.offset and
                   self._length <= other.length and
-                  self._literal <= other.literal and
+                  Text.compare(self._literal, other.literal) <= 0 and
                   self._source <= other.source)
         return result
 
