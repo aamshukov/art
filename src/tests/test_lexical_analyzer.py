@@ -12,7 +12,6 @@ from art.framework.frontend.token.token import Token
 from art.framework.frontend.token.token_kind import TokenKind
 from art.framework.frontend.lexical_analyzer.lexical_analyzer import LexicalAnalyzer
 from art.framework.frontend.token.tokenizer import Tokenizer
-from tests.__init__ import data_equal
 
 
 class Test(unittest.TestCase):
@@ -37,13 +36,13 @@ class Test(unittest.TestCase):
                     self._token = Token(TokenKind.WS)
                 case 2:
                     self._content_position = 3
-                    self._token = Token(TokenKind.ASSIGNMENT)
+                    self._token = Token(TokenKind.EQUAL)
                 case 3:
                     self._content_position = 4
                     self._token = Token(TokenKind.WS)
                 case 4:
                     self._content_position = 5
-                    self._token = Token(TokenKind.OPEN_PAREN)
+                    self._token = Token(TokenKind.LEFT_PARENTHESIS)
                 case 5:
                     self._content_position = 8
                     self._token = Token(TokenKind.IDENTIFIER)
@@ -52,7 +51,7 @@ class Test(unittest.TestCase):
                     self._token = Token(TokenKind.WS)
                 case 7:
                     self._content_position = 10
-                    self._token = Token(TokenKind.PLUS)
+                    self._token = Token(TokenKind.PLUS_SIGN)
                 case 8:
                     self._content_position = 11
                     self._token = Token(TokenKind.WS)
@@ -61,7 +60,7 @@ class Test(unittest.TestCase):
                     self._token = Token(TokenKind.IDENTIFIER)
                 case 10:
                     self._content_position = 19
-                    self._token = Token(TokenKind.CLOSE_PAREN)
+                    self._token = Token(TokenKind.RIGHT_PARENTHESIS)
                 case 11:
                     self._content_position = 20
                     self._token = Token(TokenKind.GREATER_EQUAL)
@@ -113,21 +112,21 @@ class Test(unittest.TestCase):
         token = lexer.next_lexeme()
         assert_token(lexer, token, TokenKind.WS, TokenKind.IDENTIFIER, 1, 1, ' ', 0)
         la_token = lexer.lookahead_lexeme()
-        assert_token(lexer, la_token, TokenKind.ASSIGNMENT, TokenKind.IDENTIFIER, 2, 1, '=', 1)
+        assert_token(lexer, la_token, TokenKind.EQUAL, TokenKind.IDENTIFIER, 2, 1, '=', 1)
         assert_token(lexer, token, TokenKind.WS, TokenKind.IDENTIFIER, 1, 1, ' ', 1)
         la_token = lexer.lookahead_lexeme()
         assert_token(lexer, la_token, TokenKind.WS, TokenKind.IDENTIFIER, 3, 1, ' ', 2)
         assert_token(lexer, token, TokenKind.WS, TokenKind.IDENTIFIER, 1, 1, ' ', 2)
         la_token = lexer.lookahead_lexeme()
-        assert_token(lexer, la_token, TokenKind.OPEN_PAREN, TokenKind.IDENTIFIER, 4, 1, '(', 3)
+        assert_token(lexer, la_token, TokenKind.LEFT_PARENTHESIS, TokenKind.IDENTIFIER, 4, 1, '(', 3)
         assert_token(lexer, token, TokenKind.WS, TokenKind.IDENTIFIER, 1, 1, ' ', 3)
         tokenizer.dec_k()
         tokenizer.dec_k()
         tokenizer.dec_k()
         token = lexer.next_lexeme()
-        assert_token(lexer, token, TokenKind.ASSIGNMENT, TokenKind.WS, 2, 1, '=', 2)
+        assert_token(lexer, token, TokenKind.EQUAL, TokenKind.WS, 2, 1, '=', 2)
         token = lexer.next_lexeme()
-        assert_token(lexer, token, TokenKind.WS, TokenKind.ASSIGNMENT, 3, 1, ' ', 1)
+        assert_token(lexer, token, TokenKind.WS, TokenKind.EQUAL, 3, 1, ' ', 1)
         tokenizer.inc_k()
         tokenizer.inc_k()
         la_token = lexer.lookahead_lexeme()

@@ -38,18 +38,27 @@ class TokenKind(IntEnum):
     STRING = auto()
 
     ENUM = auto()
-
     STRUCT = auto()
     RECORD = auto()
+    CLASS = auto()
+    INTERFACE = auto()
+    ABSTRACT = auto()
+    MIXIN = auto()
 
-    CONST = auto()
-    READONLY = auto()
+    IMPORT = auto()
+    NAMESPACE = auto()
+    MODULE = auto()
+    ALIAS = auto()
 
     LET = auto()
     VAR = auto()
+    CONST = auto()
+    READONLY = auto()
 
-    NAMESPACE = auto()
-    IMPORT = auto()
+    SUPER = auto()
+    BASE = auto()
+    SELF = auto()
+    THIS = auto()
 
     IF = auto()
     ELSE = auto()
@@ -57,6 +66,7 @@ class TokenKind(IntEnum):
     FOR = auto()
     WHILE = auto()
     DO = auto()
+    REPEAT = auto()
 
     SWITCH = auto()
     CASE = auto()
@@ -70,61 +80,85 @@ class TokenKind(IntEnum):
     LEAVE = auto()
     GOTO = auto()
     RETURN = auto()
+    NOOP = auto()  # noop
 
     PARTIAL = auto()
+    FINALLY = auto()
+    DEFER = auto()
 
     IS = auto()
     AS = auto()
 
     AND = auto()
     OR = auto()
-    NOT = auto()
-    NEG = auto()
+    NOT = auto()  # !
+    NEG = auto()  # negate
 
-    FUNCTION = auto()
-    PROCEDURE = auto()
+    FUNCTION = auto()  # fn
+    PROCEDURE = auto()  # proc
+    LAMBDA = auto()
     LAZY = auto()
-    NOOP = auto()
+    RECURSIVE = auto()
 
     TYPE = auto()
+    DEF = auto()
 
-    SHEBANG = auto()  #
+    WITH = auto()
+    SCOPED = auto()
+
+    ASYNC = auto()
+    AWAIT = auto()
+    LOCK = auto()
+    YIELD = auto()
+
+    ASSERT = auto()
+
+    PRAGMA = auto()
+
+    LEFT_PARENTHESIS = auto()  # (
+    RIGHT_PARENTHESIS = auto()  # )
+    LEFT_SQUARE_BRACKET = auto()  # [
+    RIGHT_SQUARE_BRACKET = auto()  # ]
+    LEFT_CURLY_BRACKET = auto()  # {
+    RIGHT_CURLY_BRACKET = auto()  # }
+
+    PLUS_SIGN = auto()  # +
+    HYPHEN_MINUS = auto()  # -
+    ASTERISK = auto()  # * MUL
+    FORWARD_SLASH = auto()  # / DIV
+    BACK_SLASH = auto()  # \
+
+    EQUALS_SIGN = auto()  # = ASSIGNMENT
+    LESS_THAN_SIGN = auto()  # <
+    GREATER_THAN_SIGN = auto()  # >
+
+    EQUAL = auto()  # ==
+    NOT_EQUAL = auto()  # !=
+    LESS_EQUAL = auto()  # <=
+    GREATER_EQUAL = auto()  # >=
+    SPACESHIP = auto()  # <=>
+
     SEMICOLON = auto()  # ;
     COLON = auto()  # :
     DOT = auto()  # .
-    DOT_DOT = auto()  # ..
-    DOT_DOT_DOT = auto()  # ...
+    RANGE = auto()  # ..
+    ELLIPSES = auto()  # ...
     COMMA = auto()  # ,
-    OPEN_SQUARE_BRACKET = auto()  # [
-    CLOSE_SQUARE_BRACKET = auto()  # ]
-    OPEN_PAREN = auto()  # (
-    CLOSE_PAREN = auto()  # )
-    OPEN_CURLY_BRACKET = auto()  # {
-    CLOSE_CURLY_BRACKET = auto()  # }
-    OPEN_ANGLE_BRACKET = auto()  # <
-    CLOSE_ANGLE_BRACKET = auto()  # >
-    PLUS = auto()  # +
-    MINUS = auto()  # -
-    MULTIPLICATION = auto()  # *
-    DIVISION = auto()  # /
+
+    BITWISE_AND = auto()  # &
+    BITWISE_OR = auto()  # |
+    BITWISE_XOR = auto()  # |
+
+
+
     # >>
     # <<
-    EQUAL = auto()  # ==
-    NOT_EQUAL = auto()  # !=
-    LESS_THAN = auto()  # <
-    LESS_EQUAL = auto()  # <=
-    GREATER_THAN = auto()  # >
-    GREATER_EQUAL = auto()  # >=
-    SPACESHIP = auto()  # <=>
     AMPERSAND = auto()  # &
     AMPERSAND_AMPERSAND = auto() # &&
-    BAR = auto()  # |
     BAR_BAR = auto()  # ||
-    XOR = auto()  # ^
     NOT_T = auto()  # !
-    ASSIGNMENT = auto()  # =
-    ASSIGNMENT_PLUS = auto()  # +=
-    ASSIGNMENT_MINUS = auto()  # -=
+    ADDITION_ASSIGNMENT = auto()  # +=
+    SUBSTRACTION_ASSIGNMENT = auto()  # -=
     # *=
     # /=
     # >>=
@@ -134,7 +168,5 @@ class TokenKind(IntEnum):
     # ^=
     #
 
-    ASYNC = auto()
-    AWAIT = auto()
 
     ERRONEOUS = auto()

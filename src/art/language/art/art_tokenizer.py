@@ -4,6 +4,7 @@
 """ Art Tokenizer """
 from collections import defaultdict, deque
 from art.framework.core.flags import Flags
+from art.framework.core.status import Status
 from art.framework.core.text import Text
 from art.framework.frontend.token.token import Token
 from art.framework.frontend.token.token_kind import TokenKind
@@ -25,6 +26,7 @@ class ArtTokenizer(Tokenizer):
         self._keywords = ArtTokenizer.populate_keywords()
         self._nesting_level = 0  # parentheses (() [] {}) nesting level
         self._beginning_of_line = True
+        self._indent_size = 4  # ??
         self._pending_indents = 0  # indents (if > 0) or dedents (if < 0) - from Python source code
         self._indents = deque()  # stack of indent, off-side rule support, Peter Landin
         self._indents.append(0)
@@ -67,7 +69,7 @@ class ArtTokenizer(Tokenizer):
         result['as'] = TokenKind.AS
         result['and'] = TokenKind.AND
         result['or'] = TokenKind.OR
-        result['xor'] = TokenKind.XOR
+        result['xor'] = TokenKind.BITWISE_XOR
         result['not'] = TokenKind.NOT
         result['neg'] = TokenKind.NEG
         result['fn'] = TokenKind.FUNCTION
@@ -153,6 +155,8 @@ class ArtTokenizer(Tokenizer):
                 indent += 1
             ignore = ((indent == 0 and Text.eol(self.codepoint)) or  # blank line
                       self.codepoint == 0x00000023)  # comment
+            # assert (indent % self._indent_size == 0,
+            #         f"Invalid indent, must be multiple of {self._indent_size}.")
             if not ignore and self._nesting_level == 0:
                 if indent == self._indents[0]:
                     pass
@@ -173,6 +177,11 @@ class ArtTokenizer(Tokenizer):
 
     def next_lexeme_impl(self):
         """
+        Not optimized manual implementation of the lexical analyzer.
+        For more advanced and optimized version see C++ implementation
+        of arcturus and frontend (projects). That implementation uses custom
+        generated FSA (goto transitions) which recognizes keywords without lookup,
+        recognizes integers and real (float/double) numbers, comments, etc.
         """
         if self._beginning_of_line:
             self.process_indentation()
@@ -193,21 +202,27 @@ class ArtTokenizer(Tokenizer):
             pass
         elif Text.left_parenthesis(codepoint):  # '('
             self._nesting_level += 1
+            self._token.kind = TokenKind.LEFT_PARENTHESIS
             self.advance()
         elif Text.right_parenthesis(codepoint):  # ')'
             self._nesting_level -= 1
+            self._token.kind = TokenKind.RIGHT_PARENTHESIS
             self.advance()
         elif Text.left_square_bracket(codepoint):  # '['
             self._nesting_level += 1
+            self._token.kind = TokenKind.LEFT_SQUARE_BRACKET
             self.advance()
         elif Text.right_square_bracket(codepoint):  # ']'
             self._nesting_level -= 1
+            self._token.kind = TokenKind.RIGHT_SQUARE_BRACKET
             self.advance()
         elif Text.left_curly_bracket(codepoint):  # '{'
             self._nesting_level += 1
+            self._token.kind = TokenKind.LEFT_CURLY_BRACKET
             self.advance()
         elif Text.right_curly_bracket(codepoint):  # '}'
             self._nesting_level -= 1
+            self._token.kind = TokenKind.RIGHT_CURLY_BRACKET
             self.advance()
         elif Text.plus_sign(codepoint):  # '+'
             pass
@@ -235,7 +250,7 @@ class ArtTokenizer(Tokenizer):
             pass
         elif Text.greater_than_sign(codepoint):  # '>'
             pass
-        elif Text.dot(codepoint):  # '.'
+        elif Text.dot(codepoint):  # '.' '..' '...'
             pass
         elif Text.colon(codepoint):  # ':'
             pass
@@ -267,6 +282,12 @@ class ArtTokenizer(Tokenizer):
             pass
         elif Text.ampersand(codepoint):  # '&'
             pass
+        else:
+            self._diagnostics.add(Status(f'Invalid character at '
+                                         f'{self.content.get_location(self._content_position)}',
+                                         'tokenizer',
+                                         Status.INVALID_UNICODE_ESCAPE))
+            self.advance()
 
     def epilog(self):
         """

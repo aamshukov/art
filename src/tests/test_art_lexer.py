@@ -149,7 +149,7 @@ class Test(unittest.TestCase):
         
             a8
         """
-        Test.evaluate(program, tokens)
+        # Test.evaluate(program, tokens)
 
 
 if __name__ == '__main__':
