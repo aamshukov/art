@@ -81,6 +81,7 @@ class TokenKind(IntEnum):
     GOTO = auto()
     RETURN = auto()
     NOOP = auto()  # noop
+    PASS = auto()  # pass
 
     PARTIAL = auto()
     FINALLY = auto()
@@ -122,51 +123,69 @@ class TokenKind(IntEnum):
     LEFT_CURLY_BRACKET = auto()  # {
     RIGHT_CURLY_BRACKET = auto()  # }
 
-    PLUS_SIGN = auto()  # +
-    HYPHEN_MINUS = auto()  # -
-    ASTERISK = auto()  # * MUL
-    FORWARD_SLASH = auto()  # / DIV
-    BACK_SLASH = auto()  # \
-
+    COMP_EQUAL = auto()  # eq
     EQUALS_SIGN = auto()  # = ASSIGNMENT
-    LESS_THAN_SIGN = auto()  # <
-    GREATER_THAN_SIGN = auto()  # >
-
     EQUAL = auto()  # ==
+
+    COMP_NOT_EQUAL = auto()  # ne
+    EXCLAMATION_MARK = auto()  # !
     NOT_EQUAL = auto()  # !=
-    LESS_EQUAL = auto()  # <=
-    GREATER_EQUAL = auto()  # >=
+
+    COMP_LESS_THAN = auto()  # lt
+    LESS_THAN_SIGN = auto()  # <
+    COMP_LESS_THAN_OR_EQUAL = auto()  # le
+    LESS_THAN_OR_EQUAL = auto()  # <=
+
+    COMP_GREATER_THAN = auto()  # gt
+    GREATER_THAN_SIGN = auto()  # >
+    COMP_GREATER_THAN_OR_EQUAL = auto()  # ge
+    GREATER_THAN_OR_EQUAL = auto()  # >=
+
     SPACESHIP = auto()  # <=>
 
-    SEMICOLON = auto()  # ;
-    COLON = auto()  # :
     DOT = auto()  # .
     RANGE = auto()  # ..
     ELLIPSES = auto()  # ...
-    COMMA = auto()  # ,
+
+    PLUS_SIGN = auto()  # +
+    INCREMENT = auto()  # ++
+    ADD_ASSIGNMENT = auto()  # +=
+
+    HYPHEN_MINUS = auto()  # -
+    DECREMENT = auto()  # --
+    SUB_ASSIGNMENT = auto()  # -=
+    ARROW = auto()  # ->
+    DOUBLE_ARROW = auto()  # =>
+
+    ASTERISK = auto()  # * MUL
+    MUL_ASSIGNMENT = auto()  # *=
+
+    FORWARD_SLASH = auto()  # / DIV
+    DIV_ASSIGNMENT = auto()  # /=
+
+    PERCENT_SIGN = auto()  # % MOD
+    MOD_ASSIGNMENT = auto()  # %=
 
     BITWISE_AND = auto()  # &
+    BITWISE_AND_ASSIGNMENT = auto()  # &=
     BITWISE_OR = auto()  # |
-    BITWISE_XOR = auto()  # |
+    BITWISE_OR_ASSIGNMENT = auto()  # |=
+    BITWISE_XOR = auto()  # ^
+    BITWISE_XOR_ASSIGNMENT = auto()  # ^=
+    BITWISE_NOT = auto()  # ~
+    BITWISE_NOT_ASSIGNMENT = auto()  # ~=
 
+    COLON = auto()  # :
+    COLONS = auto()  # ::
+    SEMICOLON = auto()  # ;
+    COMMA = auto()  # ,
+    QUESTION_MARK = auto()  # ?
+    COMMERCIAL_AT = auto()  # @
+    GRAVE_ACCENT = auto()  # `
 
+    BACK_SLASH = auto()  # \
 
-    # >>
-    # <<
-    AMPERSAND = auto()  # &
-    AMPERSAND_AMPERSAND = auto() # &&
-    BAR_BAR = auto()  # ||
-    NOT_T = auto()  # !
-    ADDITION_ASSIGNMENT = auto()  # +=
-    SUBSTRACTION_ASSIGNMENT = auto()  # -=
-    # *=
-    # /=
-    # >>=
-    # <<=
-    # &=
-    # |=
-    # ^=
-    #
-
+    SINGLE_LINE_COMMENT = auto()  # # //
+    MULTI_LINE_COMMENT = auto()  # /* */
 
     ERRONEOUS = auto()

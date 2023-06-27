@@ -37,34 +37,59 @@ class ArtTokenizer(Tokenizer):
         Populate keywords dictionary of string:TokenKind.
         """
         result = dict()
+        result['int'] = TokenKind.INTEGER
         result['integer'] = TokenKind.INTEGER
         result['real'] = TokenKind.REAL
-        result['string'] = TokenKind.STRING
+        result['float'] = TokenKind.REAL
+        result['double'] = TokenKind.REAL
+        result['decimal'] = TokenKind.REAL
+        result['number'] = TokenKind.REAL
+        result['bool'] = TokenKind.BOOLEAN
         result['boolean'] = TokenKind.BOOLEAN
         result['true'] = TokenKind.TRUE
         result['false'] = TokenKind.FALSE
+        result['string'] = TokenKind.STRING
         result['enum'] = TokenKind.ENUM
         result['struct'] = TokenKind.STRUCT
         result['record'] = TokenKind.RECORD
+        result['class'] = TokenKind.CLASS
+        result['interface'] = TokenKind.INTERFACE
+        result['abstract'] = TokenKind.ABSTRACT
+        result['mixin'] = TokenKind.MIXIN
+        result['import'] = TokenKind.IMPORT
+        result['namespace'] = TokenKind.NAMESPACE
+        result['module'] = TokenKind.MODULE
+        result['alias'] = TokenKind.ALIAS
         result['let'] = TokenKind.LET
         result['var'] = TokenKind.VAR
-        result['namespace'] = TokenKind.NAMESPACE
-        result['import'] = TokenKind.IMPORT
+        result['const'] = TokenKind.CONST
+        result['readonly'] = TokenKind.READONLY
+        result['super'] = TokenKind.SUPER
+        result['base'] = TokenKind.BASE
+        result['self'] = TokenKind.SELF
+        result['this'] = TokenKind.THIS
         result['if'] = TokenKind.IF
         result['else'] = TokenKind.ELSE
         result['for'] = TokenKind.FOR
         result['while'] = TokenKind.WHILE
         result['do'] = TokenKind.DO
+        result['repeat'] = TokenKind.REPEAT
         result['switch'] = TokenKind.SWITCH
         result['case'] = TokenKind.CASE
         result['when'] = TokenKind.WHEN
         result['match'] = TokenKind.MATCH
         result['pattern'] = TokenKind.PATTERN
+        result['default'] = TokenKind.DEFAULT
         result['continue'] = TokenKind.CONTINUE
         result['break'] = TokenKind.BREAK
+        result['leave'] = TokenKind.LEAVE
         result['goto'] = TokenKind.GOTO
         result['return'] = TokenKind.REAL
+        result['noop'] = TokenKind.NOOP
+        result['pass'] = TokenKind.PASS
         result['partial'] = TokenKind.PARTIAL
+        result['finally'] = TokenKind.FINALLY
+        result['defer'] = TokenKind.DEFER
         result['is'] = TokenKind.IS
         result['as'] = TokenKind.AS
         result['and'] = TokenKind.AND
@@ -74,11 +99,26 @@ class ArtTokenizer(Tokenizer):
         result['neg'] = TokenKind.NEG
         result['fn'] = TokenKind.FUNCTION
         result['proc'] = TokenKind.PROCEDURE
+        result['lambda'] = TokenKind.LAMBDA
         result['lazy'] = TokenKind.LAZY
-        result['noop'] = TokenKind.NOOP
+        result['recursive'] = TokenKind.RECURSIVE
         result['type'] = TokenKind.TYPE
+        result['def'] = TokenKind.DEF
+        result['with'] = TokenKind.WITH
+        result['scoped'] = TokenKind.SCOPED
         result['async'] = TokenKind.ASYNC
         result['await'] = TokenKind.AWAIT
+        result['lock'] = TokenKind.LOCK
+        result['yield'] = TokenKind.YIELD
+        result['assert'] = TokenKind.ASSERT
+        result['pragma'] = TokenKind.PRAGMA
+        result['eq'] = TokenKind.COMP_EQUAL
+        result['ne'] = TokenKind.COMP_NOT_EQUAL
+        result['lt'] = TokenKind.COMP_LESS_THAN
+        result['le'] = TokenKind.COMP_LESS_THAN_OR_EQUAL
+        result['gt'] = TokenKind.COMP_GREATER_THAN
+        result['ge'] = TokenKind.COMP_GREATER_THAN_OR_EQUAL
+
         return result
 
     def lookup(self, name):
@@ -95,7 +135,7 @@ class ArtTokenizer(Tokenizer):
         it means in any case return TokenKind.WS.
         """
         self.advance()
-        while Text.whitespace(self.codepoint):
+        while Text.whitespace(self._codepoint):
             self.advance()
         self._token.kind = TokenKind.WS
 
@@ -139,7 +179,7 @@ class ArtTokenizer(Tokenizer):
         """
         """
         self.advance()
-        while self.identifier_part(self.codepoint):
+        while self.identifier_part(self._codepoint):
             self.advance()
         self._token.kind = TokenKind.IDENTIFIER
 
@@ -150,11 +190,11 @@ class ArtTokenizer(Tokenizer):
         if self._content_position < self._end_content:
             indent = 0
             while (self._content_position < self._end_content and
-                   self.codepoint == 0x00000020):  # ' ':
+                   self._codepoint == 0x00000020):  # ' ':
                 self.advance()
                 indent += 1
-            ignore = ((indent == 0 and Text.eol(self.codepoint)) or  # blank line
-                      self.codepoint == 0x00000023)  # comment
+            ignore = ((indent == 0 and Text.eol(self._codepoint)) or  # blank line
+                      self._codepoint == 0x00000023)  # comment
             # assert (indent % self._indent_size == 0,
             #         f"Invalid indent, must be multiple of {self._indent_size}.")
             if not ignore and self._nesting_level == 0:
@@ -175,6 +215,56 @@ class ArtTokenizer(Tokenizer):
                     self._pending_indents += 1
                     self._token.kind = TokenKind.DEDENT
 
+    def scan_number(self):
+        """
+        """
+        pass
+
+    def scan_escape_literal(self):
+        """
+        """
+        self.advance()  # skip '\'
+        match self._codepoint:
+            case 'a':
+                self._codepoint = 0x07
+            case 'b':
+                self._codepoint = 0x08
+            case 't':
+                self._codepoint = 0x09
+            case 'v':
+                self._codepoint = 0x0B
+            case 'n':
+                self._codepoint = 0x0A
+            case 'f':
+                self._codepoint = 0x0C
+            case 'r':
+                self._codepoint = 0x0D
+            case '"':
+                self._codepoint = 0x22
+            case '\'':
+                self._codepoint = 0x27
+            case '\\':
+                self._codepoint = 0x5C
+            case '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7':
+                pass
+            case _:
+                self._diagnostics.add(Status(f'Invalid escape literal at '
+                                             f'{self.content.get_location(self._content_position)}',
+                                             'tokenizer',
+                                             Status.INVALID_LITERAL))
+
+    def scan_string(self, single_quote):
+        """
+        """
+        pass
+
+    def scan_comments(self, single_line):
+        """
+        Scans single (# //) or multi (/**/) line comments.
+        Multi line comments can be nested.
+        """
+        pass
+
     def next_lexeme_impl(self):
         """
         Not optimized manual implementation of the lexical analyzer.
@@ -188,7 +278,7 @@ class ArtTokenizer(Tokenizer):
             if (self._token.kind == TokenKind.INDENT or
                     self._token.kind == TokenKind.DEDENT):
                 return
-        codepoint = self.codepoint
+        codepoint = self._codepoint
         if codepoint == Text.eos_codepoint():
             self._token.kind = TokenKind.EOS
         elif Text.whitespace(codepoint):
@@ -199,7 +289,7 @@ class ArtTokenizer(Tokenizer):
               Text.octal_digit(codepoint) or
               Text.decimal_digit(codepoint) or
               Text.hexadecimal_digit(codepoint)):
-            pass
+            self.scan_number()
         elif Text.left_parenthesis(codepoint):  # '('
             self._nesting_level += 1
             self._token.kind = TokenKind.LEFT_PARENTHESIS
@@ -224,14 +314,6 @@ class ArtTokenizer(Tokenizer):
             self._nesting_level -= 1
             self._token.kind = TokenKind.RIGHT_CURLY_BRACKET
             self.advance()
-        elif Text.plus_sign(codepoint):  # '+'
-            pass
-        elif Text.hyphen_minus(codepoint):  # '-'
-            pass
-        elif Text.asterisk(codepoint):  # '*'
-            pass
-        elif Text.forward_slash(codepoint):  # '/'
-            pass
         elif self._codepoint == 0x0000000D:  # fast path for \r\n
             self.advance()
             if self._codepoint == 0x0000000A:  # if \r\n
@@ -239,49 +321,168 @@ class ArtTokenizer(Tokenizer):
             self._beginning_of_line = True
             self._token.kind = TokenKind.EOL
         elif Text.eol(codepoint):
-            self.advance()
             self._beginning_of_line = True
             self._token.kind = TokenKind.EOL
-        elif Text.back_slash(codepoint):  # '\\'
-            pass
-        elif Text.equals_sign(codepoint):  # '='
-            pass
-        elif Text.less_than_sign(codepoint):  # '<'
-            pass
-        elif Text.greater_than_sign(codepoint):  # '>'
-            pass
-        elif Text.dot(codepoint):  # '.' '..' '...'
-            pass
-        elif Text.colon(codepoint):  # ':'
-            pass
-        elif Text.comma(codepoint):  # ','
-            pass
-        elif Text.semicolon(codepoint):  # ';'
-            pass
-        elif Text.vertical_line(codepoint):  # '|'
-            pass
-        elif Text.grave_accent(codepoint):  # '`'
-            pass
+            self.advance()
+        elif Text.equals_sign(codepoint):  # '=' '==' '=>' eq as kw
+            codepoint = self.advance()
+            if Text.equals_sign(codepoint):
+                self._token.kind = TokenKind.EQUAL
+                self.advance()
+            elif Text.greater_than_sign(codepoint):
+                self._token.kind = TokenKind.DOUBLE_ARROW
+                self.advance()
+            else:
+                self._token.kind = TokenKind.EQUALS_SIGN
+        elif Text.exclamation_mark(codepoint):  # '!' '!=' ne as kw
+            codepoint = self.advance()
+            if Text.equals_sign(codepoint):
+                self._token.kind = TokenKind.NOT_EQUAL
+                self.advance()
+            else:
+                self._token.kind = TokenKind.EXCLAMATION_MARK
+        elif Text.less_than_sign(codepoint):  # '<' '<=' '<=>' lt, le as kws
+            codepoint = self.advance()
+            if Text.equals_sign(codepoint):
+                codepoint = self.advance()
+                if Text.greater_than_sign(codepoint):
+                    self._token.kind = TokenKind.SPACESHIP
+                    self.advance()
+                else:
+                    self._token.kind = TokenKind.LESS_THAN_OR_EQUAL
+            else:
+                self._token.kind = TokenKind.LESS_THAN_SIGN
+        elif Text.greater_than_sign(codepoint):  # '>' '>=' gt, ge as kws
+            codepoint = self.advance()
+            if Text.equals_sign(codepoint):
+                self._token.kind = TokenKind.GREATER_THAN_OR_EQUAL
+                self.advance()
+            else:
+                self._token.kind = TokenKind.GREATER_THAN_SIGN
+        elif Text.dot(codepoint):  # '.' '..' '...', do not consider fraction part like .025
+            codepoint = self.advance()
+            if Text.dot(codepoint):
+                codepoint = self.advance()
+                if Text.dot(codepoint):
+                    self._token.kind = TokenKind.ELLIPSES
+                    self.advance()
+                else:
+                    self._token.kind = TokenKind.RANGE
+            else:
+                self._token.kind = TokenKind.DOT
+        elif Text.plus_sign(codepoint):  # '+' '++' '+='
+            codepoint = self.advance()
+            if Text.plus_sign(codepoint):
+                self._token.kind = TokenKind.INCREMENT
+                self.advance()
+            elif Text.equals_sign(codepoint):
+                self._token.kind = TokenKind.ADD_ASSIGNMENT
+                self.advance()
+            else:
+                self._token.kind = TokenKind.PLUS_SIGN
+        elif Text.hyphen_minus(codepoint):  # '-' '--' '-=' '->'
+            codepoint = self.advance()
+            if Text.hyphen_minus(codepoint):
+                self._token.kind = TokenKind.DECREMENT
+                self.advance()
+            elif Text.equals_sign(codepoint):
+                self._token.kind = TokenKind.SUB_ASSIGNMENT
+                self.advance()
+            elif Text.greater_than_sign(codepoint):
+                self._token.kind = TokenKind.ARROW
+                self.advance()
+            else:
+                self._token.kind = TokenKind.HYPHEN_MINUS
+        elif Text.asterisk(codepoint):  # '*' '*='
+            codepoint = self.advance()
+            if Text.equals_sign(codepoint):
+                self._token.kind = TokenKind.MUL_ASSIGNMENT
+                self.advance()
+            else:
+                self._token.kind = TokenKind.ASTERISK
+        elif Text.forward_slash(codepoint):  # '/' '/=' '//' '/*'
+            codepoint = self.advance()
+            if Text.equals_sign(codepoint):
+                self._token.kind = TokenKind.DIV_ASSIGNMENT
+                self.advance()
+            elif Text.forward_slash(codepoint):
+                self.scan_comments(single_line=True)
+            elif Text.asterisk(codepoint):
+                self.scan_comments(single_line=False)
+            else:
+                self._token.kind = TokenKind.FORWARD_SLASH
+        elif Text.percent_sign(codepoint):  # '%' '%='
+            codepoint = self.advance()
+            if Text.equals_sign(codepoint):
+                self._token.kind = TokenKind.MOD_ASSIGNMENT
+                self.advance()
+            else:
+                self._token.kind = TokenKind.PERCENT_SIGN
+        elif Text.ampersand(codepoint):  # '&' '&='
+            codepoint = self.advance()
+            if Text.equals_sign(codepoint):
+                self._token.kind = TokenKind.BITWISE_AND_ASSIGNMENT
+                self.advance()
+            else:
+                self._token.kind = TokenKind.BITWISE_AND
+        elif Text.vertical_line(codepoint):  # '|' '|='
+            codepoint = self.advance()
+            if Text.equals_sign(codepoint):
+                self._token.kind = TokenKind.BITWISE_OR_ASSIGNMENT
+                self.advance()
+            else:
+                self._token.kind = TokenKind.BITWISE_OR
+        elif Text.circumflex_accent(codepoint):  # '^' '^='
+            codepoint = self.advance()
+            if Text.equals_sign(codepoint):
+                self._token.kind = TokenKind.BITWISE_XOR_ASSIGNMENT
+                self.advance()
+            else:
+                self._token.kind = TokenKind.BITWISE_XOR
+        elif Text.circumflex_accent(codepoint):  # '~' '~=' neg as kw
+            codepoint = self.advance()
+            if Text.equals_sign(codepoint):
+                self._token.kind = TokenKind.BITWISE_XOR_ASSIGNMENT
+                self.advance()
+            else:
+                self._token.kind = TokenKind.BITWISE_XOR
         elif Text.tilde(codepoint):  # '~'
-            pass
-        elif Text.exclamation_mark(codepoint):  # '!'
-            pass
+            codepoint = self.advance()
+            if Text.equals_sign(codepoint):
+                self._token.kind = TokenKind.BITWISE_NOT_ASSIGNMENT
+                self.advance()
+            else:
+                self._token.kind = TokenKind.BITWISE_NOT
+        elif Text.colon(codepoint):  # ':' '::'
+            codepoint = self.advance()
+            if Text.colon(codepoint):
+                self._token.kind = TokenKind.COLONS
+                self.advance()
+            else:
+                self._token.kind = TokenKind.COLON
+        elif Text.semicolon(codepoint):  # ';'
+            self._token.kind = TokenKind.SEMICOLON
+            self.advance()
+        elif Text.comma(codepoint):  # ','
+            self._token.kind = TokenKind.COMMA
+            self.advance()
         elif Text.question_mark(codepoint):  # '?'
-            pass
-        elif Text.apostrophe(codepoint):  # '''
-            pass
-        elif Text.quotation_mark(codepoint):  # '"'
-            pass
+            self._token.kind = TokenKind.QUESTION_MARK
+            self.advance()
         elif Text.commercial_at(codepoint):  # '@'
-            pass
+            self._token.kind = TokenKind.COMMERCIAL_AT
+            self.advance()
+        elif Text.grave_accent(codepoint):  # '`'
+            self._token.kind = TokenKind.GRAVE_ACCENT
+            self.advance()
+        elif Text.back_slash(codepoint):  # '\\'
+            self.scan_escape_literal()
+        elif Text.apostrophe(codepoint):  # '''
+            self.scan_string(single_quote=True)
+        elif Text.quotation_mark(codepoint):  # '"'
+            self.scan_string(single_quote=False)
         elif Text.number_sign(codepoint):  # '#'
-            pass
-        elif Text.percent_sign(codepoint):  # '%'
-            pass
-        elif Text.circumflex_accent(codepoint):  # '^'
-            pass
-        elif Text.ampersand(codepoint):  # '&'
-            pass
+            self.scan_comments(single_line=True)
         else:
             self._diagnostics.add(Status(f'Invalid character at '
                                          f'{self.content.get_location(self._content_position)}',
