@@ -173,6 +173,50 @@ class Tokenizer(Entity):
                 result = codepoint
         return result, content_position - 1
 
+    def consume_escape(self):
+        """
+        """
+        self.advance()  # skip '\'
+        match self._codepoint:
+            case 'a':
+                self._codepoint = 0x07
+            case 'b':
+                self._codepoint = 0x08
+            case 't':
+                self._codepoint = 0x09
+            case 'v':
+                self._codepoint = 0x0B
+            case 'n':
+                self._codepoint = 0x0A
+            case 'f':
+                self._codepoint = 0x0C
+            case 'r':
+                self._codepoint = 0x0D
+            case '"':
+                self._codepoint = 0x22
+            case '\'':
+                self._codepoint = 0x27
+            case '\\':
+                self._codepoint = 0x5C
+            case 'N':
+                # \N{name}
+                # NAME in the Unicode.
+                # NOT IMPLEMENTED
+                raise NotImplemented('The escape sequence \\N{name}.')
+            case 'x':
+                # \xh
+                # \xhh
+                # NOT IMPLEMENTED
+                raise NotImplemented('The escape sequence \\xhh.')
+            case '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7':
+                # Octal, up to 3FF
+                pass
+            case _:
+                self._diagnostics.add(Status(f'Invalid escape literal at '
+                                             f'{self.content.get_location(self._content_position)}',
+                                             'tokenizer',
+                                             Status.INVALID_LITERAL))
+
     def advance(self):
         """
         Content is represented as string with 'virtual' codepoints.

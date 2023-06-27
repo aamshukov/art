@@ -27,6 +27,7 @@ class Status(Base):
     INVALID_LITERAL         = 128 | ERROR_MASK      # noqa
     STATUS_DEPRECATED       = 129 | WARNING_MASK    # noqa
     INVALID_UNICODE_ESCAPE  = 130 | ERROR_MASK      # noqa
+    INVALID_CHARACTER       = 131 | ERROR_MASK      # noqa
 
     def __init__(self,
                  text,  # description

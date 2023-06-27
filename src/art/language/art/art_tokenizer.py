@@ -220,39 +220,6 @@ class ArtTokenizer(Tokenizer):
         """
         pass
 
-    def scan_escape_literal(self):
-        """
-        """
-        self.advance()  # skip '\'
-        match self._codepoint:
-            case 'a':
-                self._codepoint = 0x07
-            case 'b':
-                self._codepoint = 0x08
-            case 't':
-                self._codepoint = 0x09
-            case 'v':
-                self._codepoint = 0x0B
-            case 'n':
-                self._codepoint = 0x0A
-            case 'f':
-                self._codepoint = 0x0C
-            case 'r':
-                self._codepoint = 0x0D
-            case '"':
-                self._codepoint = 0x22
-            case '\'':
-                self._codepoint = 0x27
-            case '\\':
-                self._codepoint = 0x5C
-            case '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7':
-                pass
-            case _:
-                self._diagnostics.add(Status(f'Invalid escape literal at '
-                                             f'{self.content.get_location(self._content_position)}',
-                                             'tokenizer',
-                                             Status.INVALID_LITERAL))
-
     def scan_string(self, single_quote):
         """
         """
@@ -476,7 +443,11 @@ class ArtTokenizer(Tokenizer):
             self._token.kind = TokenKind.GRAVE_ACCENT
             self.advance()
         elif Text.back_slash(codepoint):  # '\\'
-            self.scan_escape_literal()
+            self._diagnostics.add(Status(f'Loose "\\" character at '
+                                         f'{self.content.get_location(self._content_position)}',
+                                         'tokenizer',
+                                         Status.INVALID_CHARACTER))
+            self.advance()
         elif Text.apostrophe(codepoint):  # '''
             self.scan_string(single_quote=True)
         elif Text.quotation_mark(codepoint):  # '"'
