@@ -176,68 +176,68 @@ class Tokenizer(Entity):
     def consume_escape(self):
         """
         """
-        self.advance()  # skip '\'
-        match self._codepoint:
-            case 'a':
-                self._codepoint = 0x07
-            case 'b':
-                self._codepoint = 0x08
-            case 't':
-                self._codepoint = 0x09
-            case 'v':
-                self._codepoint = 0x0B
-            case 'n':
-                self._codepoint = 0x0A
-            case 'f':
-                self._codepoint = 0x0C
-            case 'r':
-                self._codepoint = 0x0D
-            case '"':
-                self._codepoint = 0x22
-            case '\'':
-                self._codepoint = 0x27
-            case '\\':
-                self._codepoint = 0x5C
+        content_position = self._content_position + 1  # skip '\'
+        codepoint = self._content.data[content_position]
+        match codepoint:
+            case 0x00000061:  # 'a'
+                codepoint = 0x07
+            case 0x00000062:  # 'b'
+                codepoint = 0x08
+            case 0x00000074:  # 't'
+                codepoint = 0x09
+            case 0x00000076:  # 'v'
+                codepoint = 0x0B
+            case 0x0000006E:  # 'n'
+                codepoint = 0x0A
+            case 0x00000066:  # 'f'
+                codepoint = 0x0C
+            case 0x00000072:  # 'r'
+                codepoint = 0x0D
+            case 0x00000022:  # '"'
+                codepoint = 0x22
+            case 0x00000027:  # '\''
+                codepoint = 0x27
+            case 0x0000005C:  # '\\':
+                codepoint = 0x5C
             case 'N':
                 # \N{name}
                 # NAME in the Unicode.
                 # NOT IMPLEMENTED
+                codepoint = Text.ERRONEOUS_CODEPOINT
                 raise NotImplemented('The escape sequence \\N{name}.')
             case 'x':
                 # \xh
                 # \xhh
                 # NOT IMPLEMENTED
+                codepoint = Text.ERRONEOUS_CODEPOINT
                 raise NotImplemented('The escape sequence \\xhh.')
             case '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7':
                 # Octal, up to 3FF
+                codepoint = 0  # ??
                 pass
             case _:
                 self._diagnostics.add(Status(f'Invalid escape literal at '
                                              f'{self.content.get_location(self._content_position)}',
                                              'tokenizer',
                                              Status.INVALID_LITERAL))
+                codepoint = Text.ERRONEOUS_CODEPOINT
+        return codepoint, content_position
 
     def advance(self):
         """
-        Content is represented as string with 'virtual' codepoints.
-        To deal with genuine codepoints content must be loaded with to_codepoints=True.
+        Content is represented as string of codepoints.
         """
         self._content_position += 1
         if self._content_position < self._end_content:
             self._codepoint = self._content.data[self._content_position]
             if Text.back_slash(self._codepoint):
-                if self._unicode_backslash_count % 2 == 0:  # '\' might start unicode escape sequence
-                    prefix = self.peek()          # check for single '\': ..._count = 0, 2, etc.
-                    if Tokenizer.unicode_escape_prefix(prefix):
-                        mode = 'u' if prefix == 0x00000075 else 'U'
-                        self._codepoint, self._content_position =\
-                            self.consume_unicode_escape(mode, self._content_position)
-                    else:
-                        self._unicode_backslash_count += 1
+                prefix = self.peek()
+                if Tokenizer.unicode_escape_prefix(prefix):  # '\' might start unicode escape sequence
+                    mode = 'u' if prefix == 0x00000075 else 'U'
+                    self._codepoint, self._content_position =\
+                        self.consume_unicode_escape(mode, self._content_position)
                 else:
-                    self._unicode_backslash_count += 1  # single '\'
-            else:
-                self._unicode_backslash_count = 0
+                    self._codepoint, self._content_position = self.consume_escape()
         else:
             self._codepoint = Text.eos_codepoint()
         if self._content_position > self._end_content:

@@ -428,3 +428,37 @@ def guard(subject):
         self._unicode_length = 0  # length of unicode codepoint
 
 
+
+
+
+
+    def advance(self):
+        """
+        Content is represented as string of codepoints.
+        """
+        self._content_position += 1
+        if self._content_position < self._end_content:
+            self._codepoint = self._content.data[self._content_position]
+            if Text.back_slash(self._codepoint):
+                if self._unicode_backslash_count % 2 == 0:  # '\' might start unicode escape sequence
+                    prefix = self.peek()  # check for single '\': ..._count = 0, 2, etc.
+                    if Tokenizer.unicode_escape_prefix(prefix):
+                        mode = 'u' if prefix == 0x00000075 else 'U'
+                        self._codepoint, self._content_position =\
+                            self.consume_unicode_escape(mode, self._content_position)
+                    else:
+                        self._unicode_backslash_count += 1
+                else:
+                    self._unicode_backslash_count += 1  # single '\'
+                    self._codepoint, self._content_position = self.consume_escape()
+            else:
+                self._unicode_backslash_count = 0
+        else:
+            self._codepoint = Text.eos_codepoint()
+        if self._content_position > self._end_content:
+            self._content_position = self._end_content
+        assert Text.valid_codepoint(self._codepoint)
+        return self._codepoint
+
+
+
