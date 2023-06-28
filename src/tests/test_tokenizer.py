@@ -493,6 +493,49 @@ class Test(unittest.TestCase):
         codepoint = tokenizer.advance()
         assert codepoint == Text.eos_codepoint()
 
+    def test_octal_escapes_success(self):
+        dp = StringDataProvider(r'\0\1\32\52\175\000\012\377\378\401\123456')
+        data = dp.load()
+        content = Content(0, data, '')
+        content.build_line_map()
+        assert len(data) == content.count
+        assert data == content.data
+        tokenizer = Test.TestTokenizer(0, content)
+        codepoint = tokenizer.codepoint
+        assert codepoint == 0
+        codepoint = tokenizer.advance()
+        assert codepoint == 1
+        codepoint = tokenizer.advance()
+        assert codepoint == int('32', 8)
+        codepoint = tokenizer.advance()
+        assert codepoint == int('52', 8)
+        codepoint = tokenizer.advance()
+        assert codepoint == int('175', 8)
+        codepoint = tokenizer.advance()
+        assert codepoint == int('0', 8)
+        codepoint = tokenizer.advance()
+        assert codepoint == int('12', 8)
+        codepoint = tokenizer.advance()
+        assert codepoint == int('377', 8)
+        codepoint = tokenizer.advance()
+        assert codepoint == int('37', 8)
+        codepoint = tokenizer.advance()
+        assert codepoint == ord('8')
+        codepoint = tokenizer.advance()
+        assert codepoint == int('40', 8)
+        codepoint = tokenizer.advance()
+        assert codepoint == ord('1')
+        codepoint = tokenizer.advance()
+        assert codepoint == int('123', 8)
+        codepoint = tokenizer.advance()
+        assert codepoint == ord('4')
+        codepoint = tokenizer.advance()
+        assert codepoint == ord('5')
+        codepoint = tokenizer.advance()
+        assert codepoint == ord('6')
+        codepoint = tokenizer.advance()
+        assert codepoint == Text.eos_codepoint()
+
 
 if __name__ == '__main__':
     """

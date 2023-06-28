@@ -33,7 +33,6 @@ class Tokenizer(Entity):
         self._lexeme_position = self._start_content  # beginning position of lexeme in content
         self._token = Token(TokenKind.UNKNOWN)  # current lexeme
         self._snapshots = deque()  # stack of backtracking snapshots - positions
-        self._unicode_backslash_count = 0  # tracks how many '\' has been observed
         self._codepoint = Text.eos_codepoint()
         self._statistics = statistics
         self._diagnostics = diagnostics
@@ -204,17 +203,37 @@ class Tokenizer(Entity):
                 # NAME in the Unicode.
                 # NOT IMPLEMENTED
                 codepoint = Text.ERRONEOUS_CODEPOINT
-                raise NotImplemented('The escape sequence \\N{name}.')
+                self._diagnostics.add(Status(f'Escape \\N(name) is not implemented, at '
+                                             f'{self.content.get_location(self._content_position)}',
+                                             'tokenizer',
+                                             Status.INVALID_LITERAL))
             case 'x':
                 # \xh
                 # \xhh
                 # NOT IMPLEMENTED
                 codepoint = Text.ERRONEOUS_CODEPOINT
-                raise NotImplemented('The escape sequence \\xhh.')
-            case '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7':
-                # Octal, up to 3FF
-                codepoint = 0  # ??
-                pass
+                self._diagnostics.add(Status(f'Escape \\xhh is not implemented, at '
+                                             f'{self.content.get_location(self._content_position)}',
+                                             'tokenizer',
+                                             Status.INVALID_LITERAL))
+            case (0x00000030 |  # 0
+                  0x00000031 |  # 1
+                  0x00000032 |  # 2
+                  0x00000033 |  # 3
+                  0x00000034 |  # 4
+                  0x00000035 |  # 5
+                  0x00000036 |  # 6
+                  0x00000037):  # 7
+                # may start octal, up to 377, sequence
+                d1 = codepoint = Text.ascii_number(codepoint)
+                d2 = self.peek_at(content_position)
+                if 0x00000030 <= d2 <= 0x00000037:
+                    content_position += 1
+                    codepoint = codepoint * 8 + Text.ascii_number(d2)
+                    d3 = self.peek_at(content_position)
+                    if d1 <= 3 and (0x00000030 <= d3 <= 0x00000037):
+                        content_position += 1
+                        codepoint = codepoint * 8 + Text.ascii_number(d3)
             case _:
                 self._diagnostics.add(Status(f'Invalid escape literal at '
                                              f'{self.content.get_location(self._content_position)}',
