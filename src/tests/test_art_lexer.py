@@ -26,6 +26,7 @@ class Test(unittest.TestCase):
         dp = StringDataProvider(program)
         data = dp.load()
         content = Content(0, data, '')
+        content.build_line_map()
         diagnostics = Diagnostics()
         statistics = Statistics()
         tokenizer = ArtTokenizer(0, content, statistics, diagnostics)
@@ -34,10 +35,13 @@ class Test(unittest.TestCase):
 
     @staticmethod
     def evaluate(program, tokens):
+        literals = list()
         lexer = Test.get_lexer(program)
         for k, token in enumerate(tokens):
             lexer.next_lexeme()
             assert lexer.token.kind == TokenKind(token)
+            literals.append(lexer.token.literal)
+        return literals
 
     def test_identifier_start_success(self):
         assert ArtTokenizer.identifier_start(ord('a'))
@@ -150,6 +154,153 @@ class Test(unittest.TestCase):
             a8
         """
         # Test.evaluate(program, tokens)
+
+    def test_string_single_quote_empty_success(self):
+        tokens = [TokenKind.STRING,
+                  TokenKind.EOS]
+        program = "''"
+        literals = Test.evaluate(program, tokens)
+        assert len(literals) == len(tokens)
+        assert literals[0] == program
+
+    def test_string_empty_success(self):
+        tokens = [TokenKind.STRING,
+                  TokenKind.EOS]
+        program = '""'
+        literals = Test.evaluate(program, tokens)
+        assert len(literals) == len(tokens)
+        assert literals[0] == program
+
+    def test_string_1_success(self):
+        tokens = [TokenKind.STRING,
+                  TokenKind.EOS]
+        program = '" "'
+        literals = Test.evaluate(program, tokens)
+        assert len(literals) == len(tokens)
+        assert literals[0] == program
+
+    def test_string_2_success(self):
+        tokens = [TokenKind.STRING,
+                  TokenKind.EOS]
+        program = '" a "'
+        literals = Test.evaluate(program, tokens)
+        assert len(literals) == len(tokens)
+        assert literals[0] == program
+
+    def test_string_success(self):
+        tokens = [TokenKind.STRING,
+                  TokenKind.EOS]
+        program = r'"\"prefix \" 😁🐍 ⏩⏰⌚⏳☔♈ \uD83D\uDC0D ♿ \U0001F40Dသန彡xyz你叫什么名字Я ⚓⚡⚪⚽⛄⛎⛔⛪⛲⛵⛺⛽✅✊✨❌❎❓❗➕➰➿⬛⭐⭕🀄🃏🆎🆑🈁🈚🈯🈲🈸🉐🌀\""'  # noqa
+        literals = Test.evaluate(program, tokens)
+        assert len(literals) == len(tokens)
+        assert literals[0] == program
+
+    def test_string_single_quote_success(self):
+        tokens = [TokenKind.STRING,
+                  TokenKind.EOS]
+        program = r"'\'prefix \' 😁🐍 ⏩⏰⌚⏳☔♈ \uD83D\uDC0D ♿ \U0001F40Dသန彡xyz你叫什么名字Я ⚓⚡⚪⚽⛄⛎⛔⛪⛲⛵⛺⛽✅✊✨❌❎❓❗➕➰➿⬛⭐⭕🀄🃏🆎🆑🈁🈚🈯🈲🈸🉐🌀\''"  # noqa
+        literals = Test.evaluate(program, tokens)
+        assert len(literals) == len(tokens)
+        assert literals[0] == program
+
+    def test_string_eos_success(self):
+        tokens = [TokenKind.UNKNOWN,
+                  TokenKind.EOS]
+        program = r'"abc'
+        literals = Test.evaluate(program, tokens)
+        assert len(literals) == len(tokens)
+        assert literals[0] == program
+
+    def test_string_eol_success(self):
+        tokens = [TokenKind.UNKNOWN,
+                  TokenKind.EOL,
+                  TokenKind.INDENT,
+                  TokenKind.EOS]
+        program = """'a
+        """
+        literals = Test.evaluate(program, tokens)
+        assert len(literals) == len(tokens)
+        assert literals[0] == "'a"
+
+    def test_single_line_number_sign_comments_success(self):
+        tokens = [TokenKind.SINGLE_LINE_COMMENT,
+                  TokenKind.EOS]
+        program = '# 123'
+        literals = Test.evaluate(program, tokens)
+        assert len(literals) == len(tokens)
+        assert literals[0] == program
+        tokens = [TokenKind.WS,
+                  TokenKind.SINGLE_LINE_COMMENT,
+                  TokenKind.EOS]
+        program = '   # 123'
+        literals = Test.evaluate(program, tokens)
+        assert len(literals) == len(tokens)
+        assert literals[0] == '   '
+        assert literals[1] == '# 123'
+
+    def test_single_line_comments_success(self):
+        tokens = [TokenKind.SINGLE_LINE_COMMENT,
+                  TokenKind.EOS]
+        program = '// 123'
+        literals = Test.evaluate(program, tokens)
+        assert len(literals) == len(tokens)
+        assert literals[0] == program
+        tokens = [TokenKind.WS,
+                  TokenKind.SINGLE_LINE_COMMENT,
+                  TokenKind.EOS]
+        program = '   // 123'
+        literals = Test.evaluate(program, tokens)
+        assert len(literals) == len(tokens)
+        assert literals[0] == '   '
+        assert literals[1] == '// 123'
+
+    def test_multi_line_comments_success(self):
+        tokens = [TokenKind.MULTI_LINE_COMMENT,
+                  TokenKind.EOS]
+        program = '/**/'
+        literals = Test.evaluate(program, tokens)
+        assert len(literals) == len(tokens)
+        assert literals[0] == program
+        tokens = [TokenKind.MULTI_LINE_COMMENT,
+                  TokenKind.EOS]
+        program = '/* */'
+        literals = Test.evaluate(program, tokens)
+        assert len(literals) == len(tokens)
+        assert literals[0] == program
+        tokens = [TokenKind.MULTI_LINE_COMMENT,
+                  TokenKind.EOS]
+        program = '/* 123 */'
+        literals = Test.evaluate(program, tokens)
+        assert len(literals) == len(tokens)
+        assert literals[0] == program
+        tokens = [TokenKind.MULTI_LINE_COMMENT,
+                  TokenKind.WS,
+                  TokenKind.MULTI_LINE_COMMENT,
+                  TokenKind.EOS]
+        program = '/* /**/ /* /* /* */ */ */ */ /* */'
+        literals = Test.evaluate(program, tokens)
+        assert len(literals) == len(tokens)
+        assert literals[0] == '/* /**/ /* /* /* */ */ */ */'
+        assert literals[1] == ' '
+        assert literals[2] == '/* */'
+        tokens = [TokenKind.UNKNOWN,
+                  TokenKind.EOS]
+        program = '/**'
+        literals = Test.evaluate(program, tokens)
+        assert len(literals) == len(tokens)
+        assert literals[0] == program
+        tokens = [TokenKind.UNKNOWN,
+                  TokenKind.EOS]
+        program = '/*'
+        literals = Test.evaluate(program, tokens)
+        assert len(literals) == len(tokens)
+        assert literals[0] == program
+        tokens = [TokenKind.UNKNOWN,
+                  TokenKind.EOS]
+        program = '/* /*/ /* /* /* */ */ */ */ /* */'
+        literals = Test.evaluate(program, tokens)
+        assert len(literals) == len(tokens)
+        assert literals[0] == program
 
 
 if __name__ == '__main__':

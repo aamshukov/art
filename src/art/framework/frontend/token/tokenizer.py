@@ -34,6 +34,7 @@ class Tokenizer(Entity):
         self._token = Token(TokenKind.UNKNOWN)  # current lexeme
         self._snapshots = deque()  # stack of backtracking snapshots - positions
         self._codepoint = Text.eos_codepoint()
+        self._escaped = False  # True if codepoint has been derived from escape sequence
         self._statistics = statistics
         self._diagnostics = diagnostics
         self.advance()  #
@@ -246,6 +247,7 @@ class Tokenizer(Entity):
         """
         Content is represented as string of codepoints.
         """
+        self._escaped = False
         self._content_position += 1
         if self._content_position < self._end_content:
             self._codepoint = self._content.data[self._content_position]
@@ -257,6 +259,7 @@ class Tokenizer(Entity):
                         self.consume_unicode_escape(mode, self._content_position)
                 else:
                     self._codepoint, self._content_position = self.consume_escape()
+                self._escaped = True
         else:
             self._codepoint = Text.eos_codepoint()
         if self._content_position > self._end_content:
@@ -266,7 +269,7 @@ class Tokenizer(Entity):
 
     def peek(self):
         """
-        Lookahead codepoint.
+        Lookahead.
         """
         if self._content_position + 1 < self._end_content:
             result = self._content.data[self._content_position + 1]
@@ -276,7 +279,7 @@ class Tokenizer(Entity):
 
     def peek_at(self, content_position):
         """
-        Lookahead codepoint at.
+        Lookahead at.
         """
         if content_position + 1 < self._end_content:
             result = self._content.data[content_position + 1]

@@ -724,6 +724,12 @@ class Text(Base):
             result = unicodedata.category(ch) == 'Nd'
         return result
 
+    @staticmethod
+    def zero_digit(codepoint):
+        """
+        """
+        return 0x00000030 == codepoint or codepoint == 0x0000FF10
+
     ASCII_NUMBERS = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 0, 0, 0, 0, 0,
                      0, 0xA, 0xB, 0xC, 0xD, 0xE, 0xF, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,

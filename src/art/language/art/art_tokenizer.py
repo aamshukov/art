@@ -183,9 +183,20 @@ class ArtTokenizer(Tokenizer):
             self.advance()
         self._token.kind = TokenKind.IDENTIFIER
 
+    def comment_start(self):
+        """
+        """
+        crr = self._codepoint
+        nxt = self.peek()
+        return (crr == 0x00000023 or                          # #
+                (crr == 0x0000002F and nxt == 0x0000002F) or  # //
+                (crr == 0x0000002F and nxt == 0x0000002A))    # /*
+
     def process_indentation(self):
         """
         """
+        content_position = self._content_position
+        codepoint = self._codepoint
         self._beginning_of_line = False
         if self._content_position < self._end_content:
             indent = 0
@@ -194,7 +205,7 @@ class ArtTokenizer(Tokenizer):
                 self.advance()
                 indent += 1
             ignore = ((indent == 0 and Text.eol(self._codepoint)) or  # blank line
-                      self._codepoint == 0x00000023)  # comment
+                      self.comment_start())  # comment
             # assert (indent % self._indent_size == 0,
             #         f"Invalid indent, must be multiple of {self._indent_size}.")
             if not ignore and self._nesting_level == 0:
@@ -214,23 +225,85 @@ class ArtTokenizer(Tokenizer):
                 else:
                     self._pending_indents += 1
                     self._token.kind = TokenKind.DEDENT
+            else:
+                self._content_position = content_position  # rollback
+                self._codepoint = codepoint
 
     def scan_number(self):
         """
+        Binary:      0b101111100011   0b__101_1_1_1100_011
+        Octal:       0o5743 or 05743  0o_57__4_3 or 0__57_4____3
+        Decimal:     3043             3___0__4_3
+        Hexadecimal: 0xBE3            0xB__E_3
+        Real:        3.14159265359  3.1415E2    3.1415e2    3_5.1__41_5E2    3.1_41_5e2
+                     3.141__26_3_9  3.1415E+2   3.1415e+2   3_6.1__41_5E+2   3.1_41_5e+2
+                     3.141_______5  3.1415E-2   3.1415e-2   3_7.1__41_5E-2   3.1_41_5e-2
+        Digit separator: _
+        All numbers are 64 bits.
         """
-        pass
+        codepoint = self._codepoint
+        if Text.zero_digit(codepoint):
+            codepoint = self.advance()
+            match codepoint:
+                case ('b' | 'B'):
+                    radix = 2
+                case ('o' | 'O'):
+                    radix = 8
+                case ('x' | 'X'):
+                    radix = 16
+                case _:
+                    radix = 8
+        else:
+            radix = 10
 
-    def scan_string(self, single_quote):
+    def scan_string(self, quote):
         """
         """
-        pass
+        self.advance()
+        while (not Text.eol(self._codepoint) and
+               not Text.eos(self._codepoint) and
+               self._codepoint != quote or
+               (self._codepoint == quote and self._escaped)):
+            self.advance()
+        if self._codepoint == quote:
+            self.advance()
+            self._token.kind = TokenKind.STRING
+        else:
+            self._diagnostics.add(Status(f'Unclosed string literal at '
+                                         f'{self.content.get_location(self._content_position)}',
+                                         'tokenizer',
+                                         Status.INVALID_STRING_LITERAL))
 
     def scan_comments(self, single_line):
         """
         Scans single (# //) or multi (/**/) line comments.
         Multi line comments can be nested.
         """
-        pass
+        self.advance()
+        if single_line:
+            while (not Text.eol(self._codepoint) and
+                   not Text.eos(self._codepoint)):
+                self.advance()
+            self._token.kind = TokenKind.SINGLE_LINE_COMMENT
+        else:
+            level = 1  # nesting level
+            while not Text.eos(self._codepoint):
+                crr = self._codepoint
+                nxt = self.peek()
+                if crr == 0x0000002F and nxt == 0x0000002A:  # /*, exact codepoints
+                    self.advance()
+                    self.advance()
+                    level += 1
+                elif crr == 0x0000002A and nxt == 0x0000002F:  # */, exact codepoints
+                    self.advance()
+                    self.advance()
+                    level -= 1
+                    if level == 0:
+                        break
+                else:
+                    self.advance()
+            if level == 0:
+                self._token.kind = TokenKind.MULTI_LINE_COMMENT
 
     def next_lexeme_impl(self):
         """
@@ -252,10 +325,7 @@ class ArtTokenizer(Tokenizer):
             self.consume_whitespaces()
         elif self.identifier_start(codepoint):
             self.scan_identifier()
-        elif (Text.binary_digit(codepoint) or
-              Text.octal_digit(codepoint) or
-              Text.decimal_digit(codepoint) or
-              Text.hexadecimal_digit(codepoint)):
+        elif Text.hexadecimal_digit(codepoint):  # covers all digits bin, oct, dec, hex
             self.scan_number()
         elif Text.left_parenthesis(codepoint):  # '('
             self._nesting_level += 1
@@ -449,9 +519,9 @@ class ArtTokenizer(Tokenizer):
                                          Status.INVALID_CHARACTER))
             self.advance()
         elif Text.apostrophe(codepoint):  # '''
-            self.scan_string(single_quote=True)
+            self.scan_string(codepoint)
         elif Text.quotation_mark(codepoint):  # '"'
-            self.scan_string(single_quote=False)
+            self.scan_string(codepoint)
         elif Text.number_sign(codepoint):  # '#'
             self.scan_comments(single_line=True)
         else:
