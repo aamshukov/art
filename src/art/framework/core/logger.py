@@ -13,7 +13,7 @@ class Logger(Base):
     """
     LOGGER_NAME = 'uilab.art'
 
-    def __init__(self, level=logging.DEBUG, path=None):
+    def __init__(self, level=logging.DEBUG, mode='a', path=None):
         """
         """
         super().__init__()
@@ -27,7 +27,7 @@ class Logger(Base):
         if path:
             if not os.path.exists(path):
                 os.makedirs(path)
-            file_handler = logging.FileHandler(os.path.join(path, f'{Logger.LOGGER_NAME}.log'))
+            file_handler = logging.FileHandler(os.path.join(path, f'{Logger.LOGGER_NAME}.log'), mode=mode)
             file_handler.setLevel(level)
             file_handler.setFormatter(formatter)
             self.logger.addHandler(file_handler)

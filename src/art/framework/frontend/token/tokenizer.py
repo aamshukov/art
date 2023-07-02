@@ -102,7 +102,7 @@ class Tokenizer(Entity):
                 break
             codepoint = self._content.data[content_position]
             if Text.hexadecimal_digit(codepoint):
-                result = (result << 4) | Text.ascii_number(codepoint)
+                result = (result << 4) | Text.ascii_digit(codepoint)
                 content_position += 1
             else:
                 self._diagnostics.add(Status(f'Invalid unicode escape sequence (digits) at'
@@ -226,15 +226,15 @@ class Tokenizer(Entity):
                   0x00000036 |  # 6
                   0x00000037):  # 7
                 # may start octal, up to 377, sequence
-                d1 = codepoint = Text.ascii_number(codepoint)
+                d1 = codepoint = Text.ascii_digit(codepoint)
                 d2 = self.peek_at(content_position)
                 if 0x00000030 <= d2 <= 0x00000037:
                     content_position += 1
-                    codepoint = codepoint * 8 + Text.ascii_number(d2)
+                    codepoint = codepoint * 8 + Text.ascii_digit(d2)
                     d3 = self.peek_at(content_position)
                     if d1 <= 3 and (0x00000030 <= d3 <= 0x00000037):
                         content_position += 1
-                        codepoint = codepoint * 8 + Text.ascii_number(d3)
+                        codepoint = codepoint * 8 + Text.ascii_digit(d3)
             case _:
                 self._diagnostics.add(Status(f'Invalid escape literal at '
                                              f'{self.content.get_location(self._content_position)}',

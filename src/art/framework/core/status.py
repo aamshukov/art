@@ -25,10 +25,12 @@ class Status(Base):
     ERROR                   = 0 | ERROR_MASK        # noqa
     FATAL_ERROR             = 0 | FATAL_ERROR_MASK  # noqa
     INVALID_LITERAL         = 128 | ERROR_MASK      # noqa
-    STATUS_DEPRECATED       = 129 | WARNING_MASK    # noqa
-    INVALID_UNICODE_ESCAPE  = 130 | ERROR_MASK      # noqa
-    INVALID_CHARACTER       = 131 | ERROR_MASK      # noqa
-    INVALID_STRING_LITERAL  = 132 | ERROR_MASK      # noqa
+    INVALID_INT_LITERAL     = 129 | ERROR_MASK      # noqa
+    INVALID_REAL_LITERAL    = 130 | ERROR_MASK      # noqa
+    STATUS_DEPRECATED       = 131 | WARNING_MASK    # noqa
+    INVALID_UNICODE_ESCAPE  = 132 | ERROR_MASK      # noqa
+    INVALID_CHARACTER       = 133 | ERROR_MASK      # noqa
+    INVALID_STRING_LITERAL  = 134 | ERROR_MASK      # noqa
 
     def __init__(self,
                  text,  # description

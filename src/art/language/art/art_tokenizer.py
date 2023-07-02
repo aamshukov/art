@@ -19,6 +19,7 @@ class ArtTokenizer(Tokenizer):
                  content,
                  statistics,
                  diagnostics,
+                 indent_size=4,
                  version='1.0'):
         """
         """
@@ -26,7 +27,7 @@ class ArtTokenizer(Tokenizer):
         self._keywords = ArtTokenizer.populate_keywords()
         self._nesting_level = 0  # parentheses (() [] {}) nesting level
         self._beginning_of_line = True
-        self._indent_size = 4  # ??
+        self._indent_size = indent_size
         self._pending_indents = 0  # indents (if > 0) or dedents (if < 0) - from Python source code
         self._indents = deque()  # stack of indent, off-side rule support, Peter Landin
         self._indents.append(0)
@@ -229,6 +230,116 @@ class ArtTokenizer(Tokenizer):
                 self._content_position = content_position  # rollback
                 self._codepoint = codepoint
 
+    @staticmethod
+    def digits_separator(codepoint):
+        """
+        """
+        return codepoint == 0x0000005F  # _
+
+    @staticmethod
+    def fraction_start(codepoint):
+        """
+        """
+        return codepoint == 0x0000002E  # .
+
+    @staticmethod
+    def exponent_start(codepoint):
+        """
+        """
+        return codepoint == 0x00000065 or codepoint == 0x00000045  # e or E
+
+    @staticmethod
+    def exponent_sign(codepoint):
+        """
+        """
+        return codepoint == 0x0000002B or codepoint == 0x0000002D  # + or -
+
+    @staticmethod
+    def number_control_codepoint(codepoint):
+        """
+        """
+        return (ArtTokenizer.digits_separator(codepoint) or
+                ArtTokenizer.fraction_start(codepoint) or
+                ArtTokenizer.exponent_start(codepoint) or
+                ArtTokenizer.exponent_sign(codepoint))
+
+    def get_radix(self):
+        """
+        """
+        octal_prefix = False  # true if 0xxx
+        codepoint = self._codepoint
+        if Text.ascii_zero_digit(codepoint):  # only consider ASCII numbers
+            match self.advance():
+                case (0x00000062 | 0x00000042):  # b or B
+                    radix = 2
+                    digits = Text.ascii_binary_digit
+                    self.advance()
+                case (0x0000006F | 0x0000004F):  # o or O, genuine octal
+                    radix = 8
+                    digits = Text.ascii_octal_digit
+                    self.advance()
+                case (0x00000078 | 0x00000058):  # x or X
+                    radix = 16
+                    digits = Text.ascii_hexadecimal_digit
+                    self.advance()
+                case _:
+                    # no need to advance as 0 already consumed
+                    radix = 8
+                    digits = Text.ascii_decimal_digit  # hopping to see real, if not - rescan as octal
+                    octal_prefix = True
+        else:
+            radix = 10
+            digits = Text.ascii_decimal_digit
+        return codepoint, radix, octal_prefix, digits
+
+    def parse_exponent(self, value):
+        """
+        E+123 e-123
+        """
+        digits = 0
+        exponent_sign = False
+        value.append(self._codepoint)
+        self.advance()  # consume e or E
+        while not Text.eos(self._codepoint):
+            if Text.ascii_decimal_digit(self._codepoint):
+                digits += 1
+                value.append(self._codepoint)
+                self.advance()
+                continue
+            elif ArtTokenizer.exponent_sign(self._codepoint):
+                digits = 0
+                if not exponent_sign:
+                    exponent_sign = True
+                    value.append(self._codepoint)
+                    self.advance()
+                    continue
+            break
+        return digits > 0
+
+    def parse_fraction(self, value):
+        """
+        .123 .123E-307  .3234e+92  .E4  .e+5
+        .1_2_3 .12__3E-307  .3_2_34e+92  1_23E4
+        """
+        separators = 0
+        parse_exponent_result = True
+        value.append(self._codepoint)
+        self.advance()  # consume .
+        while not Text.eos(self._codepoint):
+            if Text.ascii_decimal_digit(self._codepoint):
+                separators = 0
+                value.append(self._codepoint)
+                self.advance()
+                continue
+            elif ArtTokenizer.digits_separator(self._codepoint):
+                separators += 1
+                self.advance()
+                continue
+            elif ArtTokenizer.exponent_start(self._codepoint):
+                parse_exponent_result = self.parse_exponent(value)
+            break
+        return not separators and parse_exponent_result
+
     def scan_number(self):
         """
         Binary:      0b101111100011   0b__101_1_1_1100_011
@@ -238,23 +349,74 @@ class ArtTokenizer(Tokenizer):
         Real:        3.14159265359  3.1415E2    3.1415e2    3_5.1__41_5E2    3.1_41_5e2
                      3.141__26_3_9  3.1415E+2   3.1415e+2   3_6.1__41_5E+2   3.1_41_5e+2
                      3.141_______5  3.1415E-2   3.1415e-2   3_7.1__41_5E-2   3.1_41_5e-2
+                     3234E-3  6e+5   43.
         Digit separator: _
+        Not allowed at the beginning, before fraction, inside fraction ot at the end.
+        Illegals: _10, 10_, 10_.5, 10._5, 10.e_-5, 10.e+5_34
         All numbers are 64 bits.
         """
-        codepoint = self._codepoint
-        if Text.zero_digit(codepoint):
-            codepoint = self.advance()
-            match codepoint:
-                case ('b' | 'B'):
-                    radix = 2
-                case ('o' | 'O'):
-                    radix = 8
-                case ('x' | 'X'):
-                    radix = 16
-                case _:
-                    radix = 8
-        else:
-            radix = 10
+        value = list()
+        codepoint, radix, octal_prefix, digits = self.get_radix()
+        if octal_prefix:
+            value.append(codepoint)  # push first 0
+        real = False  # is real number
+        valid = True  # track erroneous or not state
+        separators = 0
+        if not octal_prefix and ArtTokenizer.number_control_codepoint(self._codepoint):
+            valid = False  # separator(s) and others cannot start number
+        if valid:
+            content_position = self._content_position
+            codepoint = self._codepoint
+            n = 2 if octal_prefix else 1  # if octal (0xxx) and not real - rescan in real octal mode
+            for k in range(n):  # mimic goto
+                if k > 0:
+                    self._content_position = content_position
+                    self._codepoint = codepoint
+                    digits = Text.ascii_octal_digit
+                    value = value[:1]
+                while not Text.eos(self._codepoint):
+                    if digits(self._codepoint):
+                        separators = 0
+                        value.append(self._codepoint)
+                        self.advance()
+                        continue
+                    elif ArtTokenizer.digits_separator(self._codepoint):
+                        separators += 1
+                        self.advance()
+                        continue
+                    elif ArtTokenizer.fraction_start(self._codepoint):
+                        if radix == 10 or octal_prefix:  # only octal or decimal
+                            valid = self.parse_fraction(value)
+                            real = True
+                        else:
+                            valid = False
+                    elif ArtTokenizer.exponent_start(self._codepoint):
+                        if radix == 10 or octal_prefix:  # only octal or decimal
+                            valid = self.parse_exponent(value)
+                            real = True
+                        else:
+                            valid = False
+                    break
+                if real:
+                    break
+        if valid and (separators or not value):
+            valid = False  # separator(s) and others cannot end number also should not be empty
+        if valid:
+            try:
+                value = ''.join(map(str, map(chr, value)))
+                if real:
+                    self._token.value = float(value)   # first to parse
+                    self._token.kind = TokenKind.REAL  # then tag
+                else:
+                    self._token.value = int(value, radix)  # first to parse
+                    self._token.kind = TokenKind.INTEGER   # then tag
+            except ValueError as ex:
+                valid = False
+        if not valid:
+            self._diagnostics.add(Status(f'Invalid numeric literal at '
+                                         f'{self.content.get_location(self._content_position)}',
+                                         'tokenizer',
+                                         Status.INVALID_REAL_LITERAL if real else Status.INVALID_INT_LITERAL))
 
     def scan_string(self, quote):
         """
@@ -313,7 +475,7 @@ class ArtTokenizer(Tokenizer):
         generated FSA (goto transitions) which recognizes keywords without lookup,
         recognizes integers and real (float/double) numbers, comments, etc.
         """
-        if self._beginning_of_line:
+        if self._indent_size and self._beginning_of_line:
             self.process_indentation()
             if (self._token.kind == TokenKind.INDENT or
                     self._token.kind == TokenKind.DEDENT):
@@ -325,7 +487,7 @@ class ArtTokenizer(Tokenizer):
             self.consume_whitespaces()
         elif self.identifier_start(codepoint):
             self.scan_identifier()
-        elif Text.hexadecimal_digit(codepoint):  # covers all digits bin, oct, dec, hex
+        elif Text.ascii_hexadecimal_digit(codepoint):  # covers all ASCII digits bin, oct, dec, hex
             self.scan_number()
         elif Text.left_parenthesis(codepoint):  # '('
             self._nesting_level += 1
@@ -537,3 +699,4 @@ class ArtTokenizer(Tokenizer):
         super().epilog()
         if self._token.kind == TokenKind.IDENTIFIER:  # check if it is keyword
             self._token.kind = self.lookup(self._token.literal)
+

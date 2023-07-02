@@ -27,7 +27,7 @@ class Test(unittest.TestCase):
         assert token2.kind == TokenKind.BOOLEAN
         assert Text.equal(token2.name, TokenKind.BOOLEAN.name)
         st1 = str(token1)
-        assert st1 == "CASE            : '', 0,0, '', Flags.CLEAR|GENUINE, 1.0"
+        assert st1 == "CASE            : '', '0', 0,0, '', Flags.CLEAR|GENUINE, 1.0"
 
 
 if __name__ == '__main__':

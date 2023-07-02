@@ -462,3 +462,117 @@ def guard(subject):
 
 
 
+
+
+
+
+
+
+    def scan_number(self):
+        """
+        Binary:      0b101111100011   0b__101_1_1_1100_011
+        Octal:       0o5743 or 05743  0o_57__4_3 or 0__57_4____3
+        Decimal:     3043             3___0__4_3
+        Hexadecimal: 0xBE3            0xB__E_3
+        Real:        3.14159265359  3.1415E2    3.1415e2    3_5.1__41_5E2    3.1_41_5e2
+                     3.141__26_3_9  3.1415E+2   3.1415e+2   3_6.1__41_5E+2   3.1_41_5e+2
+                     3.141_______5  3.1415E-2   3.1415e-2   3_7.1__41_5E-2   3.1_41_5e-2
+        Digit separator: _
+        Not allowed at the beginning, before fraction, inside fraction ot at the end.
+        Illegals: _10, 10_, 10_.5, 10._5, 10.e_-5, 10.e+5_34
+        All numbers are 64 bits.
+        """
+        value = list()
+        octal_prefix = False  # true if 0xxx
+        codepoint = self._codepoint
+        if Text.ascii_zero_digit(codepoint):  # only consider ASCII numbers
+            match self.advance():
+                case (0x00000062 | 0x00000042):  # b or B
+                    radix = 2
+                    digits = Text.ascii_binary_digit
+                    self.advance()
+                case (0x0000006F | 0x0000004F):  # o or O
+                    radix = 8
+                    digits = Text.ascii_octal_digit
+                    self.advance()
+                case (0x00000078 | 0x00000058):  # x or X
+                    radix = 16
+                    digits = Text.ascii_hexadecimal_digit
+                    self.advance()
+                case _:
+                    # no need to advance as 0 already consumed
+                    radix = 8
+                    digits = Text.ascii_octal_digit
+                    octal_prefix = True
+                    value.append(codepoint)
+        else:
+            radix = 10
+            digits = Text.ascii_decimal_digit
+        valid = True  # track erroneous or not state
+        fraction = False  # everything after . fraction, switching to real
+        exponent = False  # true if consumed exponent e|E
+        exponent_sign = False  # true if consumed exponent sign, + or -
+        if (not octal_prefix and
+                (ArtTokenizer.digits_separator(self._codepoint) or
+                 ArtTokenizer.fraction_start(self._codepoint) or
+                 ArtTokenizer.exponent_start(self._codepoint) or
+                 ArtTokenizer.exponent_sign(self._codepoint))):
+            valid = False  # separator(s), fraction, exponent, exponent sign cannot start number
+        while (valid and
+               not Text.eos(self._codepoint) and
+               (digits(self._codepoint) or
+                ArtTokenizer.digits_separator(self._codepoint) or
+                ArtTokenizer.fraction_start(self._codepoint) or
+                ArtTokenizer.exponent_start(self._codepoint) or
+                ArtTokenizer.exponent_sign(self._codepoint))):
+            if ArtTokenizer.digits_separator(self._codepoint):
+                # if fraction:
+                #     valid = False  # no separators in fraction
+                #     break
+                # else:
+                self.advance()
+                continue
+            if ArtTokenizer.fraction_start(self._codepoint):
+                if ((radix != 10 and  # only decimals
+                     (radix == 8 and not octal_prefix)) or  # or octal as decimal
+                        fraction):  # already parsing fraction
+                    valid = False
+                    break
+                fraction = True
+            elif ArtTokenizer.exponent_start(self._codepoint):
+                if ((radix != 10 and  # only decimals
+                     (radix == 8 and not octal_prefix)) or  # or octal as decimal
+                        exponent):  # already parsing exponent
+                    valid = False
+                    break
+                exponent = True
+            elif ArtTokenizer.exponent_sign(self._codepoint):
+                if ((radix != 10 and  # only decimals
+                     (radix == 8 and not octal_prefix)) or  # or octal as decimal
+                        exponent_sign):  # already seen exponent sign
+                    valid = False
+                    break
+                exponent_sign = True
+            value.append(self._codepoint)
+            self.advance()
+        if valid and (ArtTokenizer.digits_separator(self._codepoint) or
+                      ArtTokenizer.fraction_start(self._codepoint) or
+                      ArtTokenizer.exponent_start(self._codepoint) or
+                      ArtTokenizer.exponent_sign(self._codepoint)):
+            valid = False  # # separator(s), fraction, exponent, exponent sign cannot end number
+        if valid:
+            try:
+                value = ''.join(map(str, map(chr, value)))
+                if fraction:
+                    self._token.kind = TokenKind.REAL
+                    self._token.value = float(value)
+                else:
+                    self._token.kind = TokenKind.INTEGER
+                    self._token.value = int(value, radix)
+            except ValueError as ex:
+                valid = False
+        if not valid:
+            self._diagnostics.add(Status(f'Invalid numeric literal at '
+                                         f'{self.content.get_location(self._content_position)}',
+                                         'tokenizer',
+                                         Status.INVALID_REAL_LITERAL if fraction else Status.INVALID_INT_LITERAL))

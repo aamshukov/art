@@ -689,6 +689,13 @@ class Text(Base):
         return result
 
     @staticmethod
+    def ascii_binary_digit(codepoint):
+        """
+        Only considering ASCII table.
+        """
+        return 0x00000030 <= codepoint <= 0x00000031
+
+    @staticmethod
     def octal_digit(codepoint):
         """
         Only considering ASCII table and 0xFF10 - 0xFF17
@@ -697,6 +704,13 @@ class Text(Base):
         result = ((0x00000030 <= codepoint <= 0x00000037) or
                   (0x0000FF10 <= codepoint <= 0x0000FF17))
         return result
+
+    @staticmethod
+    def ascii_octal_digit(codepoint):
+        """
+        Only considering ASCII table.
+        """
+        return 0x00000030 <= codepoint <= 0x00000037
 
     @staticmethod
     def decimal_digit(codepoint):
@@ -708,6 +722,13 @@ class Text(Base):
             ch = Text.convert_to_character(codepoint)
             result = unicodedata.category(ch) == 'Nd'
         return result
+
+    @staticmethod
+    def ascii_decimal_digit(codepoint):
+        """
+        Only considering ASCII table.
+        """
+        return 0x00000030 <= codepoint <= 0x00000039
 
     @staticmethod
     def hexadecimal_digit(codepoint):
@@ -725,10 +746,24 @@ class Text(Base):
         return result
 
     @staticmethod
+    def ascii_hexadecimal_digit(codepoint):
+        """
+        """
+        return ((0x00000030 <= codepoint <= 0x00000039) or
+                (0x00000041 <= codepoint <= 0x00000046) or
+                (0x00000061 <= codepoint <= 0x00000066))
+
+    @staticmethod
     def zero_digit(codepoint):
         """
         """
         return 0x00000030 == codepoint or codepoint == 0x0000FF10
+
+    @staticmethod
+    def ascii_zero_digit(codepoint):
+        """
+        """
+        return 0x00000030 == codepoint
 
     ASCII_NUMBERS = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 0, 0, 0, 0, 0,
@@ -737,7 +772,7 @@ class Text(Base):
                      0, 0, 0, 0, 0, 0, 0]
 
     @staticmethod
-    def ascii_number(digit):
+    def ascii_digit(digit):
         """
         """
         return Text.ASCII_NUMBERS[digit]
@@ -1122,11 +1157,11 @@ class Text(Base):
                 codepoint == 0x0000FE60)    # '﹠'
 
     @staticmethod
-    def epsilon(codepoint):
+    def epsilon(ch):
         """
         """
-        return (codepoint == 0x000003B5 or  # 'ε'
-                codepoint == 0x0001D6C6)    # '𝛆'
+        return (ch == 'ε' or  # 0x000003B5
+                ch == 'λ')    # 0x000003BB
 
     @staticmethod
     def emoji(codepoint):

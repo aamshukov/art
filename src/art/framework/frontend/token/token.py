@@ -20,13 +20,14 @@ class Token(Value):
         self._offset = 0  # offset in context (absolute address)
         self._length = 0  # length of lexeme
         self._literal = ''  # string or char literal (if unicode - always decoded), numeric value, etc.
+        self._value = 0
         self._source = source  # lexical analyser which recognizes this lexeme, could be from different files
         self._flags = Flags.CLEAR | Flags.GENUINE
 
     def __repr__(self):
         """
         """
-        return f"{self._kind.name.ljust(16)}: '{self._literal}', {self._offset}," \
+        return f"{self._kind.name.ljust(16)}: '{self._literal}', '{self._value}', {self._offset}," \
                f"{self._length}, '{self._source}', {self._flags}, {self.version}"
 
     __str__ = __repr__
@@ -39,6 +40,7 @@ class Token(Value):
                   hash(self._offset) ^
                   hash(self._length) ^
                   hash(self._literal) ^
+                  hash(self._value) ^
                   hash(self._source))
         return result
 
@@ -50,6 +52,7 @@ class Token(Value):
                   self._offset == other.offset and
                   self._length == other.length and
                   Text.equal(self._literal, other.literal) and
+                  self._value == other.value and
                   self._source == other.source)
         return result
 
@@ -61,6 +64,7 @@ class Token(Value):
                   self._offset < other.offset and
                   self._length < other.length and
                   Text.compare(self._literal, other.literal) < 0 and
+                  self._value < other.value and
                   self._source < other.source)
         return result
 
@@ -72,6 +76,7 @@ class Token(Value):
                   self._offset <= other.offset and
                   self._length <= other.length and
                   Text.compare(self._literal, other.literal) <= 0 and
+                  self._value <= other.value and
                   self._source <= other.source)
         return result
 
@@ -130,6 +135,18 @@ class Token(Value):
         self._literal = literal
 
     @property
+    def value(self):
+        """
+        """
+        return self._value
+
+    @value.setter
+    def value(self, value):
+        """
+        """
+        self._value = value
+
+    @property
     def source(self):
         """
         """
@@ -165,6 +182,7 @@ class Token(Value):
         self._offset = token.offset
         self._length = token.length
         self._literal = token.literal
+        self._value = token.value
         self._source = token.source
         self._flags = token.flags
 
@@ -175,5 +193,6 @@ class Token(Value):
         self._offset = 0
         self._length = 0
         self._literal = ''
+        self._value = 0
         self._source = ''
         self._flags = Flags.CLEAR | Flags.GENUINE

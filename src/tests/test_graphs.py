@@ -55,7 +55,7 @@ class Test(unittest.TestCase):
         stack.append(tree)  # push
         while stack:
             node = stack.pop()
-            # result.add_node(node.label)
+            # result.add_node(node.name)
             for kid in node.kids:
                 result.add_edge(node.label, kid.label)
                 stack.append(kid)  # push

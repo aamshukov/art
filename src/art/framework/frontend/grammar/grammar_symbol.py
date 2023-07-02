@@ -2,34 +2,42 @@
 # UI Lab Inc. Arthur Amshukov
 #
 """ Grammar symbol """
+from art.framework.core.entity import Entity
 from art.framework.core.flags import Flags
-from art.framework.core.colors import Colors
 from art.framework.core.text import Text
-from art.framework.core.value import Value
 from art.framework.core.visitable import Visitable
+from art.framework.frontend.grammar.grammar_symbol_associativity import GrammarSymbolAssociativity
+from art.framework.frontend.grammar.grammar_symbol_type import GrammarSymbolType
 
 
-class GrammarSymbol(Value, Visitable):
+class GrammarSymbol(Entity, Visitable):
     """
     """
     def __init__(self,
-                 label='',
+                 id,
+                 name='',
+                 symbol_type=GrammarSymbolType.TERMINAL,
                  flags=Flags.CLEAR,
                  version='1.0'):
         """
         """
-        super().__init__(version)
-        self._label = label
+        super().__init__(id, version)
+        self._name = name  # name (label) of the symbol
+        self._type = symbol_type
+        self._associativity = GrammarSymbolAssociativity.LEFT
+        self._nullable = False  # if A ->* ε
         self._flags = flags
         self._first_set = list()  # first set for k = 1
+        self._follow_set = list()  # first set for k = 1
         self._first_set2 = list()  # first set for k = 2
+        self._follow2_set = list()  # first set for k = 1
         self._la_set = list()  # lookahead set for k = 1
-        self._la_set2 = list()  # lookahead set for k = 2
+        self._la2_set = list()  # lookahead set for k = 2
 
     def __repr__(self):
         """
         """
-        return f"{type(self).__name__}:{self._label}:{self._version}:"
+        return f"{type(self).__name__}:{self._name}:{self._version}:"
 
     __str__ = __repr__
 
@@ -37,41 +45,65 @@ class GrammarSymbol(Value, Visitable):
         """
         """
         result = super().__hash__()
-        result ^= hash(self._label)
+        result ^= hash(self._name)
         return result
 
     def __eq__(self, other):
         """
         """
         result = (super().__eq__(other) and
-                  Text.equal(self._label, other.label))
+                  Text.equal(self._name, other.name))
         return result
 
     def __lt__(self, other):
         """
         """
         result = (super().__lt__(other) and
-                  Text.compare(self._label, other.label) < 0)
+                  Text.compare(self._name, other.name) < 0)
         return result
 
     def __le__(self, other):
         """
         """
         result = (super().__le__(other) and
-                  Text.compare(self._label, other.label) <= 0)
+                  Text.compare(self._name, other.name) <= 0)
         return result
 
     @property
-    def label(self):
+    def name(self):
         """
         """
-        return self._label
+        return self._name
 
-    @label.setter
-    def label(self, label):
+    @property
+    def type(self):
         """
         """
-        self._label = label
+        return self._type
+
+    @property
+    def terminal(self):
+        """
+        """
+        return self._type == GrammarSymbolType.TERMINAL
+
+    @property
+    def associativity(self):
+        """
+        """
+        return self._associativity
+
+    @property
+    def non_terminal(self):
+        """
+        """
+        return self._type == GrammarSymbolType.NON_TERMINAL
+
+    @property
+    def nullable(self):
+        """
+        """
+        return self._nullable
 
     @property
     def flags(self):
@@ -85,6 +117,18 @@ class GrammarSymbol(Value, Visitable):
         """
         self._flags = flags
 
+    @property
+    def la(self):
+        """
+        """
+        return self._la_set
+
+    @property
+    def la2(self):
+        """
+        """
+        return self._la2_set
+
     def validate(self):
         """
         """
@@ -94,3 +138,10 @@ class GrammarSymbol(Value, Visitable):
         """
         """
         pass
+
+    def decorate(self):
+        """
+        """
+        quote = "'" if self.terminal else ""
+        result = f"{quote}{self._name}{quote} ({self._type.name}, {'NULLABLE' if self._nullable else 'NON-NULLABLE'})"
+        return result

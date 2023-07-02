@@ -34,14 +34,17 @@ class Test(unittest.TestCase):
         return lexer
 
     @staticmethod
-    def evaluate(program, tokens):
+    def evaluate(program, tokens, validate=True):
         literals = list()
+        values = list()
         lexer = Test.get_lexer(program)
         for k, token in enumerate(tokens):
             lexer.next_lexeme()
-            assert lexer.token.kind == TokenKind(token)
             literals.append(lexer.token.literal)
-        return literals
+            values.append(lexer.token.value)
+            if validate:
+                assert lexer.token.kind == TokenKind(token)
+        return literals, values
 
     def test_identifier_start_success(self):
         assert ArtTokenizer.identifier_start(ord('a'))
@@ -159,7 +162,7 @@ class Test(unittest.TestCase):
         tokens = [TokenKind.STRING,
                   TokenKind.EOS]
         program = "''"
-        literals = Test.evaluate(program, tokens)
+        literals, _ = Test.evaluate(program, tokens)
         assert len(literals) == len(tokens)
         assert literals[0] == program
 
@@ -167,7 +170,7 @@ class Test(unittest.TestCase):
         tokens = [TokenKind.STRING,
                   TokenKind.EOS]
         program = '""'
-        literals = Test.evaluate(program, tokens)
+        literals, _ = Test.evaluate(program, tokens)
         assert len(literals) == len(tokens)
         assert literals[0] == program
 
@@ -175,7 +178,7 @@ class Test(unittest.TestCase):
         tokens = [TokenKind.STRING,
                   TokenKind.EOS]
         program = '" "'
-        literals = Test.evaluate(program, tokens)
+        literals, _ = Test.evaluate(program, tokens)
         assert len(literals) == len(tokens)
         assert literals[0] == program
 
@@ -183,7 +186,7 @@ class Test(unittest.TestCase):
         tokens = [TokenKind.STRING,
                   TokenKind.EOS]
         program = '" a "'
-        literals = Test.evaluate(program, tokens)
+        literals, _ = Test.evaluate(program, tokens)
         assert len(literals) == len(tokens)
         assert literals[0] == program
 
@@ -191,7 +194,7 @@ class Test(unittest.TestCase):
         tokens = [TokenKind.STRING,
                   TokenKind.EOS]
         program = r'"\"prefix \" 😁🐍 ⏩⏰⌚⏳☔♈ \uD83D\uDC0D ♿ \U0001F40Dသန彡xyz你叫什么名字Я ⚓⚡⚪⚽⛄⛎⛔⛪⛲⛵⛺⛽✅✊✨❌❎❓❗➕➰➿⬛⭐⭕🀄🃏🆎🆑🈁🈚🈯🈲🈸🉐🌀\""'  # noqa
-        literals = Test.evaluate(program, tokens)
+        literals, _ = Test.evaluate(program, tokens)
         assert len(literals) == len(tokens)
         assert literals[0] == program
 
@@ -199,7 +202,7 @@ class Test(unittest.TestCase):
         tokens = [TokenKind.STRING,
                   TokenKind.EOS]
         program = r"'\'prefix \' 😁🐍 ⏩⏰⌚⏳☔♈ \uD83D\uDC0D ♿ \U0001F40Dသန彡xyz你叫什么名字Я ⚓⚡⚪⚽⛄⛎⛔⛪⛲⛵⛺⛽✅✊✨❌❎❓❗➕➰➿⬛⭐⭕🀄🃏🆎🆑🈁🈚🈯🈲🈸🉐🌀\''"  # noqa
-        literals = Test.evaluate(program, tokens)
+        literals, _ = Test.evaluate(program, tokens)
         assert len(literals) == len(tokens)
         assert literals[0] == program
 
@@ -207,7 +210,7 @@ class Test(unittest.TestCase):
         tokens = [TokenKind.UNKNOWN,
                   TokenKind.EOS]
         program = r'"abc'
-        literals = Test.evaluate(program, tokens)
+        literals, _ = Test.evaluate(program, tokens)
         assert len(literals) == len(tokens)
         assert literals[0] == program
 
@@ -218,7 +221,7 @@ class Test(unittest.TestCase):
                   TokenKind.EOS]
         program = """'a
         """
-        literals = Test.evaluate(program, tokens)
+        literals, _ = Test.evaluate(program, tokens)
         assert len(literals) == len(tokens)
         assert literals[0] == "'a"
 
@@ -226,14 +229,14 @@ class Test(unittest.TestCase):
         tokens = [TokenKind.SINGLE_LINE_COMMENT,
                   TokenKind.EOS]
         program = '# 123'
-        literals = Test.evaluate(program, tokens)
+        literals, _ = Test.evaluate(program, tokens)
         assert len(literals) == len(tokens)
         assert literals[0] == program
         tokens = [TokenKind.WS,
                   TokenKind.SINGLE_LINE_COMMENT,
                   TokenKind.EOS]
         program = '   # 123'
-        literals = Test.evaluate(program, tokens)
+        literals, _ = Test.evaluate(program, tokens)
         assert len(literals) == len(tokens)
         assert literals[0] == '   '
         assert literals[1] == '# 123'
@@ -242,14 +245,14 @@ class Test(unittest.TestCase):
         tokens = [TokenKind.SINGLE_LINE_COMMENT,
                   TokenKind.EOS]
         program = '// 123'
-        literals = Test.evaluate(program, tokens)
+        literals, _ = Test.evaluate(program, tokens)
         assert len(literals) == len(tokens)
         assert literals[0] == program
         tokens = [TokenKind.WS,
                   TokenKind.SINGLE_LINE_COMMENT,
                   TokenKind.EOS]
         program = '   // 123'
-        literals = Test.evaluate(program, tokens)
+        literals, _ = Test.evaluate(program, tokens)
         assert len(literals) == len(tokens)
         assert literals[0] == '   '
         assert literals[1] == '// 123'
@@ -258,19 +261,19 @@ class Test(unittest.TestCase):
         tokens = [TokenKind.MULTI_LINE_COMMENT,
                   TokenKind.EOS]
         program = '/**/'
-        literals = Test.evaluate(program, tokens)
+        literals, _ = Test.evaluate(program, tokens)
         assert len(literals) == len(tokens)
         assert literals[0] == program
         tokens = [TokenKind.MULTI_LINE_COMMENT,
                   TokenKind.EOS]
         program = '/* */'
-        literals = Test.evaluate(program, tokens)
+        literals, _ = Test.evaluate(program, tokens)
         assert len(literals) == len(tokens)
         assert literals[0] == program
         tokens = [TokenKind.MULTI_LINE_COMMENT,
                   TokenKind.EOS]
         program = '/* 123 */'
-        literals = Test.evaluate(program, tokens)
+        literals, _ = Test.evaluate(program, tokens)
         assert len(literals) == len(tokens)
         assert literals[0] == program
         tokens = [TokenKind.MULTI_LINE_COMMENT,
@@ -278,7 +281,7 @@ class Test(unittest.TestCase):
                   TokenKind.MULTI_LINE_COMMENT,
                   TokenKind.EOS]
         program = '/* /**/ /* /* /* */ */ */ */ /* */'
-        literals = Test.evaluate(program, tokens)
+        literals, _ = Test.evaluate(program, tokens)
         assert len(literals) == len(tokens)
         assert literals[0] == '/* /**/ /* /* /* */ */ */ */'
         assert literals[1] == ' '
@@ -286,21 +289,80 @@ class Test(unittest.TestCase):
         tokens = [TokenKind.UNKNOWN,
                   TokenKind.EOS]
         program = '/**'
-        literals = Test.evaluate(program, tokens)
+        literals, _ = Test.evaluate(program, tokens)
         assert len(literals) == len(tokens)
         assert literals[0] == program
         tokens = [TokenKind.UNKNOWN,
                   TokenKind.EOS]
         program = '/*'
-        literals = Test.evaluate(program, tokens)
+        literals, _ = Test.evaluate(program, tokens)
         assert len(literals) == len(tokens)
         assert literals[0] == program
         tokens = [TokenKind.UNKNOWN,
                   TokenKind.EOS]
         program = '/* /*/ /* /* /* */ */ */ */ /* */'
-        literals = Test.evaluate(program, tokens)
+        literals, _ = Test.evaluate(program, tokens)
         assert len(literals) == len(tokens)
         assert literals[0] == program
+
+    def test_integers_success(self):
+        tokens = [TokenKind.INTEGER,
+                  TokenKind.EOS]
+        numbers =\
+            [
+               '077', '77',
+               '0', '0_1', '0__1', '1', '0b1', '0x1', '0xa', '0__1__3__56',
+               '0b101111100011', '0b1_01_1_1_1100_011',
+               '0o5743', '05743', '00005743', '0o57__4_3', '05_7_4____3',
+               '3044563', '3___0__4_3', '12_345_6789',
+               '0xBE3', '0x1F34EAFB', '0xB_____E3', '0x1_F_34E__A_F_B'
+            ]
+        for number in numbers:
+            literals, values = Test.evaluate(number, tokens)
+            assert len(literals) == len(tokens)
+            assert len(values) == len(tokens)
+            assert literals[0] == number
+
+    def test_invalid_integers_success(self):
+        tokens = [TokenKind.UNKNOWN,
+                  TokenKind.EOS]
+        numbers = ['0xG000L', '0E0', '079', '123___',
+                   '0b', '0b1.0', '0_b__101_1_1_1100_011', '0b__101_1_1_1100_011', '0b101_1_1_1100_011__',
+                   '0oo5743', '05o743', '0o_57__4_3', '0__57_4____3',
+                   '0xBkE3', '0x1_F_34E__A_F_B',
+                   '089'
+                   ]
+        for number in numbers:
+            literals, _ = Test.evaluate(number, tokens, validate=False)
+            pass
+
+    def test_reals_success(self):
+        tokens = [TokenKind.REAL,
+                  TokenKind.EOS]
+        numbers = ['0.', '0.0', '0.1', '00.1', '1.00',
+                   '0.e+2', '3234E-3', '6e+5', '43.', '3.14159359', '3.1415E2', '3.1415e2',
+                   '3_5.1__41_5E2', '03.1_41_5e2',
+                   '3.141__26_3_9', '3.1415E+2', '3.1415e+2', '3_6.1__41_5E+2', '0.31_41_5e+2',
+                   '3.141_______5', '3.1415E-2', '3.1415e-2', '3_7.1__41_5E-2', '12.31_41_5e-2',
+                   '0E+0', '0E-0'
+                   ]
+        for number in numbers:
+            literals, values = Test.evaluate(number, tokens)
+            assert len(literals) == len(tokens)
+            assert len(values) == len(tokens)
+            assert literals[0] == number
+
+    def test_invalid_reals_success(self):
+        tokens = [TokenKind.UNKNOWN, TokenKind.UNKNOWN,
+                  TokenKind.EOS]
+        numbers = ['1+3', '0b0.e+2', '0.0.1',
+                   '.0', '0.', '.1', '1.', '0.0.1', '1.00', '0b0.e+2',
+                   '3.14159359', '3.1415E2', '3.1415e2', '3_5.1__41_5E2', '0.3.1_41_5e2',
+                   '3.141__26_3_9', '3.1415E+2', '3.1415e+2', '3_6.1__41_5E+2', '0.3.1_41_5e+2',
+                   '3.141_______5', '3.1415E-2', '3.1415e-2', '3_7.1__41_5E-2', '12.3.1_41_5e-2']
+        for number in numbers:
+            literals, _ = Test.evaluate(number, tokens, validate=False)
+            pass
 
 
 if __name__ == '__main__':
