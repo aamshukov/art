@@ -348,8 +348,8 @@ class Test(unittest.TestCase):
         assert Text.ampersand(ord('﹠'))
 
     def test_epsilon_success(self):
-        assert Text.epsilon(ord('ε'))
-        assert Text.epsilon(ord('𝛆'))
+        assert Text.epsilon('ε')
+        assert Text.epsilon('λ')
 
     def test_emoji_success(self):
         assert Text.emoji(ord('⌛'))

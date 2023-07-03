@@ -6,6 +6,7 @@
 import os
 import logging
 from art.framework.core.base import Base
+from art.framework.core.custom_stream_handler import CustomStreamHandler
 
 
 class Logger(Base):
@@ -20,14 +21,16 @@ class Logger(Base):
         self.logger = logging.getLogger(Logger.LOGGER_NAME)
         self.logger.setLevel(level)
         formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-        console_handler = logging.StreamHandler()
+        console_handler = CustomStreamHandler()
         console_handler.setLevel(level)
         console_handler.setFormatter(formatter)
         self.logger.addHandler(console_handler)
         if path:
             if not os.path.exists(path):
                 os.makedirs(path)
-            file_handler = logging.FileHandler(os.path.join(path, f'{Logger.LOGGER_NAME}.log'), mode=mode)
+            file_handler = logging.FileHandler(os.path.join(path, f'{Logger.LOGGER_NAME}.log'),
+                                               mode=mode,
+                                               encoding='utf-8')
             file_handler.setLevel(level)
             file_handler.setFormatter(formatter)
             self.logger.addHandler(file_handler)

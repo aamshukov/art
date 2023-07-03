@@ -5,12 +5,11 @@
 from art.framework.core.entity import Entity
 from art.framework.core.flags import Flags
 from art.framework.core.text import Text
-from art.framework.core.visitable import Visitable
 from art.framework.frontend.grammar.grammar_symbol_associativity import GrammarSymbolAssociativity
 from art.framework.frontend.grammar.grammar_symbol_type import GrammarSymbolType
 
 
-class GrammarSymbol(Entity, Visitable):
+class GrammarSymbol(Entity):
     """
     """
     def __init__(self,
@@ -25,7 +24,7 @@ class GrammarSymbol(Entity, Visitable):
         self._name = name  # name (label) of the symbol
         self._type = symbol_type
         self._associativity = GrammarSymbolAssociativity.LEFT
-        self._nullable = False  # if A ->* ε
+        self._nullable = False  # if A ->* ε or TERMINAL
         self._flags = flags
         self._first_set = list()  # first set for k = 1
         self._follow_set = list()  # first set for k = 1
@@ -88,16 +87,22 @@ class GrammarSymbol(Entity, Visitable):
         return self._type == GrammarSymbolType.TERMINAL
 
     @property
-    def associativity(self):
-        """
-        """
-        return self._associativity
-
-    @property
     def non_terminal(self):
         """
         """
         return self._type == GrammarSymbolType.NON_TERMINAL
+
+    @property
+    def epsilon(self):
+        """
+        """
+        return self._type == GrammarSymbolType.EPSILON
+
+    @property
+    def associativity(self):
+        """
+        """
+        return self._associativity
 
     @property
     def nullable(self):
@@ -133,11 +138,6 @@ class GrammarSymbol(Entity, Visitable):
         """
         """
         return True
-
-    def accept(self, visitor, *args, **kwargs):
-        """
-        """
-        pass
 
     def decorate(self):
         """

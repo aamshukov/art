@@ -25,3 +25,14 @@ class GrammarAlgorithms(Base):
         """
         """
         return [symbol for symbol in grammar.pool.values() if symbol.terminal]
+
+    @staticmethod
+    def collect_nullable(grammar):
+        """
+        """
+        return [symbol for symbol in grammar.pool.values() if symbol.nullable]
+
+    @staticmethod
+    def build_nullability_set(grammar):
+        """
+        """

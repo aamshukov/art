@@ -10,3 +10,4 @@ class GrammarSymbolType(IntEnum):
     """
     TERMINAL = auto()
     NON_TERMINAL = auto()
+    EPSILON = auto()

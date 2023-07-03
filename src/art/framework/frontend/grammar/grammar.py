@@ -6,6 +6,7 @@ import os
 from functools import lru_cache
 from art.framework.core.base import Base
 from art.framework.core.diagnostics import Diagnostics
+from art.framework.core.text import Text
 from art.framework.frontend.content.content import Content
 from art.framework.frontend.data_provider.string_data_provider import StringDataProvider
 from art.framework.frontend.grammar.grammar_rule import GrammarRule
@@ -21,10 +22,11 @@ class Grammar(Base):
     """
     Context Free Grammar
     """
-    def __init__(self, name=''):
+    def __init__(self, name='', logger=None):
         """
         """
         self._name = name
+        self._logger = logger
         self._rules = list()
         self._pool = dict()  # name:symbol mapping
 
@@ -114,8 +116,14 @@ class Grammar(Base):
     def get_symbol_type(name):
         """
         """
-        return (GrammarSymbolType.TERMINAL if name.strip().startswith("'")
-                else GrammarSymbolType.NON_TERMINAL)
+        name = name.strip()
+        if name.startswith("'"):
+            result = GrammarSymbolType.TERMINAL
+        elif Text.epsilon(name):
+            result = GrammarSymbolType.EPSILON
+        else:
+            result = GrammarSymbolType.NON_TERMINAL
+        return result
 
     def get_symbol(self, name):
         """

@@ -4,7 +4,6 @@
 #
 import os
 import unittest
-
 from art.framework.core.logger import Logger
 from art.framework.frontend.grammar.grammar import Grammar
 from art.framework.frontend.grammar.grammar_algorithms import GrammarAlgorithms
@@ -39,14 +38,19 @@ class Test(unittest.TestCase):
                                | fully_qualified_identifier type_arguments_opt  # geo.point<T>, point<real>
                                | '(' expression ')'
                                ;
+                               
+            type_arguments_opt  : type_arguments
+                                | ε
+                                | λ
+                                ;                               
 
         """
         logger = Logger(path=r'd:\tmp\art', mode='w')
-        grammar = Grammar()
+        grammar = Grammar(logger=logger)
         grammar.load(schema)
         decorated_grammar = grammar.decorate()
         logger.info(decorated_grammar)
-        assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 7
+        assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 8
         assert len(GrammarAlgorithms.collect_terminals(grammar)) == 10
 
 

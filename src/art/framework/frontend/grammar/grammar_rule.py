@@ -4,10 +4,9 @@
 """ Grammar rule """
 from art.framework.core.entity import Entity
 from art.framework.core.text import Text
-from art.framework.core.visitable import Visitable
 
 
-class GrammarRule(Entity, Visitable):
+class GrammarRule(Entity):
     """
     Context Free Grammar rule:
         LHS -> RHS
@@ -98,11 +97,6 @@ class GrammarRule(Entity, Visitable):
         """
         """
         return True
-
-    def accept(self, visitor, *args, **kwargs):
-        """
-        """
-        pass
 
     def decorate(self):
         """

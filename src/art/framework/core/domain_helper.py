@@ -12,6 +12,11 @@ from art.framework.core.base import Base
 class DomainHelper(Base):
     """
     """
+    def __init__(self):
+        """
+        """
+        super().__init__()
+
     @staticmethod
     def collect_slots(obj):
         """
