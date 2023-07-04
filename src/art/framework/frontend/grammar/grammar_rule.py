@@ -65,6 +65,12 @@ class GrammarRule(Entity):
         """
         return self._name
 
+    @name.setter
+    def name(self, name):
+        """
+        """
+        self._name = name
+
     @property
     def lhs(self):
         """
@@ -91,7 +97,7 @@ class GrammarRule(Entity):
         return (self._lhs and
                 self._lhs.non_terminal and
                 self._rhs and
-                Text.epsilon(self._rhs[0]))
+                self._rhs[0].epsilon)
 
     def validate(self):
         """

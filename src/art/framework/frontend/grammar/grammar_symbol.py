@@ -45,27 +45,31 @@ class GrammarSymbol(Entity):
         """
         result = super().__hash__()
         result ^= hash(self._name)
+        result ^= hash(self._type)
         return result
 
     def __eq__(self, other):
         """
         """
         result = (super().__eq__(other) and
-                  Text.equal(self._name, other.name))
+                  Text.equal(self._name, other.name) and
+                  self._type == other.type)
         return result
 
     def __lt__(self, other):
         """
         """
         result = (super().__lt__(other) and
-                  Text.compare(self._name, other.name) < 0)
+                  Text.compare(self._name, other.name) < 0 and
+                  self._type < other.type)
         return result
 
     def __le__(self, other):
         """
         """
         result = (super().__le__(other) and
-                  Text.compare(self._name, other.name) <= 0)
+                  Text.compare(self._name, other.name) <= 0 and
+                  self._type <= other.type)
         return result
 
     @property
@@ -109,6 +113,12 @@ class GrammarSymbol(Entity):
         """
         """
         return self._nullable
+
+    @nullable.setter
+    def nullable(self, nullable):
+        """
+        """
+        self._nullable = nullable
 
     @property
     def flags(self):

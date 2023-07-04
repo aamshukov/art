@@ -144,6 +144,8 @@ class Grammar(Base):
         rule.lhs = self.get_symbol(lhs_name)
         for rhs_name in rhs_names:
             rule.rhs.append(self.get_symbol(rhs_name))
+        rhs = [s.name for s in rule.rhs]
+        rule.name = f"{rule.lhs.name}  ->  {'  '.join(rhs)}"
         self._rules.append(rule)
 
     def decorate(self):
