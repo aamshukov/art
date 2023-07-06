@@ -29,6 +29,8 @@ class Grammar(Base):
         self._logger = logger
         self._rules = list()
         self._pool = dict()  # name:symbol mapping
+        self._pool['ε'] = GrammarSymbol(0, 'ε', GrammarSymbolType.EPSILON)
+        self._pool['λ'] = self._pool['ε']
 
     @property
     def name(self):
@@ -36,6 +38,7 @@ class Grammar(Base):
         """
         return self._name
 
+    @property
     @lru_cache
     def start(self):
         """
@@ -56,18 +59,23 @@ class Grammar(Base):
         """
         return self._pool
 
-    @staticmethod
-    def load_file(filepath):
+    @property
+    def epsilon(self):
+        """
+        """
+        return self._pool['ε']
+
+    def load_file(self, filepath):
         """
         """
         with open(os.path.abspath(filepath), 'r') as stream:
-            text = stream.read()
-            return Grammar.load(text)
+            content = stream.read()
+            return self.load(content)
 
-    def load(self, text):
+    def load(self, content):
         """
         """
-        dp = StringDataProvider(text)
+        dp = StringDataProvider(content)
         data = dp.load()
         content = Content(0, data, 'grammar-lexer')
         content.build_line_map()
@@ -142,6 +150,7 @@ class Grammar(Base):
        """
         rule = GrammarRule(len(self._rules) + 1, '')
         rule.lhs = self.get_symbol(lhs_name)
+        rule.lhs.rules.append(rule)
         for rhs_name in rhs_names:
             rule.rhs.append(self.get_symbol(rhs_name))
         rhs = [s.name for s in rule.rhs]

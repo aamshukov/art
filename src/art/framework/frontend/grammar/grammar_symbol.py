@@ -23,15 +23,13 @@ class GrammarSymbol(Entity):
         super().__init__(id, version)
         self._name = name  # name (label) of the symbol
         self._type = symbol_type
+        self._rules = list()  # rules this symbol belongs too, only fot non-terminals
         self._associativity = GrammarSymbolAssociativity.LEFT
         self._nullable = False  # if A ->* ε or TERMINAL
         self._flags = flags
-        self._first_set = list()  # first set for k = 1
-        self._follow_set = list()  # first set for k = 1
-        self._first_set2 = list()  # first set for k = 2
-        self._follow2_set = list()  # first set for k = 1
-        self._la_set = list()  # lookahead set for k = 1
-        self._la2_set = list()  # lookahead set for k = 2
+        self._first = list()  # first set
+        self._follow = list()  # follow set
+        self._la = list()  # lookahead set
 
     def __repr__(self):
         """
@@ -97,6 +95,12 @@ class GrammarSymbol(Entity):
         return self._type == GrammarSymbolType.NON_TERMINAL
 
     @property
+    def rules(self):
+        """
+        """
+        return self._rules
+
+    @property
     def epsilon(self):
         """
         """
@@ -133,16 +137,22 @@ class GrammarSymbol(Entity):
         self._flags = flags
 
     @property
+    def first(self):
+        """
+        """
+        return self._first
+
+    @property
+    def follow(self):
+        """
+        """
+        return self._follow
+
+    @property
     def la(self):
         """
         """
-        return self._la_set
-
-    @property
-    def la2(self):
-        """
-        """
-        return self._la2_set
+        return self._la
 
     def validate(self):
         """
