@@ -576,3 +576,11 @@ def guard(subject):
                                          f'{self.content.get_location(self._content_position)}',
                                          'tokenizer',
                                          Status.INVALID_REAL_LITERAL if fraction else Status.INVALID_INT_LITERAL))
+
+
+
+            assert (indent % self._indent_size == 0,
+                    f"Invalid indent, must be multiple of {self._indent_size}.")
+
+
+

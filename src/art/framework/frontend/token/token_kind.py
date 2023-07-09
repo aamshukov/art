@@ -19,6 +19,7 @@ class TokenKind(IntEnum):
 
     INDENT = auto()  # literal = '    '
     DEDENT = auto()  # literal = '    '
+    CORRUPTED_DEDENT = auto()  # corrupted sequence of indents/dedents
 
     IDENTIFIER = auto()
 

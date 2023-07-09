@@ -28,6 +28,7 @@ class ArtTokenizer(Tokenizer):
         self._nesting_level = 0  # parentheses (() [] {}) nesting level
         self._beginning_of_line = True
         self._indent_size = indent_size
+        self._indents_level = 0  # level of nested indents/dedents
         self._pending_indents = 0  # indents (if > 0) or dedents (if < 0) - from Python source code
         self._indents = deque()  # stack of indent, off-side rule support, Peter Landin
         self._indents.append(0)
@@ -205,20 +206,23 @@ class ArtTokenizer(Tokenizer):
                    self._codepoint == 0x00000020):  # ' ':
                 self.advance()
                 indent += 1
-            ignore = ((indent == 0 and Text.eol(self._codepoint)) or  # blank line
+            ignore = ((indent >= 0 and Text.eol(self._codepoint)) or  # blank line, either '\n' or '   \n'
                       self.comment_start())  # comment
-            # assert (indent % self._indent_size == 0,
-            #         f"Invalid indent, must be multiple of {self._indent_size}.")
             if not ignore and self._nesting_level == 0:
-                if indent == self._indents[0]:
+                if indent == self._indents[self._indents_level]:
                     pass
-                elif indent > self._indents[0]:
+                elif indent > self._indents[self._indents_level]:
+                    self._indents_level += 1
                     self._pending_indents += 1
                     self._indents.append(indent)
-                else:  # indent == self._indents[0]
-                    while self._indents and indent < self._indents[0]:
+                else:  # indent == self._indents[self._indents_level]
+                    while (self._indents_level > 0 and
+                           indent < self._indents[self._indents_level]):
+                        self._indents_level -= 1
                         self._pending_indents -= 1
-                        self._indents.popleft()
+                        self._indents.pop()
+                    if indent != self._indents[self._indents_level]:
+                        self._token.kind = TokenKind.CORRUPTED_DEDENT
             if self._pending_indents != 0:
                 if self._pending_indents > 0:
                     self._pending_indents -= 1
@@ -229,6 +233,8 @@ class ArtTokenizer(Tokenizer):
             else:
                 self._content_position = content_position  # rollback
                 self._codepoint = codepoint
+        return (self._token.kind == TokenKind.INDENT or
+                self._token.kind == TokenKind.DEDENT)
 
     @staticmethod
     def digits_separator(codepoint):
@@ -476,9 +482,7 @@ class ArtTokenizer(Tokenizer):
         recognizes integers and real (float/double) numbers, comments, etc.
         """
         if self._indent_size and self._beginning_of_line:
-            self.process_indentation()
-            if (self._token.kind == TokenKind.INDENT or
-                    self._token.kind == TokenKind.DEDENT):
+            if self.process_indentation():
                 return
         codepoint = self._codepoint
         if codepoint == Text.eos_codepoint():

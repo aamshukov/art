@@ -120,43 +120,144 @@ class Test(unittest.TestCase):
         Test.evaluate('  A   冬   integer ⌛ သည်  B  C 🐍 သည်   ', tokens)
 
     def test_lexical_analyzer_indentation_1_success(self):
-        tokens = [TokenKind.IDENTIFIER,
-                  TokenKind.WS,
+        tokens = [TokenKind.EOL,
                   TokenKind.IDENTIFIER,
                   TokenKind.WS,
                   TokenKind.IDENTIFIER,
-                  TokenKind.WS,
-                  TokenKind.INTEGER,
-                  TokenKind.WS,
+                  TokenKind.LEFT_PARENTHESIS,
+                  TokenKind.RIGHT_PARENTHESIS,
+                  TokenKind.EOL,
+                  TokenKind.INDENT,
                   TokenKind.IDENTIFIER,
-                  TokenKind.WS,
+                  TokenKind.EOL,
+                  TokenKind.EOL,
+                  TokenKind.EOL,
+                  TokenKind.INDENT,
+                  TokenKind.INDENT,
                   TokenKind.IDENTIFIER,
-                  TokenKind.WS,
+                  TokenKind.EOL,
+                  TokenKind.INDENT,
+                  TokenKind.EOL,
+                  TokenKind.INDENT,
+                  TokenKind.INDENT,
                   TokenKind.IDENTIFIER,
+                  TokenKind.EOL,
+                  TokenKind.INDENT,
                   TokenKind.WS,
+                  TokenKind.LEFT_PARENTHESIS,
+                  TokenKind.RIGHT_PARENTHESIS,
+                  TokenKind.EOL,
+                  TokenKind.INDENT,
                   TokenKind.IDENTIFIER,
+                  TokenKind.EOL,
+                  TokenKind.EOL,
+                  TokenKind.EOL,
+                  TokenKind.INDENT,
+                  TokenKind.INDENT,
+                  TokenKind.IDENTIFIER,
+                  TokenKind.EOL,
+                  TokenKind.INDENT,
+                  TokenKind.EOL,
+                  TokenKind.INDENT,
+                  TokenKind.INDENT,
+                  TokenKind.IDENTIFIER,
+                  TokenKind.EOL,
+                  TokenKind.INDENT,
+                  TokenKind.EOL,
+                  TokenKind.LEFT_PARENTHESIS,
+                  TokenKind.RIGHT_PARENTHESIS,
+                  TokenKind.EOL,
+                  TokenKind.INDENT,
+                  TokenKind.IDENTIFIER,
+                  TokenKind.EOL,
+                  TokenKind.EOL,
+                  TokenKind.EOL,
+                  TokenKind.INDENT,
+                  TokenKind.INDENT,
+                  TokenKind.IDENTIFIER,
+                  TokenKind.EOL,
+                  TokenKind.INDENT,
+                  TokenKind.EOL,
+                  TokenKind.INDENT,
+                  TokenKind.INDENT,
+                  TokenKind.IDENTIFIER,
+                  TokenKind.EOL,
+                  TokenKind.INDENT,
+                  TokenKind.EOL,
+                  TokenKind.LEFT_PARENTHESIS,
+                  TokenKind.RIGHT_PARENTHESIS,
+                  TokenKind.EOL,
+                  TokenKind.INDENT,
+                  TokenKind.IDENTIFIER,
+                  TokenKind.EOL,
+                  TokenKind.EOL,
+                  TokenKind.EOL,
+                  TokenKind.INDENT,
+                  TokenKind.INDENT,
+                  TokenKind.IDENTIFIER,
+                  TokenKind.EOL,
+                  TokenKind.INDENT,
+                  TokenKind.EOL,
+                  TokenKind.INDENT,
+                  TokenKind.INDENT,
+                  TokenKind.IDENTIFIER,
+                  TokenKind.EOL,
+                  TokenKind.INDENT,
+                  TokenKind.EOL,
+                  TokenKind.LEFT_PARENTHESIS,
+                  TokenKind.RIGHT_PARENTHESIS,
+                  TokenKind.EOL,
+                  TokenKind.INDENT,
+                  TokenKind.IDENTIFIER,
+                  TokenKind.EOL,
+                  TokenKind.EOL,
+                  TokenKind.EOL,
+                  TokenKind.INDENT,
+                  TokenKind.INDENT,
+                  TokenKind.IDENTIFIER,
+                  TokenKind.EOL,
+                  TokenKind.INDENT,
+                  TokenKind.EOL,
+                  TokenKind.INDENT,
+                  TokenKind.INDENT,
+                  TokenKind.IDENTIFIER,
+                  TokenKind.EOL,
+                  TokenKind.INDENT,
+                  TokenKind.EOL,
+                  TokenKind.INDENT,
+                  TokenKind.INDENT,
+                  TokenKind.IDENTIFIER,
+                  TokenKind.EOL,
+                  TokenKind.INDENT,
                   TokenKind.WS,
-                  TokenKind.IDENTIFIER,
-                  TokenKind.WS,
-                  TokenKind.IDENTIFIER,
                   TokenKind.WS,
                   TokenKind.EOS]
         program = """
         def foo()
 
             a1
-
-
-                 a2
-                     a3
-                         a4
-                         a5
-                 a6
-                 a7
         
-            a8
+                                        
+                a2
+                    a3
+                        a4
+                        a5      # comments
+            a6
+                      a7
+                            a8
+                                a9
+                                    a10
+                                    a11
+                                    a12
+                            a13              
+                        a14
+                    a15              
+            a16
+        
+            a17
+        end
         """
-        # Test.evaluate(program, tokens)
+        Test.evaluate(program, tokens, validate=False)
 
     def test_string_single_quote_empty_success(self):
         tokens = [TokenKind.STRING,
