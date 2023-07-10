@@ -2,16 +2,14 @@
 # -*- encoding: utf-8 -*-
 # UI Lab Inc. Arthur Amshukov
 #
-""" Visitor design pattern """
-from abc import abstractmethod
+""" Parse tree mixin """
 from art.framework.core.base import Base
 
 
-class Visitor(Base):
+class ParseTreeMixin(Base):
     """
     """
-    @abstractmethod
-    def visit(self, visitable, *args, **kwargs):
+    def __init__(self):
         """
         """
         super().__init__()

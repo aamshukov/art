@@ -9,4 +9,7 @@ from abc import ABCMeta
 class Base(metaclass=ABCMeta):
     """
     """
-    pass
+    def __init__(self):
+        """
+        """
+        pass

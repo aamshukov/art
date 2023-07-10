@@ -1,12 +1,10 @@
 # -*- encoding: utf-8 -*-
 # UI Lab Inc. Arthur Amshukov
 #
-""" Art Tokenizer """
-from collections import defaultdict, deque
-from art.framework.core.flags import Flags
+""" Art tokenizer """
+from collections import deque
 from art.framework.core.status import Status
 from art.framework.core.text import Text
-from art.framework.frontend.token.token import Token
 from art.framework.frontend.token.token_kind import TokenKind
 from art.framework.frontend.token.tokenizer import Tokenizer
 
@@ -30,7 +28,7 @@ class ArtTokenizer(Tokenizer):
         self._indent_size = indent_size
         self._indents_level = 0  # level of nested indents/dedents
         self._pending_indents = 0  # indents (if > 0) or dedents (if < 0) - from Python source code
-        self._indents = deque()  # stack of indent, off-side rule support, Peter Landin
+        self._indents = deque()  # stack of indents, off-side rule support, Peter Landin
         self._indents.append(0)
 
     @staticmethod
@@ -199,40 +197,41 @@ class ArtTokenizer(Tokenizer):
         """
         content_position = self._content_position
         codepoint = self._codepoint
-        self._beginning_of_line = False
-        if self._content_position < self._end_content:
-            indent = 0
-            while (self._content_position < self._end_content and
-                   self._codepoint == 0x00000020):  # ' ':
-                self.advance()
-                indent += 1
-            ignore = ((indent >= 0 and Text.eol(self._codepoint)) or  # blank line, either '\n' or '   \n'
-                      self.comment_start())  # comment
-            if not ignore and self._nesting_level == 0:
-                if indent == self._indents[self._indents_level]:
-                    pass
-                elif indent > self._indents[self._indents_level]:
-                    self._indents_level += 1
-                    self._pending_indents += 1
-                    self._indents.append(indent)
-                else:  # indent == self._indents[self._indents_level]
-                    while (self._indents_level > 0 and
-                           indent < self._indents[self._indents_level]):
-                        self._indents_level -= 1
-                        self._pending_indents -= 1
-                        self._indents.pop()
-                    if indent != self._indents[self._indents_level]:
-                        self._token.kind = TokenKind.CORRUPTED_DEDENT
-            if self._pending_indents != 0:
-                if self._pending_indents > 0:
-                    self._pending_indents -= 1
-                    self._token.kind = TokenKind.INDENT
-                else:
-                    self._pending_indents += 1
-                    self._token.kind = TokenKind.DEDENT
+        if self._beginning_of_line:
+            self._beginning_of_line = False
+            if self._content_position < self._end_content:
+                indent = 0
+                while (self._content_position < self._end_content and
+                       self._codepoint == 0x00000020):  # ' ':
+                    self.advance()
+                    indent += 1
+                ignore = ((indent >= 0 and Text.eol(self._codepoint)) or  # blank line, either '\n' or '   \n'
+                          self.comment_start())  # comment
+                if not ignore and self._nesting_level == 0:
+                    if indent == self._indents[self._indents_level]:
+                        pass
+                    elif indent > self._indents[self._indents_level]:
+                        self._indents_level += 1
+                        self._pending_indents += 1
+                        self._indents.append(indent)
+                    else:  # indent < self._indents[self._indents_level]
+                        while (self._indents_level > 0 and
+                               indent < self._indents[self._indents_level]):
+                            self._indents_level -= 1
+                            self._pending_indents -= 1
+                            self._indents.pop()
+                        if indent != self._indents[self._indents_level]:
+                            self._token.kind = TokenKind.CORRUPTED_DEDENT
+        if self._pending_indents != 0:
+            if self._pending_indents < 0:
+                self._pending_indents += 1
+                self._token.kind = TokenKind.DEDENT
             else:
-                self._content_position = content_position  # rollback
-                self._codepoint = codepoint
+                self._pending_indents -= 1
+                self._token.kind = TokenKind.INDENT
+        else:
+            self._content_position = content_position  # rollback
+            self._codepoint = codepoint
         return (self._token.kind == TokenKind.INDENT or
                 self._token.kind == TokenKind.DEDENT)
 
@@ -481,7 +480,7 @@ class ArtTokenizer(Tokenizer):
         generated FSA (goto transitions) which recognizes keywords without lookup,
         recognizes integers and real (float/double) numbers, comments, etc.
         """
-        if self._indent_size and self._beginning_of_line:
+        if self._indent_size:
             if self.process_indentation():
                 return
         codepoint = self._codepoint

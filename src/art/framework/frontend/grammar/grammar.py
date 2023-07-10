@@ -25,6 +25,7 @@ class Grammar(Base):
     def __init__(self, name='', logger=None):
         """
         """
+        super().__init__()
         self._name = name
         self._logger = logger
         self._rules = list()

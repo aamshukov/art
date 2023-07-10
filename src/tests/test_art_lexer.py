@@ -121,115 +121,99 @@ class Test(unittest.TestCase):
 
     def test_lexical_analyzer_indentation_1_success(self):
         tokens = [TokenKind.EOL,
-                  TokenKind.IDENTIFIER,
+                  TokenKind.INDENT,
+                  TokenKind.DEF,
                   TokenKind.WS,
                   TokenKind.IDENTIFIER,
                   TokenKind.LEFT_PARENTHESIS,
                   TokenKind.RIGHT_PARENTHESIS,
                   TokenKind.EOL,
-                  TokenKind.INDENT,
-                  TokenKind.IDENTIFIER,
-                  TokenKind.EOL,
-                  TokenKind.EOL,
                   TokenKind.EOL,
                   TokenKind.INDENT,
-                  TokenKind.INDENT,
-                  TokenKind.IDENTIFIER,
+                  TokenKind.IDENTIFIER,  # a1
                   TokenKind.EOL,
-                  TokenKind.INDENT,
-                  TokenKind.EOL,
-                  TokenKind.INDENT,
-                  TokenKind.INDENT,
-                  TokenKind.IDENTIFIER,
-                  TokenKind.EOL,
-                  TokenKind.INDENT,
                   TokenKind.WS,
-                  TokenKind.LEFT_PARENTHESIS,
-                  TokenKind.RIGHT_PARENTHESIS,
                   TokenKind.EOL,
-                  TokenKind.INDENT,
-                  TokenKind.IDENTIFIER,
-                  TokenKind.EOL,
-                  TokenKind.EOL,
-                  TokenKind.EOL,
-                  TokenKind.INDENT,
-                  TokenKind.INDENT,
-                  TokenKind.IDENTIFIER,
-                  TokenKind.EOL,
-                  TokenKind.INDENT,
-                  TokenKind.EOL,
-                  TokenKind.INDENT,
-                  TokenKind.INDENT,
-                  TokenKind.IDENTIFIER,
-                  TokenKind.EOL,
-                  TokenKind.INDENT,
-                  TokenKind.EOL,
-                  TokenKind.LEFT_PARENTHESIS,
-                  TokenKind.RIGHT_PARENTHESIS,
-                  TokenKind.EOL,
-                  TokenKind.INDENT,
-                  TokenKind.IDENTIFIER,
-                  TokenKind.EOL,
-                  TokenKind.EOL,
-                  TokenKind.EOL,
-                  TokenKind.INDENT,
-                  TokenKind.INDENT,
-                  TokenKind.IDENTIFIER,
-                  TokenKind.EOL,
-                  TokenKind.INDENT,
-                  TokenKind.EOL,
-                  TokenKind.INDENT,
-                  TokenKind.INDENT,
-                  TokenKind.IDENTIFIER,
-                  TokenKind.EOL,
-                  TokenKind.INDENT,
-                  TokenKind.EOL,
-                  TokenKind.LEFT_PARENTHESIS,
-                  TokenKind.RIGHT_PARENTHESIS,
-                  TokenKind.EOL,
-                  TokenKind.INDENT,
-                  TokenKind.IDENTIFIER,
-                  TokenKind.EOL,
-                  TokenKind.EOL,
-                  TokenKind.EOL,
-                  TokenKind.INDENT,
-                  TokenKind.INDENT,
-                  TokenKind.IDENTIFIER,
-                  TokenKind.EOL,
-                  TokenKind.INDENT,
-                  TokenKind.EOL,
-                  TokenKind.INDENT,
-                  TokenKind.INDENT,
-                  TokenKind.IDENTIFIER,
-                  TokenKind.EOL,
-                  TokenKind.INDENT,
-                  TokenKind.EOL,
-                  TokenKind.LEFT_PARENTHESIS,
-                  TokenKind.RIGHT_PARENTHESIS,
-                  TokenKind.EOL,
-                  TokenKind.INDENT,
-                  TokenKind.IDENTIFIER,
-                  TokenKind.EOL,
-                  TokenKind.EOL,
-                  TokenKind.EOL,
-                  TokenKind.INDENT,
-                  TokenKind.INDENT,
-                  TokenKind.IDENTIFIER,
-                  TokenKind.EOL,
-                  TokenKind.INDENT,
-                  TokenKind.EOL,
-                  TokenKind.INDENT,
-                  TokenKind.INDENT,
-                  TokenKind.IDENTIFIER,
-                  TokenKind.EOL,
-                  TokenKind.INDENT,
-                  TokenKind.EOL,
-                  TokenKind.INDENT,
-                  TokenKind.INDENT,
-                  TokenKind.IDENTIFIER,
-                  TokenKind.EOL,
-                  TokenKind.INDENT,
                   TokenKind.WS,
+                  TokenKind.EOL,
+                  TokenKind.INDENT,
+                  TokenKind.IDENTIFIER,  # a2
+                  TokenKind.EOL,
+                  TokenKind.INDENT,
+                  TokenKind.IDENTIFIER,  # a3
+                  TokenKind.EOL,
+                  TokenKind.INDENT,
+                  TokenKind.IDENTIFIER,  # a4
+                  TokenKind.EOL,
+                  TokenKind.WS,
+                  TokenKind.IDENTIFIER,  # a5
+                  TokenKind.WS,
+                  TokenKind.SINGLE_LINE_COMMENT,
+                  TokenKind.EOL,
+                  TokenKind.DEDENT,
+                  TokenKind.DEDENT,
+                  TokenKind.DEDENT,
+                  TokenKind.IDENTIFIER,  # a6
+                  TokenKind.EOL,
+                  TokenKind.INDENT,
+                  TokenKind.IDENTIFIER,  # a7
+                  TokenKind.EOL,
+                  TokenKind.INDENT,
+                  TokenKind.IDENTIFIER,  # a8
+                  TokenKind.EOL,
+                  TokenKind.INDENT,
+                  TokenKind.IDENTIFIER,  # a9
+                  TokenKind.EOL,
+                  TokenKind.INDENT,
+                  TokenKind.IDENTIFIER,  # a10
+                  TokenKind.EOL,
+                  TokenKind.WS,
+                  TokenKind.IDENTIFIER,  # a11
+                  TokenKind.EOL,
+                  TokenKind.WS,
+                  TokenKind.IDENTIFIER,  # a12
+                  TokenKind.EOL,
+                  TokenKind.DEDENT,
+                  TokenKind.DEDENT,
+                  TokenKind.IDENTIFIER,  # a13
+                  TokenKind.WS,
+                  TokenKind.EOL,
+                  TokenKind.DEDENT,
+                  TokenKind.IDENTIFIER,  # a14
+                  TokenKind.EOL,
+                  TokenKind.DEDENT,
+                  TokenKind.IDENTIFIER,  # a15
+                  TokenKind.WS,
+                  TokenKind.EOL,
+                  TokenKind.INDENT,
+                  TokenKind.IDENTIFIER,  # a16
+                  TokenKind.EOL,
+                  TokenKind.DEDENT,
+                  TokenKind.IDENTIFIER,  # a17
+                  TokenKind.EOL,
+                  TokenKind.EOL,
+                  TokenKind.WS,
+                  TokenKind.IDENTIFIER,  # a18
+                  TokenKind.EOL,
+                  TokenKind.INDENT,
+                  TokenKind.IDENTIFIER,  # a19
+                  TokenKind.EOL,
+                  TokenKind.INDENT,
+                  TokenKind.IDENTIFIER,  # a20
+                  TokenKind.EOL,
+                  TokenKind.DEDENT,
+                  TokenKind.DEDENT,
+                  TokenKind.IDENTIFIER,  # a21
+                  TokenKind.EOL,
+                  TokenKind.EOL,
+                  TokenKind.WS,
+                  TokenKind.EOL,
+                  TokenKind.WS,
+                  TokenKind.IDENTIFIER,  # a22
+                  TokenKind.EOL,
+                  TokenKind.DEDENT,
+                  TokenKind.IDENTIFIER,  # end
+                  TokenKind.EOL,
                   TokenKind.WS,
                   TokenKind.EOS]
         program = """
@@ -252,12 +236,71 @@ class Test(unittest.TestCase):
                             a13              
                         a14
                     a15              
-            a16
-        
+                    a16
             a17
+
+            a18
+                    a19
+                            a20
+            a21
+
+        
+            a22
         end
         """
-        Test.evaluate(program, tokens, validate=False)
+        Test.evaluate(program, tokens, validate=True)
+
+    def test_lexical_analyzer_indentation_2_success(self):
+        tokens = [TokenKind.EOL,
+                  TokenKind.INDENT,
+                  TokenKind.WHILE,
+                  TokenKind.WS,
+                  TokenKind.LEFT_PARENTHESIS,
+                  TokenKind.SELF,  # self
+                  TokenKind.DOT,  # .
+                  TokenKind.IDENTIFIER,  # _content_position
+                  TokenKind.WS,
+                  TokenKind.LESS_THAN_SIGN,
+                  TokenKind.WS,
+                  TokenKind.SELF,  # self
+                  TokenKind.DOT,  # .
+                  TokenKind.IDENTIFIER,  # _end_content
+                  TokenKind.WS,
+                  TokenKind.AND,
+                  TokenKind.EOL,
+                  TokenKind.WS,
+                  TokenKind.SELF,  # self
+                  TokenKind.DOT,  # .
+                  TokenKind.IDENTIFIER,  # _codepoint
+                  TokenKind.WS,
+                  TokenKind.EQUAL,
+                  TokenKind.WS,
+                  TokenKind.INTEGER,
+                  TokenKind.RIGHT_PARENTHESIS,
+                  TokenKind.COLON,
+                  TokenKind.WS,
+                  TokenKind.SINGLE_LINE_COMMENT,
+                  TokenKind.EOL,
+                  TokenKind.INDENT,
+                  TokenKind.SELF,  # self
+                  TokenKind.DOT,  # .
+                  TokenKind.IDENTIFIER,  # advance
+                  TokenKind.LEFT_PARENTHESIS,
+                  TokenKind.RIGHT_PARENTHESIS,
+                  TokenKind.EOL,
+                  TokenKind.DEDENT,
+                  TokenKind.IDENTIFIER,  # end
+                  TokenKind.EOL,
+                  TokenKind.WS,
+                  TokenKind.EOS
+                  ]
+        program = """
+        while (self._content_position < self._end_content and
+               self._codepoint == 0x00000020):  # ' ':
+            self.advance()
+        end
+        """
+        Test.evaluate(program, tokens, validate=True)
 
     def test_string_single_quote_empty_success(self):
         tokens = [TokenKind.STRING,

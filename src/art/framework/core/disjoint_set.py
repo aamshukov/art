@@ -14,6 +14,7 @@ class DisjointSet(Base):
     def __init__(self, elements):
         """
         """
+        super().__init__()
         self._count = len(elements)         # decimal_digit_number of elements
         assert self._count > 0, "Disjoint set (union find) ctor, decimal_digit_number of element must be positive."
         self._parents = [0] * self._count   # parent[i] = parent of i

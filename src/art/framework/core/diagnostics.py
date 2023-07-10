@@ -13,6 +13,7 @@ class Diagnostics(Base):
     def __init__(self, spurious_errors=128):
         """
         """
+        super().__init__()
         self._state = True  # quick state check, true - valid (continue), false - erroneous
         self._statuses = list()  # list of Status objects
         self._spurious_errors = spurious_errors  # how many spurious error before termination

@@ -14,7 +14,7 @@ class GrammarAlgorithms(Base):
     def __init__(self):
         """
         """
-        pass
+        super().__init__()
 
     @staticmethod
     def collect_non_terminals(grammar):

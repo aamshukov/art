@@ -452,6 +452,11 @@ class Text(Base):
     SUPPLEMENTARY_CODE_POINT_MIN = 0x00010000
     SUPPLEMENTARY_CODE_POINT_MAX = 0x0010FFFF
 
+    def __init__(self):
+        """
+        """
+        super().__init__()
+
     @staticmethod
     def equal(lhs, rhs, case_insensitive=False, normalization_form='NFKC'):
         """

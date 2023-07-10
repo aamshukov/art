@@ -12,4 +12,4 @@ class Controller(Base):
     def __init__(self):
         """
         """
-        pass
+        super().__init__()

@@ -13,6 +13,7 @@ class GraphVisitor(Visitor):
     def __init__(self, graph):
         """
         """
+        super().__init__()
         self._graph = graph
 
     def __repr__(self):

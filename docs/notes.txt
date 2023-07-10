@@ -584,3 +584,54 @@ def guard(subject):
 
 
 
+
+
+
+
+
+
+
+    def process_indentation(self):
+        """
+        """
+        if self._dedents:
+            self._token.kind = self._dedents.popleft()
+        else:
+            if self._beginning_of_line:
+                content_position = self._content_position
+                codepoint = self._codepoint
+                self._beginning_of_line = False
+                if self._content_position < self._end_content:
+                    indent = 0
+                    while (self._content_position < self._end_content and
+                           self._codepoint == 0x00000020):  # ' ':
+                        self.advance()
+                        indent += 1
+                    ignore = ((indent >= 0 and Text.eol(self._codepoint)) or  # blank line, either '\n' or '   \n'
+                              self.comment_start())  # comment
+                    if not ignore and self._nesting_level == 0:
+                        if indent == self._indents[self._indents_level]:
+                            pass
+                        elif indent > self._indents[self._indents_level]:
+                            self._indents_level += 1
+                            self._indents.append(indent)
+                            self._token.kind = TokenKind.INDENT
+                        else:  # indent < self._indents[self._indents_level]
+                            n = 0
+                            while (self._indents_level > 0 and
+                                   indent < self._indents[self._indents_level]):
+                                n += 1
+                                self._indents_level -= 1
+                                self._indents.pop()
+                            for _ in range(n - 1):
+                                self._dedents.append(TokenKind.DEDENT)
+                            if indent == self._indents[self._indents_level]:
+                                self._token.kind = TokenKind.DEDENT
+                            else:
+                                self._token.kind = TokenKind.CORRUPTED_DEDENT
+                    if not (self._token.kind == TokenKind.INDENT or
+                            self._token.kind == TokenKind.DEDENT):
+                        self._content_position = content_position  # rollback
+                        self._codepoint = codepoint
+        return (self._token.kind == TokenKind.INDENT or
+                self._token.kind == TokenKind.DEDENT)

@@ -18,6 +18,7 @@ class Statistics(Base):
     def __init__(self):
         """
         """
+        super().__init__()
         self._quantities = defaultdict(lambda: 0)  # source:quantity
         self._timings = defaultdict(lambda: 0.0)  # source:duration
 

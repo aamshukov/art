@@ -42,6 +42,7 @@ class Status(Base):
                  ):
         """
         """
+        super().__init__()
         self._text = text
         self._contributor = contributor
         self._custom_code = custom_code
