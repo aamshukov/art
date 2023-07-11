@@ -11,7 +11,7 @@ from art.framework.frontend.content.content import Content
 from art.framework.frontend.data_provider.string_data_provider import StringDataProvider
 from art.framework.frontend.grammar.grammar_rule import GrammarRule
 from art.framework.frontend.grammar.grammar_symbol import GrammarSymbol
-from art.framework.frontend.grammar.grammar_symbol_type import GrammarSymbolType
+from art.framework.frontend.grammar.grammar_symbol_kind import GrammarSymbolKind
 from art.framework.frontend.grammar.grammar_tokenizer import GrammarTokenizer
 from art.framework.frontend.lexical_analyzer.lexical_analyzer import LexicalAnalyzer
 from art.framework.frontend.statistics.statistics import Statistics
@@ -30,7 +30,7 @@ class Grammar(Base):
         self._logger = logger
         self._rules = list()
         self._pool = dict()  # name:symbol mapping
-        self._pool['ε'] = GrammarSymbol(0, 'ε', GrammarSymbolType.EPSILON)
+        self._pool['ε'] = GrammarSymbol(0, 'ε', GrammarSymbolKind.EPSILON)
         self._pool['λ'] = self._pool['ε']
 
     @property
@@ -127,11 +127,11 @@ class Grammar(Base):
         """
         name = name.strip()
         if name.startswith("'"):
-            result = GrammarSymbolType.TERMINAL
+            result = GrammarSymbolKind.TERMINAL
         elif Text.epsilon(name):
-            result = GrammarSymbolType.EPSILON
+            result = GrammarSymbolKind.EPSILON
         else:
-            result = GrammarSymbolType.NON_TERMINAL
+            result = GrammarSymbolKind.NON_TERMINAL
         return result
 
     def get_symbol(self, name):

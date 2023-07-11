@@ -79,6 +79,12 @@ class Tokenizer(Entity):
         return self._content
 
     @property
+    def content_position(self):
+        """
+        """
+        return self._content_position
+
+    @property
     def token(self):
         """
         """
@@ -95,7 +101,7 @@ class Tokenizer(Entity):
             if content_position == self._end_content:
                 result = 0
                 valid = False
-                self._diagnostics.add(Status(f'Invalid unicode escape sequence length at'
+                self._diagnostics.add(Status(f'Invalid unicode escape sequence length at '
                                              f'{self.content.get_location(content_position)}',
                                              'tokenizer',
                                              Status.INVALID_UNICODE_ESCAPE))
@@ -105,7 +111,7 @@ class Tokenizer(Entity):
                 result = (result << 4) | Text.ascii_digit(codepoint)
                 content_position += 1
             else:
-                self._diagnostics.add(Status(f'Invalid unicode escape sequence (digits) at'
+                self._diagnostics.add(Status(f'Invalid unicode escape sequence (digits) at '
                                              f'{self.content.get_location(content_position)}',
                                              'tokenizer',
                                              Status.INVALID_UNICODE_ESCAPE))

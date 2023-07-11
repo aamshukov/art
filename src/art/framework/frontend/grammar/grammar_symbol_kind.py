@@ -5,7 +5,7 @@
 from enum import IntEnum, auto
 
 
-class GrammarSymbolType(IntEnum):
+class GrammarSymbolKind(IntEnum):
     """
     """
     TERMINAL = auto()

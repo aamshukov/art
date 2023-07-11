@@ -31,6 +31,7 @@ class Status(Base):
     INVALID_UNICODE_ESCAPE  = 132 | ERROR_MASK      # noqa
     INVALID_CHARACTER       = 133 | ERROR_MASK      # noqa
     INVALID_STRING_LITERAL  = 134 | ERROR_MASK      # noqa
+    INVALID_TOKEN           = 135 | ERROR_MASK      # noqa
 
     def __init__(self,
                  text,  # description

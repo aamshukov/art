@@ -3,8 +3,8 @@
 # UI Lab Inc. Arthur Amshukov
 #
 """ Art parser """
-from abc import abstractmethod
-from art.framework.frontend.parser.recursive_descent_parser import RecursiveDescentParser
+from art.framework.frontend.parser.backtracking.\
+    recursive_descent.recursive_descent_parser import RecursiveDescentParser
 
 
 class ArtParser(RecursiveDescentParser):
@@ -15,7 +15,7 @@ class ArtParser(RecursiveDescentParser):
         """
         super().__init__(context, lexical_analyzer)
 
-    def parse(self, visitor, *args, **kwargs):
+    def parse(self, *args, **kwargs):
         """
         """
         pass

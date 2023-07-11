@@ -10,13 +10,20 @@ from art.framework.frontend.parser.parser import Parser
 class RecursiveDescentParser(Parser):
     """
     """
-    def __init__(self, context, lexical_analyzer):
+    def __init__(self,
+                 context,
+                 lexical_analyzer,
+                 statistics,
+                 diagnostics):
         """
         """
-        super().__init__(context, lexical_analyzer)
+        super().__init__(context,
+                         lexical_analyzer,
+                         statistics,
+                         diagnostics)
 
     @abstractmethod
-    def parse(self, visitor, *args, **kwargs):
+    def parse(self, *args, **kwargs):
         """
         """
         raise NotImplemented(self.parse.__qualname__)

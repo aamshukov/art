@@ -77,6 +77,11 @@ class LexicalAnalyzer(Entity):
         """
         return True
 
+    def get_content_position(self):
+        """
+        """
+        return self._tokenizer.content.get_location(self._tokenizer.content_position)
+
     def next_lexeme(self):
         """
         """

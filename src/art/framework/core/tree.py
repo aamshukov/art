@@ -35,8 +35,9 @@ class Tree(Entity, Visitable):
     def __repr__(self):
         """
         """
-        return f"{type(self).__name__}:{self._id}:{self._label}:{self._version}:{self._value}:[{self._attributes}]:" \
-               f"{self._flags}:{self._color}:{self._papa}:[{self._kids}]]"
+        return f"{type(self).__name__}:{self._id}:{self._label}:{self._version}:" \
+               f"{self._value}:[{self._attributes}]:{self._flags}:" \
+               f"{self._color}:{self._papa}:[{self._kids}]]"
 
     __str__ = __repr__
 
@@ -164,9 +165,4 @@ class Tree(Entity, Visitable):
     def accept(self, visitor, *args, **kwargs):
         """
         """
-        if (self._flags & Flags.VISITED) != Flags.VISITED:
-            self._flags = Flags.modify_flags(self._flags, Flags.VISITED, Flags.CLEAR)
-            visitor.visit(self, *args, **kwargs)
-            for kid in self._kids:
-                if (kid.flags & Flags.VISITED) != Flags.VISITED:
-                    kid.accept(visitor, *args, **kwargs)
+        pass

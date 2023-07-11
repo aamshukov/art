@@ -6,7 +6,7 @@ from art.framework.core.entity import Entity
 from art.framework.core.flags import Flags
 from art.framework.core.text import Text
 from art.framework.frontend.grammar.grammar_symbol_associativity import GrammarSymbolAssociativity
-from art.framework.frontend.grammar.grammar_symbol_type import GrammarSymbolType
+from art.framework.frontend.grammar.grammar_symbol_kind import GrammarSymbolKind
 
 
 class GrammarSymbol(Entity):
@@ -15,7 +15,7 @@ class GrammarSymbol(Entity):
     def __init__(self,
                  id,
                  name='',
-                 symbol_type=GrammarSymbolType.TERMINAL,
+                 symbol_type=GrammarSymbolKind.TERMINAL,
                  flags=Flags.CLEAR,
                  version='1.0'):
         """
@@ -86,13 +86,13 @@ class GrammarSymbol(Entity):
     def terminal(self):
         """
         """
-        return self._type == GrammarSymbolType.TERMINAL
+        return self._type == GrammarSymbolKind.TERMINAL
 
     @property
     def non_terminal(self):
         """
         """
-        return self._type == GrammarSymbolType.NON_TERMINAL
+        return self._type == GrammarSymbolKind.NON_TERMINAL
 
     @property
     def rules(self):
@@ -104,7 +104,7 @@ class GrammarSymbol(Entity):
     def epsilon(self):
         """
         """
-        return self._type == GrammarSymbolType.EPSILON
+        return self._type == GrammarSymbolKind.EPSILON
 
     @property
     def associativity(self):

@@ -17,14 +17,16 @@ class Flags(Flag):
     MARKED = auto()
     DELETED = auto()
     GENUINE = auto()
-    # additional (artificial) tokens which are inserted into the token stream, syntactic sugar - desugaring ...
-    SYNTHETIC = auto()
-    # contextual, recognized in specific contexts, similar to C# get/set, async/await ...
-    CONTEXTUAL = auto()
+    SYNTHETIC = auto()  # additional (artificial) tokens which are inserted
+                        # into the token stream, syntactic sugar - desugaring ...
+    CONTEXTUAL = auto()  # contextual, recognized in specific contexts,
+                         # similar to C# get/set, async/await ...
     LEAF = auto()
     OVERFLOW = auto()
     UNDERFLOW = auto()
     INVALID = auto()
+    ROOT_IN_AST = auto()  # aka ANTLR, expr : expr (’+’^ mexpr)* EOF!  \  mutually
+    NOT_IN_AST = auto()   # aka ANTLR, expr : expr (’+’^ mexpr)* EOF!  /  exclusive
 
     @staticmethod
     def modify_flags(flags, add, remove):

@@ -4,7 +4,7 @@
 #
 """ Scope """
 from art.framework.core.tree import Tree
-from art.framework.frontend.symtable.scope_kind import ScopeKind
+from art.framework.frontend.symtable.scope.scope_kind import ScopeKind
 
 
 class Scope(Tree):

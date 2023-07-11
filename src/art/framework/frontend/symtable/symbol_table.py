@@ -2,14 +2,16 @@
 # -*- encoding: utf-8 -*-
 # UI Lab Inc. Arthur Amshukov
 #
-""" Parse tree mixin """
+""" Symbol table """
 from art.framework.core.base import Base
 
 
-class ParseTreeMixin(Base):
+class SymbolTable(Base):
     """
     """
     def __init__(self):
         """
         """
         super().__init__()
+        self._scopes = None  # root of scope tree, might represent 'global' scope
+        self._scope = None  # current scope, level
