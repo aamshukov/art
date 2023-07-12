@@ -14,13 +14,13 @@ class Symbol(Entity):
     """
     def __init__(self,
                  id,
-                 name='',
+                 label='',
                  flags=Flags.CLEAR,
                  version='1.0'):
         """
         """
         super().__init__(id, version)
-        self._name = name
+        self._label = label
         self._grammar_symbol = None  # CFG (Context Free Grammar) parsed symbol
         self._token = None  # link with content
         self._value = None  # inferred value if any, might be integer value,
@@ -37,7 +37,7 @@ class Symbol(Entity):
     def __repr__(self):
         """
         """
-        return f"{type(self).__name__}:{self._id}:{self._name}:{self._version}:"
+        return f"{type(self).__name__}:{self._id}:{self._label}:{self._version}:"
 
     __str__ = __repr__
 
@@ -45,26 +45,44 @@ class Symbol(Entity):
         """
         """
         result = super().__hash__()
-        result ^= hash(self._name)
+        result ^= hash(self._label)
         return result
 
     def __eq__(self, other):
         """
         """
         result = (super().__eq__(other) and
-                  Text.equal(self._name, other.name))
+                  Text.equal(self._label, other.label))
         return result
 
     def __lt__(self, other):
         """
         """
         result = (super().__lt__(other) and
-                  Text.compare(self._name, other.name) < 0)
+                  Text.compare(self._label, other.label) < 0)
         return result
 
     def __le__(self, other):
         """
         """
         result = (super().__le__(other) and
-                  Text.compare(self._name, other.name) <= 0)
+                  Text.compare(self._label, other.label) <= 0)
         return result
+
+    @property
+    def label(self):
+        """
+        """
+        return self._label
+
+    @property
+    def grammar_symbol(self):
+        """
+        """
+        return self._grammar_symbol
+
+    @grammar_symbol.setter
+    def grammar_symbol(self, grammar_symbol):
+        """
+        """
+        self._grammar_symbol = grammar_symbol

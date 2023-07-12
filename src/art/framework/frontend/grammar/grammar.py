@@ -143,7 +143,20 @@ class Grammar(Base):
         else:
             stype = Grammar.get_symbol_type(name)
             result = GrammarSymbol(len(self._pool) + 1, normalized_name, stype)
+            if stype == GrammarSymbolKind.NON_TERMINAL:
+                normalized_name = normalized_name.upper()
             self._pool[normalized_name] = result
+        return result
+
+    def get_non_terminal(self, name):
+        """
+        """
+        result = None
+        normalized_name = Grammar.normalize_symbol_name(name)
+        if normalized_name in self._pool:
+            result = self._pool[normalized_name]
+            if result.terminal:
+                result = None
         return result
 
     def assemble_rule(self, lhs_name, rhs_names):

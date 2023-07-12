@@ -10,3 +10,6 @@ class ParseTreeKind(IntEnum):
     """
     """
     UNKNOWN = auto()
+    LITERAL = auto()
+    IDENTIFIER = auto()
+    FULLY_QUALIFIED_IDENTIFIER = auto()

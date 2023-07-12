@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 # UI Lab Inc. Arthur Amshukov
 #
-""" FSA state """
+""" FSA status """
 from art.framework.core.vertex import Vertex
 from art.framework.frontend.token.token_kind import TokenKind
 

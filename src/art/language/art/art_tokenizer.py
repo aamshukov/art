@@ -366,7 +366,7 @@ class ArtTokenizer(Tokenizer):
         if octal_prefix:
             value.append(codepoint)  # push first 0
         real = False  # is real number
-        valid = True  # track erroneous or not state
+        valid = True  # track erroneous or not status
         separators = 0
         if not octal_prefix and ArtTokenizer.number_control_codepoint(self._codepoint):
             valid = False  # separator(s) and others cannot start number

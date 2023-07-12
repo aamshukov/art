@@ -508,7 +508,7 @@ def guard(subject):
         else:
             radix = 10
             digits = Text.ascii_decimal_digit
-        valid = True  # track erroneous or not state
+        valid = True  # track erroneous or not status
         fraction = False  # everything after . fraction, switching to real
         exponent = False  # true if consumed exponent e|E
         exponent_sign = False  # true if consumed exponent sign, + or -

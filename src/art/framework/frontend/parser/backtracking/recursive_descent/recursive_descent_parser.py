@@ -13,12 +13,14 @@ class RecursiveDescentParser(Parser):
     def __init__(self,
                  context,
                  lexical_analyzer,
+                 grammar,
                  statistics,
                  diagnostics):
         """
         """
         super().__init__(context,
                          lexical_analyzer,
+                         grammar,
                          statistics,
                          diagnostics)
 
