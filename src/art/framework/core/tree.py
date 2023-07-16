@@ -145,6 +145,12 @@ class Tree(Entity, Visitable):
     def kids(self):
         return tuple(self._kids)
 
+    def insert_kid(self, kid, index=0):
+        """
+        """
+        kid.papa = self
+        self._kids.insert(index, kid)
+
     def add_kid(self, kid):
         """
         """

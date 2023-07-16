@@ -9,7 +9,7 @@ from enum import IntEnum, auto
 class TokenKind(IntEnum):
     """
     """
-    UNKNOWN = auto()
+    UNKNOWN = 0
 
     EPSILON = auto()
 
@@ -23,16 +23,16 @@ class TokenKind(IntEnum):
 
     IDENTIFIER = auto()
 
-    INT = auto()
-    INTEGER = auto()
+    INTEGER = auto()  # integer number
+    INTEGER_KW = auto()
 
-    REAL = auto()
-    FLOAT = auto()
-    DOUBLE = auto()
-    DECIMAL = auto()
+    REAL = auto()  # real number
+    REAL_KW = auto()
+    FLOAT_KW = auto()
+    DOUBLE_KW = auto()
+    DECIMAL_KW = auto()
 
-    BOOL = auto()
-    BOOLEAN = auto()
+    BOOLEAN_KW = auto()
     TRUE = auto()
     FALSE = auto()
 
@@ -136,11 +136,15 @@ class TokenKind(IntEnum):
     LESS_THAN_SIGN = auto()  # <
     COMP_LESS_THAN_OR_EQUAL = auto()  # le
     LESS_THAN_OR_EQUAL = auto()  # <=
+    SHIFT_LEFT = auto()  # <<
+    SHIFT_LEFT_OR_EQUAL = auto()  # <<=
 
     COMP_GREATER_THAN = auto()  # gt
     GREATER_THAN_SIGN = auto()  # >
     COMP_GREATER_THAN_OR_EQUAL = auto()  # ge
     GREATER_THAN_OR_EQUAL = auto()  # >=
+    SHIFT_RIGHT = auto()  # >>
+    SHIFT_RIGHT_OR_EQUAL = auto()  # >>=
 
     SPACESHIP = auto()  # <=>
 

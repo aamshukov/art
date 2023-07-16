@@ -18,7 +18,7 @@ class Test(unittest.TestCase):
     def test_statistics(self):
         statistics = Statistics()
         statistics.update_stats(Token(TokenKind.IDENTIFIER))
-        statistics.update_stats(Token(TokenKind.BOOLEAN))
+        statistics.update_stats(Token(TokenKind.BOOLEAN_KW))
         assert statistics.quantities[NUMBER_OF_LEXEMES] == 2
         assert statistics.quantities[NUMBER_OF_KEYWORDS] == 1
         assert statistics.quantities[NUMBER_OF_IDENTIFIERS] == 1

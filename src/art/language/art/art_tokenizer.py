@@ -37,15 +37,15 @@ class ArtTokenizer(Tokenizer):
         Populate keywords dictionary of string:TokenKind.
         """
         result = dict()
-        result['int'] = TokenKind.INTEGER
-        result['integer'] = TokenKind.INTEGER
-        result['real'] = TokenKind.REAL
-        result['float'] = TokenKind.REAL
-        result['double'] = TokenKind.REAL
-        result['decimal'] = TokenKind.REAL
-        result['number'] = TokenKind.REAL
-        result['bool'] = TokenKind.BOOLEAN
-        result['boolean'] = TokenKind.BOOLEAN
+        result['int'] = TokenKind.INTEGER_KW
+        result['integer'] = TokenKind.INTEGER_KW
+        result['real'] = TokenKind.REAL_KW
+        result['float'] = TokenKind.REAL_KW
+        result['double'] = TokenKind.REAL_KW
+        result['decimal'] = TokenKind.REAL_KW
+        result['number'] = TokenKind.REAL_KW
+        result['bool'] = TokenKind.BOOLEAN_KW
+        result['boolean'] = TokenKind.BOOLEAN_KW
         result['true'] = TokenKind.TRUE
         result['false'] = TokenKind.FALSE
         result['string'] = TokenKind.STRING
@@ -544,24 +544,38 @@ class ArtTokenizer(Tokenizer):
                 self.advance()
             else:
                 self._token.kind = TokenKind.EXCLAMATION_MARK
-        elif Text.less_than_sign(codepoint):  # '<' '<=' '<=>' lt, le as kws
-            codepoint = self.advance()
+        elif Text.less_than_sign(codepoint):  # '<' '<<' '<=' '<<=' '<=>' lt, le as kws
+            n = 1
+            for _ in range(2):
+                codepoint = self.advance()
+                if Text.less_than_sign(codepoint):
+                    n += 1
+                else:
+                    break
             if Text.equals_sign(codepoint):
                 codepoint = self.advance()
                 if Text.greater_than_sign(codepoint):
                     self._token.kind = TokenKind.SPACESHIP
                     self.advance()
                 else:
-                    self._token.kind = TokenKind.LESS_THAN_OR_EQUAL
+                    if n == 1:
+                        self._token.kind = TokenKind.LESS_THAN_OR_EQUAL
+                    else:  # n == 2
+                        self._token.kind = TokenKind.SHIFT_LEFT_OR_EQUAL
             else:
-                self._token.kind = TokenKind.LESS_THAN_SIGN
+                if n == 1:
+                    self._token.kind = TokenKind.LESS_THAN_SIGN
+                else:  # n == 2
+                    self._token.kind = TokenKind.SHIFT_LEFT
         elif Text.greater_than_sign(codepoint):  # '>' '>=' gt, ge as kws
-            codepoint = self.advance()
-            if Text.equals_sign(codepoint):
-                self._token.kind = TokenKind.GREATER_THAN_OR_EQUAL
-                self.advance()
-            else:
-                self._token.kind = TokenKind.GREATER_THAN_SIGN
+            # >= >> >>= should be treated one char by one as that might be template recognition in progress
+            # codepoint = self.advance()
+            # if Text.equals_sign(codepoint):
+            #     self._token.kind = TokenKind.GREATER_THAN_OR_EQUAL
+            #     self.advance()
+            # else:
+            self._token.kind = TokenKind.GREATER_THAN_SIGN
+            self.advance()
         elif Text.dot(codepoint):  # '.' '..' '...', do not consider fraction part like .025
             codepoint = self.advance()
             if Text.dot(codepoint):
@@ -704,3 +718,7 @@ class ArtTokenizer(Tokenizer):
         if self._token.kind == TokenKind.IDENTIFIER:  # check if it is keyword
             self._token.kind = self.lookup(self._token.literal)
 
+    def validate(self):
+        """
+        """
+        return True

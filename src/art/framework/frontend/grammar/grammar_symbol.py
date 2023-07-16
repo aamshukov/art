@@ -159,9 +159,28 @@ class GrammarSymbol(Entity):
         """
         return True
 
-    def decorate(self):
+    def decorate(self, full=False):
         """
         """
         quote = "'" if self.terminal else ""
-        result = f"{quote}{self._name}{quote} ({self._type.name}, {'NULLABLE' if self._nullable else 'NON-NULLABLE'})"
+        result = f"{quote}{self._name}{quote} " \
+                 f"({self._type.name}, " \
+                 f"{'NULLABLE' if self._nullable else 'NON-NULLABLE'}, " \
+                 f"{self._associativity.name})"
+        if full:
+            result = f"\n{result}\n"
+            result = f"{result} FIRST: [{GrammarSymbol.sets_to_string(self.first)}]\n"
+            result = f"{result} FOLLOW:[{GrammarSymbol.sets_to_string(self.follow)}]\n"
+            result = f"{result} LA:    [{GrammarSymbol.sets_to_string(self.la)}]\n"
         return result
+
+    @staticmethod
+    def sets_to_string(sets):
+        """
+        """
+        result = ''
+        for s in sets:
+            for sym in s:
+                result = f'{result} {sym.name}'
+            result = f'{result},'
+        return result.strip(' ,')

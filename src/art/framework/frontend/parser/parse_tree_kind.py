@@ -13,3 +13,4 @@ class ParseTreeKind(IntEnum):
     LITERAL = auto()
     IDENTIFIER = auto()
     FULLY_QUALIFIED_IDENTIFIER = auto()
+    ASSIGNMENT_OPERATOR = auto()

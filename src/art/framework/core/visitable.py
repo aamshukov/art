@@ -14,4 +14,4 @@ class Visitable(Base):
     def accept(self, visitor, *args, **kwargs):
         """
         """
-        pass
+        raise NotImplemented(self.accept.__qualname__)

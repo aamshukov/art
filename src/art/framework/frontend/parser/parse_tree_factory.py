@@ -3,10 +3,13 @@
 # UI Lab Inc. Arthur Amshukov
 #
 """ Parse tree factory """
+from copy import deepcopy
+
 from art.framework.core.base import Base
 from art.framework.core.colors import Colors
 from art.framework.core.flags import Flags
 from art.framework.frontend.parser.parse_tree import ParseTree
+from art.framework.frontend.symtable.symbol_factory import SymbolFactory
 
 
 class ParseTreeFactory(Base):
@@ -44,3 +47,11 @@ class ParseTreeFactory(Base):
                          flags=flags,
                          color=color,
                          version=version)
+
+    @staticmethod
+    def make_tree(kind, grammar, token):
+        tree = ParseTreeFactory.create(kind, kind.name)
+        tree.symbol = SymbolFactory.create(tree.label)
+        tree.symbol.grammar_symbol = grammar.lookup_symbol(kind.name)
+        tree.symbol.token = token
+        return tree

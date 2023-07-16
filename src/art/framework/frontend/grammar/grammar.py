@@ -11,6 +11,7 @@ from art.framework.frontend.content.content import Content
 from art.framework.frontend.data_provider.string_data_provider import StringDataProvider
 from art.framework.frontend.grammar.grammar_rule import GrammarRule
 from art.framework.frontend.grammar.grammar_symbol import GrammarSymbol
+from art.framework.frontend.grammar.grammar_symbol_factory import GrammarSymbolFactory
 from art.framework.frontend.grammar.grammar_symbol_kind import GrammarSymbolKind
 from art.framework.frontend.grammar.grammar_tokenizer import GrammarTokenizer
 from art.framework.frontend.lexical_analyzer.lexical_analyzer import LexicalAnalyzer
@@ -30,8 +31,9 @@ class Grammar(Base):
         self._logger = logger
         self._rules = list()
         self._pool = dict()  # name:symbol mapping
-        self._pool['ε'] = GrammarSymbol(0, 'ε', GrammarSymbolKind.EPSILON)
-        self._pool['λ'] = self._pool['ε']
+        self._pool['ε'] = GrammarSymbolFactory.epsilon_symbol()
+        self._pool['λ'] = GrammarSymbolFactory.epsilon_symbol()
+        self._pool[GrammarSymbolFactory.UNKNOWN_SYMBOL.name] = GrammarSymbolFactory.unknown_symbol()
 
     @property
     def name(self):
@@ -112,6 +114,32 @@ class Grammar(Base):
                 case _:
                     pass
 
+    def assemble_rule(self, lhs_name, rhs_names):
+        """
+       """
+        rule = GrammarRule(len(self._rules) + 1, '')
+        rule.lhs = self.get_symbol(lhs_name)
+        rule.lhs.rules.append(rule)
+        for rhs_name in rhs_names:
+            rule.rhs.append(self.get_symbol(rhs_name))
+        rhs = [s.name for s in rule.rhs]
+        rule.name = f"{rule.lhs.name}  ->  {'  '.join(rhs)}"
+        self._rules.append(rule)
+
+    def get_symbol(self, name):
+        """
+        """
+        normalized_name = Grammar.normalize_symbol_name(name)
+        stype = Grammar.get_symbol_type(name)
+        if stype == GrammarSymbolKind.NON_TERMINAL:
+            normalized_name = normalized_name.upper()
+        if normalized_name in self._pool:
+            result = self._pool[normalized_name]
+        else:
+            result = GrammarSymbolFactory.create(normalized_name, stype)
+            self._pool[normalized_name] = result
+        return result
+
     @staticmethod
     def normalize_symbol_name(name):
         """
@@ -134,42 +162,11 @@ class Grammar(Base):
             result = GrammarSymbolKind.NON_TERMINAL
         return result
 
-    def get_symbol(self, name):
+    def lookup_symbol(self, name):
         """
         """
         normalized_name = Grammar.normalize_symbol_name(name)
-        if normalized_name in self._pool:
-            result = self._pool[normalized_name]
-        else:
-            stype = Grammar.get_symbol_type(name)
-            result = GrammarSymbol(len(self._pool) + 1, normalized_name, stype)
-            if stype == GrammarSymbolKind.NON_TERMINAL:
-                normalized_name = normalized_name.upper()
-            self._pool[normalized_name] = result
-        return result
-
-    def get_non_terminal(self, name):
-        """
-        """
-        result = None
-        normalized_name = Grammar.normalize_symbol_name(name)
-        if normalized_name in self._pool:
-            result = self._pool[normalized_name]
-            if result.terminal:
-                result = None
-        return result
-
-    def assemble_rule(self, lhs_name, rhs_names):
-        """
-       """
-        rule = GrammarRule(len(self._rules) + 1, '')
-        rule.lhs = self.get_symbol(lhs_name)
-        rule.lhs.rules.append(rule)
-        for rhs_name in rhs_names:
-            rule.rhs.append(self.get_symbol(rhs_name))
-        rhs = [s.name for s in rule.rhs]
-        rule.name = f"{rule.lhs.name}  ->  {'  '.join(rhs)}"
-        self._rules.append(rule)
+        return self._pool[normalized_name]
 
     def decorate(self):
         """
@@ -181,4 +178,12 @@ class Grammar(Base):
                 lhs = rule.lhs
                 result += '\n'
             result += f'{rule.decorate()}\n'
+        return result
+
+    def decorate_pool(self):
+        """
+        """
+        result = ""
+        for symbol in self._pool.values():
+            result = f'{result}{symbol.decorate(full=True)}\n'
         return result

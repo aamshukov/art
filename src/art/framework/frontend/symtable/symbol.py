@@ -86,3 +86,20 @@ class Symbol(Entity):
         """
         """
         self._grammar_symbol = grammar_symbol
+
+    @property
+    def token(self):
+        """
+        """
+        return self._token
+
+    @token.setter
+    def token(self, token):
+        """
+        """
+        self._token = token
+
+    def validate(self):
+        """
+        """
+        return True

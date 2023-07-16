@@ -14,6 +14,7 @@ class FileDataProvider(DataProvider):
     def __init__(self, source):
         """
         """
+        super().__init__()
         self._source = source
 
     def load(self, to_codepoints=True):

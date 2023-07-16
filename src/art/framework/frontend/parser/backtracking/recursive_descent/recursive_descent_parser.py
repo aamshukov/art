@@ -25,6 +25,14 @@ class RecursiveDescentParser(Parser):
                          diagnostics)
 
     @abstractmethod
+    def skip_tokens(self, *args, **kwargs):
+        """
+        Panic mode error recovery help routine.
+        Skip input tokens until a stop token is found.
+        """
+        raise NotImplemented(self.skip_tokens.__qualname__)
+
+    @abstractmethod
     def parse(self, *args, **kwargs):
         """
         """

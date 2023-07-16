@@ -26,6 +26,9 @@ class Test(unittest.TestCase):
         def dec_k(self):
             self._k -= 1
 
+        def validate(self):
+            raise NotImplemented(self.validate.__qualname__)
+
         def next_lexeme_impl(self):
             match self._k:
                 case 0:

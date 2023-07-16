@@ -29,7 +29,7 @@ class Statistics(Base):
         match token.kind:
             case TokenKind.IDENTIFIER:
                 self._quantities[NUMBER_OF_IDENTIFIERS] += 1
-            case TokenKind.CASE | TokenKind.BOOLEAN:
+            case TokenKind.CASE | TokenKind.BOOLEAN_KW:
                 self._quantities[NUMBER_OF_KEYWORDS] += 1
         # ?? print(token)
 

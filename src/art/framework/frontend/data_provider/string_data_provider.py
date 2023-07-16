@@ -14,6 +14,7 @@ class StringDataProvider(DataProvider):
         """
         """
         assert data is not None, "Invalid argument 'data'"
+        super().__init__()
         if raw_bytes:
             self._data = data.decode('UTF-8')
         else:

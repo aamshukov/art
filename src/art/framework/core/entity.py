@@ -53,7 +53,8 @@ class Entity(Value):
         """
         return self._id
 
+    @abstractmethod
     def validate(self):
         """
         """
-        return True
+        raise NotImplemented(self.validate.__qualname__)

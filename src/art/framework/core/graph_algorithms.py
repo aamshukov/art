@@ -4,7 +4,7 @@
 #
 """ Graph algorithms """
 import heapq
-from collections import defaultdict
+from collections import defaultdict, deque
 from operator import itemgetter
 from art.framework.core.flags import Flags
 from art.framework.core.colors import Colors
@@ -62,7 +62,7 @@ class GraphAlgorithms(Base):
     def dfs(start_vertex, action=None, *args, **kwargs):
         """
         """
-        stack = list()
+        stack = deque()
         stack.append(start_vertex)  # push
         while stack:
             vertex = stack.pop()
@@ -80,7 +80,7 @@ class GraphAlgorithms(Base):
     def dfs_postorder(start_vertex, *args, **kwargs):
         """
         """
-        stack = list()
+        stack = deque()
         stack.append(start_vertex)  # push
         while stack:
             vertex = stack.pop()
@@ -151,7 +151,7 @@ class GraphAlgorithms(Base):
         """
         assert graph.digraph, "Invalid graph type, must be directed graph."
         result = list()
-        stack = list()
+        stack = deque()
         for vertex in graph.vertices.values():
             if vertex.color != Colors.WHITE:  # is being processed or processed
                 continue
@@ -177,7 +177,7 @@ class GraphAlgorithms(Base):
         see ... get_topological_order_dfs_colored
         """
         assert graph.digraph, "Invalid graph type, must be directed graph."
-        stack = list()
+        stack = deque()
         for vertex in graph.vertices.values():
             if vertex.color != Colors.WHITE:
                 continue
@@ -205,7 +205,7 @@ class GraphAlgorithms(Base):
         in_degree = {vertex: 0 for vertex in graph.vertices.values()}
         for edge in graph.edges.values():
             in_degree[edge.endpoints[1]] += 1
-        stack = list()
+        stack = deque()
         for degree in in_degree.items():
             if degree[1] == 0:
                 stack.append(degree[0])  # push
@@ -231,7 +231,8 @@ class GraphAlgorithms(Base):
 
         preorder = list()
         postorder = list()
-        stack = [Pair(tree, 1)]  # push
+        stack = deque()
+        stack.append(Pair(tree, 1))  # push
         while stack:
             pair = stack.pop()  # pop
             if pair.value == 1:
@@ -264,8 +265,9 @@ class GraphAlgorithms(Base):
         """
         nodes = list()   # array of visiting nodes, 2 * N - 1
         depths = list()  # array of depths of nodes, 2 * N - 1
-        stack = [tree]   # push root
         lasts = dict()
+        stack = deque()
+        stack.append(tree)   # push root
         depth = 0
         index = 0
         while stack:
@@ -342,7 +344,8 @@ class GraphAlgorithms(Base):
         """
         See calculate_shortest_distances_dijkstra.
         """
-        _, prev_vertices, dst_distance = GraphAlgorithms.calculate_shortest_distances_dijkstra(src_vertex, dst_vertex)
+        _, prev_vertices, dst_distance =\
+            GraphAlgorithms.calculate_shortest_distances_dijkstra(src_vertex, dst_vertex)
         path = list()
         if dst_distance != DomainHelper.get_max_int():  # check if start and end vertices disconnected
             path.append(dst_vertex)

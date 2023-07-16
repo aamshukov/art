@@ -3,15 +3,20 @@
 # UI Lab Inc. Arthur Amshukov
 #
 """ IR symbol factory """
+from copy import deepcopy
+
 from art.framework.core.base import Base
 from art.framework.core.flags import Flags
 from art.framework.frontend.symtable.symbol import Symbol
+from art.framework.frontend.symtable.symbol_kind import SymbolKind
 
 
 class SymbolFactory(Base):
     """
     """
     id_generator = 0
+
+    UNKNOWN_SYMBOL = Symbol(id_generator, SymbolKind.UNKNOWN.name)
 
     def __init__(self):
         """
@@ -35,3 +40,9 @@ class SymbolFactory(Base):
                       label=label,
                       flags=flags,
                       version=version)
+
+    @staticmethod
+    def unknown_symbol():
+        """
+        """
+        return deepcopy(SymbolFactory.UNKNOWN_SYMBOL)

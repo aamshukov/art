@@ -50,6 +50,8 @@ class Test(unittest.TestCase):
         grammar.load(schema)
         decorated_grammar = grammar.decorate()
         logger.info(decorated_grammar)
+        decorated_pool = grammar.decorate_pool()
+        logger.info(decorated_pool)
         assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 8
         assert len(GrammarAlgorithms.collect_terminals(grammar)) == 10
 
@@ -67,6 +69,8 @@ class Test(unittest.TestCase):
         grammar.load(schema)
         decorated_grammar = grammar.decorate()
         logger.info(decorated_grammar)
+        decorated_pool = grammar.decorate_pool()
+        logger.info(decorated_pool)
         assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 2
         assert len(GrammarAlgorithms.collect_terminals(grammar)) == 2
         nullables = GrammarAlgorithms.build_nullability_set(grammar)
@@ -93,6 +97,8 @@ class Test(unittest.TestCase):
         grammar.load(schema)
         decorated_grammar = grammar.decorate()
         logger.info(decorated_grammar)
+        decorated_pool = grammar.decorate_pool()
+        logger.info(decorated_pool)
         assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 4
         assert len(GrammarAlgorithms.collect_terminals(grammar)) == 3
         nullables = GrammarAlgorithms.build_nullability_set(grammar)
@@ -118,6 +124,8 @@ class Test(unittest.TestCase):
         grammar.load(schema)
         decorated_grammar = grammar.decorate()
         logger.info(decorated_grammar)
+        decorated_pool = grammar.decorate_pool()
+        logger.info(decorated_pool)
         assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 4
         assert len(GrammarAlgorithms.collect_terminals(grammar)) == 3
         nullables = GrammarAlgorithms.build_nullability_set(grammar)
@@ -145,6 +153,8 @@ class Test(unittest.TestCase):
         grammar.load(schema)
         decorated_grammar = grammar.decorate()
         logger.info(decorated_grammar)
+        decorated_pool = grammar.decorate_pool()
+        logger.info(decorated_pool)
         assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 5
         assert len(GrammarAlgorithms.collect_terminals(grammar)) == 3
         nullables = GrammarAlgorithms.build_nullability_set(grammar)
@@ -171,6 +181,8 @@ class Test(unittest.TestCase):
         grammar.load(schema)
         decorated_grammar = grammar.decorate()
         logger.info(decorated_grammar)
+        decorated_pool = grammar.decorate_pool()
+        logger.info(decorated_pool)
         assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 4
         assert len(GrammarAlgorithms.collect_terminals(grammar)) == 2
         nullables = GrammarAlgorithms.build_nullability_set(grammar)
@@ -191,6 +203,8 @@ class Test(unittest.TestCase):
         grammar.load(schema)
         decorated_grammar = grammar.decorate()
         logger.info(decorated_grammar)
+        decorated_pool = grammar.decorate_pool()
+        logger.info(decorated_pool)
         assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 2
         assert len(GrammarAlgorithms.collect_terminals(grammar)) == 1
         nullables = GrammarAlgorithms.build_nullability_set(grammar)
@@ -213,6 +227,8 @@ class Test(unittest.TestCase):
         grammar.load(schema)
         decorated_grammar = grammar.decorate()
         logger.info(decorated_grammar)
+        decorated_pool = grammar.decorate_pool()
+        logger.info(decorated_pool)
         assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 2
         assert len(GrammarAlgorithms.collect_terminals(grammar)) == 3
         nullables = GrammarAlgorithms.build_nullability_set(grammar)
@@ -232,6 +248,8 @@ class Test(unittest.TestCase):
         grammar.load(schema)
         decorated_grammar = grammar.decorate()
         logger.info(decorated_grammar)
+        decorated_pool = grammar.decorate_pool()
+        logger.info(decorated_pool)
         assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 2
         assert len(GrammarAlgorithms.collect_terminals(grammar)) == 2
         nullables = GrammarAlgorithms.build_nullability_set(grammar)
@@ -258,6 +276,8 @@ class Test(unittest.TestCase):
         grammar.load(schema)
         decorated_grammar = grammar.decorate()
         logger.info(decorated_grammar)
+        decorated_pool = grammar.decorate_pool()
+        logger.info(decorated_pool)
         assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 4
         assert len(GrammarAlgorithms.collect_terminals(grammar)) == 1
         nullables = GrammarAlgorithms.build_nullability_set(grammar)
@@ -278,6 +298,8 @@ class Test(unittest.TestCase):
         grammar.load(schema)
         decorated_grammar = grammar.decorate()
         logger.info(decorated_grammar)
+        decorated_pool = grammar.decorate_pool()
+        logger.info(decorated_pool)
         assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 2
         assert len(GrammarAlgorithms.collect_terminals(grammar)) == 1
         nullables = GrammarAlgorithms.build_nullability_set(grammar)
@@ -306,6 +328,8 @@ class Test(unittest.TestCase):
         grammar.load(schema)
         decorated_grammar = grammar.decorate()
         logger.info(decorated_grammar)
+        decorated_pool = grammar.decorate_pool()
+        logger.info(decorated_pool)
         assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 4
         assert len(GrammarAlgorithms.collect_terminals(grammar)) == 3
         nullables = GrammarAlgorithms.build_nullability_set(grammar)
@@ -340,6 +364,8 @@ class Test(unittest.TestCase):
         grammar.load(schema)
         decorated_grammar = grammar.decorate()
         logger.info(decorated_grammar)
+        decorated_pool = grammar.decorate_pool()
+        logger.info(decorated_pool)
         assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 6
         assert len(GrammarAlgorithms.collect_terminals(grammar)) == 5
         nullables = GrammarAlgorithms.build_nullability_set(grammar)
@@ -371,6 +397,8 @@ class Test(unittest.TestCase):
         grammar.load(schema)
         decorated_grammar = grammar.decorate()
         logger.info(decorated_grammar)
+        decorated_pool = grammar.decorate_pool()
+        logger.info(decorated_pool)
         assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 5
         assert len(GrammarAlgorithms.collect_terminals(grammar)) == 5
         nullables = GrammarAlgorithms.build_nullability_set(grammar)
@@ -401,6 +429,8 @@ class Test(unittest.TestCase):
         grammar.load(schema)
         decorated_grammar = grammar.decorate()
         logger.info(decorated_grammar)
+        decorated_pool = grammar.decorate_pool()
+        logger.info(decorated_pool)
         assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 4
         assert len(GrammarAlgorithms.collect_terminals(grammar)) == 7
         nullables = GrammarAlgorithms.build_nullability_set(grammar)
@@ -434,6 +464,8 @@ class Test(unittest.TestCase):
         grammar.load(schema)
         decorated_grammar = grammar.decorate()
         logger.info(decorated_grammar)
+        decorated_pool = grammar.decorate_pool()
+        logger.info(decorated_pool)
         assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 5
         assert len(GrammarAlgorithms.collect_terminals(grammar)) == 7
         nullables = GrammarAlgorithms.build_nullability_set(grammar)
@@ -459,6 +491,8 @@ class Test(unittest.TestCase):
         grammar.load(schema)
         decorated_grammar = grammar.decorate()
         logger.info(decorated_grammar)
+        decorated_pool = grammar.decorate_pool()
+        logger.info(decorated_pool)
         assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 3
         assert len(GrammarAlgorithms.collect_terminals(grammar)) == 3
         nullables = GrammarAlgorithms.build_nullability_set(grammar)
@@ -487,6 +521,8 @@ class Test(unittest.TestCase):
         grammar.load(schema)
         decorated_grammar = grammar.decorate()
         logger.info(decorated_grammar)
+        decorated_pool = grammar.decorate_pool()
+        logger.info(decorated_pool)
         assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 4
         assert len(GrammarAlgorithms.collect_terminals(grammar)) == 4
         nullables = GrammarAlgorithms.build_nullability_set(grammar)
@@ -518,6 +554,8 @@ class Test(unittest.TestCase):
         grammar.load(schema)
         decorated_grammar = grammar.decorate()
         logger.info(decorated_grammar)
+        decorated_pool = grammar.decorate_pool()
+        logger.info(decorated_pool)
         assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 5
         assert len(GrammarAlgorithms.collect_terminals(grammar)) == 5
         nullables = GrammarAlgorithms.build_nullability_set(grammar)
@@ -546,6 +584,8 @@ class Test(unittest.TestCase):
         grammar.load(schema)
         decorated_grammar = grammar.decorate()
         logger.info(decorated_grammar)
+        decorated_pool = grammar.decorate_pool()
+        logger.info(decorated_pool)
         assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 4
         assert len(GrammarAlgorithms.collect_terminals(grammar)) == 5
         nullables = GrammarAlgorithms.build_nullability_set(grammar)
@@ -580,6 +620,8 @@ class Test(unittest.TestCase):
         grammar.load(schema)
         decorated_grammar = grammar.decorate()
         logger.info(decorated_grammar)
+        decorated_pool = grammar.decorate_pool()
+        logger.info(decorated_pool)
         assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 6
         assert len(GrammarAlgorithms.collect_terminals(grammar)) == 2
         nullables = GrammarAlgorithms.build_nullability_set(grammar)
@@ -610,6 +652,8 @@ class Test(unittest.TestCase):
         grammar.load(schema)
         decorated_grammar = grammar.decorate()
         logger.info(decorated_grammar)
+        decorated_pool = grammar.decorate_pool()
+        logger.info(decorated_pool)
         assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 4
         assert len(GrammarAlgorithms.collect_terminals(grammar)) == 5
         nullables = GrammarAlgorithms.build_nullability_set(grammar)
@@ -645,6 +689,8 @@ class Test(unittest.TestCase):
         grammar.load(schema)
         decorated_grammar = grammar.decorate()
         logger.info(decorated_grammar)
+        decorated_pool = grammar.decorate_pool()
+        logger.info(decorated_pool)
         assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 6
         assert len(GrammarAlgorithms.collect_terminals(grammar)) == 5
         nullables = GrammarAlgorithms.build_nullability_set(grammar)
@@ -673,6 +719,8 @@ class Test(unittest.TestCase):
         grammar.load(schema)
         decorated_grammar = grammar.decorate()
         logger.info(decorated_grammar)
+        decorated_pool = grammar.decorate_pool()
+        logger.info(decorated_pool)
         assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 4
         assert len(GrammarAlgorithms.collect_terminals(grammar)) == 5
         nullables = GrammarAlgorithms.build_nullability_set(grammar)
@@ -702,6 +750,8 @@ class Test(unittest.TestCase):
         grammar.load(schema)
         decorated_grammar = grammar.decorate()
         logger.info(decorated_grammar)
+        decorated_pool = grammar.decorate_pool()
+        logger.info(decorated_pool)
         assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 4
         assert len(GrammarAlgorithms.collect_terminals(grammar)) == 5
         nullables = GrammarAlgorithms.build_nullability_set(grammar)
@@ -728,6 +778,8 @@ class Test(unittest.TestCase):
         grammar.load(schema)
         decorated_grammar = grammar.decorate()
         logger.info(decorated_grammar)
+        decorated_pool = grammar.decorate_pool()
+        logger.info(decorated_pool)
         assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 4
         assert len(GrammarAlgorithms.collect_terminals(grammar)) == 1
         nullables = GrammarAlgorithms.build_nullability_set(grammar)
@@ -747,6 +799,8 @@ class Test(unittest.TestCase):
         grammar.load(schema)
         decorated_grammar = grammar.decorate()
         logger.info(decorated_grammar)
+        decorated_pool = grammar.decorate_pool()
+        logger.info(decorated_pool)
         assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 2
         assert len(GrammarAlgorithms.collect_terminals(grammar)) == 1
         nullables = GrammarAlgorithms.build_nullability_set(grammar)
@@ -783,6 +837,8 @@ class Test(unittest.TestCase):
         grammar.load(schema)
         decorated_grammar = grammar.decorate()
         logger.info(decorated_grammar)
+        decorated_pool = grammar.decorate_pool()
+        logger.info(decorated_pool)
         assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 4
         assert len(GrammarAlgorithms.collect_terminals(grammar)) == 3
         nullables = GrammarAlgorithms.build_nullability_set(grammar)
@@ -802,6 +858,8 @@ class Test(unittest.TestCase):
         grammar.load(schema)
         decorated_grammar = grammar.decorate()
         logger.info(decorated_grammar)
+        decorated_pool = grammar.decorate_pool()
+        logger.info(decorated_pool)
         assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 2
         assert len(GrammarAlgorithms.collect_terminals(grammar)) == 1
         nullables = GrammarAlgorithms.build_nullability_set(grammar)
@@ -831,6 +889,8 @@ class Test(unittest.TestCase):
         grammar.load(schema)
         decorated_grammar = grammar.decorate()
         logger.info(decorated_grammar)
+        decorated_pool = grammar.decorate_pool()
+        logger.info(decorated_pool)
         assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 4
         assert len(GrammarAlgorithms.collect_terminals(grammar)) == 2
         nullables = GrammarAlgorithms.build_nullability_set(grammar)
@@ -858,6 +918,8 @@ class Test(unittest.TestCase):
         grammar.load(schema)
         decorated_grammar = grammar.decorate()
         logger.info(decorated_grammar)
+        decorated_pool = grammar.decorate_pool()
+        logger.info(decorated_pool)
         assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 5
         assert len(GrammarAlgorithms.collect_terminals(grammar)) == 6
         nullables = GrammarAlgorithms.build_nullability_set(grammar)
@@ -881,6 +943,8 @@ class Test(unittest.TestCase):
         grammar.load(schema)
         decorated_grammar = grammar.decorate()
         logger.info(decorated_grammar)
+        decorated_pool = grammar.decorate_pool()
+        logger.info(decorated_pool)
         assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 3
         assert len(GrammarAlgorithms.collect_terminals(grammar)) == 3
         nullables = GrammarAlgorithms.build_nullability_set(grammar)
@@ -910,6 +974,8 @@ class Test(unittest.TestCase):
         grammar.load(schema)
         decorated_grammar = grammar.decorate()
         logger.info(decorated_grammar)
+        decorated_pool = grammar.decorate_pool()
+        logger.info(decorated_pool)
         assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 5
         assert len(GrammarAlgorithms.collect_terminals(grammar)) == 3
         nullables = GrammarAlgorithms.build_nullability_set(grammar)
@@ -1041,6 +1107,8 @@ class Test(unittest.TestCase):
         grammar.load(schema)
         decorated_grammar = grammar.decorate()
         logger.info(decorated_grammar)
+        decorated_pool = grammar.decorate_pool()
+        logger.info(decorated_pool)
         assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 4
         assert len(GrammarAlgorithms.collect_terminals(grammar)) == 5
         nullables = GrammarAlgorithms.build_nullability_set(grammar)
@@ -1118,6 +1186,8 @@ class Test(unittest.TestCase):
         grammar.load(schema)
         decorated_grammar = grammar.decorate()
         logger.info(decorated_grammar)
+        decorated_pool = grammar.decorate_pool()
+        logger.info(decorated_pool)
         assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 4
         assert len(GrammarAlgorithms.collect_terminals(grammar)) == 5
         nullables = GrammarAlgorithms.build_nullability_set(grammar)
@@ -1222,6 +1292,8 @@ class Test(unittest.TestCase):
         grammar.load(schema)
         decorated_grammar = grammar.decorate()
         logger.info(decorated_grammar)
+        decorated_pool = grammar.decorate_pool()
+        logger.info(decorated_pool)
         assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 2
         assert len(GrammarAlgorithms.collect_terminals(grammar)) == 4
         nullables = GrammarAlgorithms.build_nullability_set(grammar)
@@ -1303,6 +1375,8 @@ class Test(unittest.TestCase):
         GrammarAlgorithms.build_first_set(grammar, k)
         GrammarAlgorithms.build_follow_set(grammar, k)
         GrammarAlgorithms.build_la_set(grammar, k)
+        decorated_pool = grammar.decorate_pool()
+        logger.info(decorated_pool)
         for rule in grammar.rules:
             la = GrammarAlgorithms.build_la_set_rule(grammar, rule, k)
             assert la
@@ -1341,6 +1415,8 @@ class Test(unittest.TestCase):
         GrammarAlgorithms.build_first_set(grammar, k)
         GrammarAlgorithms.build_follow_set(grammar, k)
         GrammarAlgorithms.build_la_set(grammar, k)
+        decorated_pool = grammar.decorate_pool()
+        logger.info(decorated_pool)
         for rule in grammar.rules:
             la = GrammarAlgorithms.build_la_set_rule(grammar, rule, k)
             assert la
@@ -1365,6 +1441,8 @@ class Test(unittest.TestCase):
             GrammarAlgorithms.build_first_set(grammar, k)
             GrammarAlgorithms.build_follow_set(grammar, k)
             GrammarAlgorithms.build_la_set(grammar, k)
+            decorated_pool = grammar.decorate_pool()
+            logger.info(decorated_pool)
             for rule in grammar.rules:
                 la = GrammarAlgorithms.build_la_set_rule(grammar, rule, k)
                 assert la
@@ -1389,6 +1467,8 @@ class Test(unittest.TestCase):
             GrammarAlgorithms.build_first_set(grammar, k)
             GrammarAlgorithms.build_follow_set(grammar, k)
             GrammarAlgorithms.build_la_set(grammar, k)
+            decorated_pool = grammar.decorate_pool()
+            logger.info(decorated_pool)
             for rule in grammar.rules:
                 la = GrammarAlgorithms.build_la_set_rule(grammar, rule, k)
                 assert la
@@ -1422,6 +1502,8 @@ class Test(unittest.TestCase):
             GrammarAlgorithms.build_first_set(grammar, k)
             GrammarAlgorithms.build_follow_set(grammar, k)
             GrammarAlgorithms.build_la_set(grammar, k)
+            decorated_pool = grammar.decorate_pool()
+            logger.info(decorated_pool)
             for rule in grammar.rules:
                 la = GrammarAlgorithms.build_la_set_rule(grammar, rule, k)
                 assert la
@@ -1446,6 +1528,8 @@ class Test(unittest.TestCase):
             GrammarAlgorithms.build_first_set(grammar, k)
             GrammarAlgorithms.build_follow_set(grammar, k)
             GrammarAlgorithms.build_la_set(grammar, k)
+            decorated_pool = grammar.decorate_pool()
+            logger.info(decorated_pool)
             for rule in grammar.rules:
                 la = GrammarAlgorithms.build_la_set_rule(grammar, rule, k)
                 assert la
@@ -1473,6 +1557,8 @@ class Test(unittest.TestCase):
             GrammarAlgorithms.build_first_set(grammar, k)
             GrammarAlgorithms.build_follow_set(grammar, k)
             GrammarAlgorithms.build_la_set(grammar, k)
+            decorated_pool = grammar.decorate_pool()
+            logger.info(decorated_pool)
             for rule in grammar.rules:
                 la = GrammarAlgorithms.build_la_set_rule(grammar, rule, k)
                 assert la
@@ -1500,6 +1586,8 @@ class Test(unittest.TestCase):
             GrammarAlgorithms.build_first_set(grammar, k)
             GrammarAlgorithms.build_follow_set(grammar, k)
             GrammarAlgorithms.build_la_set(grammar, k)
+            decorated_pool = grammar.decorate_pool()
+            logger.info(decorated_pool)
             for rule in grammar.rules:
                 la = GrammarAlgorithms.build_la_set_rule(grammar, rule, k)
                 assert la
@@ -1534,6 +1622,8 @@ class Test(unittest.TestCase):
             GrammarAlgorithms.build_first_set(grammar, k)
             GrammarAlgorithms.build_follow_set(grammar, k)
             GrammarAlgorithms.build_la_set(grammar, k)
+            decorated_pool = grammar.decorate_pool()
+            logger.info(decorated_pool)
             for rule in grammar.rules:
                 la = GrammarAlgorithms.build_la_set_rule(grammar, rule, k)
                 assert la
@@ -1570,6 +1660,8 @@ class Test(unittest.TestCase):
             GrammarAlgorithms.build_first_set(grammar, k)
             GrammarAlgorithms.build_follow_set(grammar, k)
             GrammarAlgorithms.build_la_set(grammar, k)
+            decorated_pool = grammar.decorate_pool()
+            logger.info(decorated_pool)
             for rule in grammar.rules:
                 la = GrammarAlgorithms.build_la_set_rule(grammar, rule, k)
                 assert la
@@ -1599,6 +1691,8 @@ class Test(unittest.TestCase):
             GrammarAlgorithms.build_first_set(grammar, k)
             GrammarAlgorithms.build_follow_set(grammar, k)
             GrammarAlgorithms.build_la_set(grammar, k)
+            decorated_pool = grammar.decorate_pool()
+            logger.info(decorated_pool)
             for rule in grammar.rules:
                 la = GrammarAlgorithms.build_la_set_rule(grammar, rule, k)
                 assert la
@@ -1629,6 +1723,8 @@ class Test(unittest.TestCase):
             GrammarAlgorithms.build_first_set(grammar, k)
             GrammarAlgorithms.build_follow_set(grammar, k)
             GrammarAlgorithms.build_la_set(grammar, k)
+            decorated_pool = grammar.decorate_pool()
+            logger.info(decorated_pool)
             for rule in grammar.rules:
                 la = GrammarAlgorithms.build_la_set_rule(grammar, rule, k)
                 assert la
@@ -1664,6 +1760,8 @@ class Test(unittest.TestCase):
             GrammarAlgorithms.build_first_set(grammar, k)
             GrammarAlgorithms.build_follow_set(grammar, k)
             GrammarAlgorithms.build_la_set(grammar, k)
+            decorated_pool = grammar.decorate_pool()
+            logger.info(decorated_pool)
             for rule in grammar.rules:
                 la = GrammarAlgorithms.build_la_set_rule(grammar, rule, k)
                 assert la
@@ -1692,6 +1790,8 @@ class Test(unittest.TestCase):
             GrammarAlgorithms.build_first_set(grammar, k)
             GrammarAlgorithms.build_follow_set(grammar, k)
             GrammarAlgorithms.build_la_set(grammar, k)
+            decorated_pool = grammar.decorate_pool()
+            logger.info(decorated_pool)
             for rule in grammar.rules:
                 la = GrammarAlgorithms.build_la_set_rule(grammar, rule, k)
                 assert la
@@ -1730,6 +1830,8 @@ class Test(unittest.TestCase):
             GrammarAlgorithms.build_first_set(grammar, k)
             GrammarAlgorithms.build_follow_set(grammar, k)
             GrammarAlgorithms.build_la_set(grammar, k)
+            decorated_pool = grammar.decorate_pool()
+            logger.info(decorated_pool)
             for rule in grammar.rules:
                 la = GrammarAlgorithms.build_la_set_rule(grammar, rule, k)
                 assert la
@@ -1783,6 +1885,8 @@ class Test(unittest.TestCase):
             GrammarAlgorithms.build_first_set(grammar, k)
             GrammarAlgorithms.build_follow_set(grammar, k)
             GrammarAlgorithms.build_la_set(grammar, k)
+            decorated_pool = grammar.decorate_pool()
+            logger.info(decorated_pool)
             for rule in grammar.rules:
                 la = GrammarAlgorithms.build_la_set_rule(grammar, rule, k)
                 assert la
@@ -1807,6 +1911,8 @@ class Test(unittest.TestCase):
             GrammarAlgorithms.build_first_set(grammar, k)
             GrammarAlgorithms.build_follow_set(grammar, k)
             GrammarAlgorithms.build_la_set(grammar, k)
+            decorated_pool = grammar.decorate_pool()
+            logger.info(decorated_pool)
             for rule in grammar.rules:
                 la = GrammarAlgorithms.build_la_set_rule(grammar, rule, k)
                 assert la
@@ -1839,6 +1945,8 @@ class Test(unittest.TestCase):
             GrammarAlgorithms.build_first_set(grammar, k)
             GrammarAlgorithms.build_follow_set(grammar, k)
             GrammarAlgorithms.build_la_set(grammar, k)
+            decorated_pool = grammar.decorate_pool()
+            logger.info(decorated_pool)
             for rule in grammar.rules:
                 la = GrammarAlgorithms.build_la_set_rule(grammar, rule, k)
                 assert la
@@ -1876,6 +1984,8 @@ class Test(unittest.TestCase):
             GrammarAlgorithms.build_first_set(grammar, k)
             GrammarAlgorithms.build_follow_set(grammar, k)
             GrammarAlgorithms.build_la_set(grammar, k)
+            decorated_pool = grammar.decorate_pool()
+            logger.info(decorated_pool)
             for rule in grammar.rules:
                 la = GrammarAlgorithms.build_la_set_rule(grammar, rule, k)
                 assert la
@@ -1903,6 +2013,8 @@ class Test(unittest.TestCase):
             GrammarAlgorithms.build_first_set(grammar, k)
             GrammarAlgorithms.build_follow_set(grammar, k)
             GrammarAlgorithms.build_la_set(grammar, k)
+            decorated_pool = grammar.decorate_pool()
+            logger.info(decorated_pool)
             for rule in grammar.rules:
                 la = GrammarAlgorithms.build_la_set_rule(grammar, rule, k)
                 assert la
@@ -1937,6 +2049,8 @@ class Test(unittest.TestCase):
             GrammarAlgorithms.build_first_set(grammar, k)
             GrammarAlgorithms.build_follow_set(grammar, k)
             GrammarAlgorithms.build_la_set(grammar, k)
+            decorated_pool = grammar.decorate_pool()
+            logger.info(decorated_pool)
             for rule in grammar.rules:
                 la = GrammarAlgorithms.build_la_set_rule(grammar, rule, k)
                 assert la
@@ -1969,6 +2083,8 @@ class Test(unittest.TestCase):
             GrammarAlgorithms.build_first_set(grammar, k)
             GrammarAlgorithms.build_follow_set(grammar, k)
             GrammarAlgorithms.build_la_set(grammar, k)
+            decorated_pool = grammar.decorate_pool()
+            logger.info(decorated_pool)
             for rule in grammar.rules:
                 la = GrammarAlgorithms.build_la_set_rule(grammar, rule, k)
                 assert la
@@ -1993,6 +2109,8 @@ class Test(unittest.TestCase):
             GrammarAlgorithms.build_first_set(grammar, k)
             GrammarAlgorithms.build_follow_set(grammar, k)
             GrammarAlgorithms.build_la_set(grammar, k)
+            decorated_pool = grammar.decorate_pool()
+            logger.info(decorated_pool)
             for rule in grammar.rules:
                 la = GrammarAlgorithms.build_la_set_rule(grammar, rule, k)
                 assert la

@@ -3,15 +3,12 @@
 # UI Lab Inc. Arthur Amshukov
 #
 import unittest
-from art.framework.core.text import Text
 from art.framework.core.diagnostics import Diagnostics
 from art.framework.frontend.data_provider.string_data_provider import StringDataProvider
 from art.framework.frontend.content.content import Content
 from art.framework.frontend.statistics.statistics import Statistics
-from art.framework.frontend.token.token import Token
 from art.framework.frontend.token.token_kind import TokenKind
 from art.framework.frontend.lexical_analyzer.lexical_analyzer import LexicalAnalyzer
-from art.framework.frontend.token.tokenizer import Tokenizer
 from art.language.art.art_tokenizer import ArtTokenizer
 
 
@@ -102,7 +99,7 @@ class Test(unittest.TestCase):
                   TokenKind.WS,
                   TokenKind.IDENTIFIER,
                   TokenKind.WS,
-                  TokenKind.INTEGER,
+                  TokenKind.INTEGER_KW,
                   TokenKind.WS,
                   TokenKind.IDENTIFIER,
                   TokenKind.WS,
@@ -507,6 +504,111 @@ class Test(unittest.TestCase):
         for number in numbers:
             literals, _ = Test.evaluate(number, tokens, validate=False)
             pass
+
+    def test_operators_success(self):
+        lexer = Test.get_lexer('<')
+        lexer.next_lexeme()
+        assert lexer.token.kind == TokenKind.LESS_THAN_SIGN
+        lexer = Test.get_lexer('<<')
+        lexer.next_lexeme()
+        assert lexer.token.kind == TokenKind.SHIFT_LEFT
+        lexer = Test.get_lexer('<=')
+        lexer.next_lexeme()
+        assert lexer.token.kind == TokenKind.LESS_THAN_OR_EQUAL
+        lexer = Test.get_lexer('<<=')
+        lexer.next_lexeme()
+        assert lexer.token.kind == TokenKind.SHIFT_LEFT_OR_EQUAL
+        lexer = Test.get_lexer('<=>')
+        lexer.next_lexeme()
+        assert lexer.token.kind == TokenKind.SPACESHIP
+        lexer = Test.get_lexer('lt')
+        lexer.next_lexeme()
+        assert lexer.token.kind == TokenKind.COMP_LESS_THAN
+        lexer = Test.get_lexer('le')
+        lexer.next_lexeme()
+        assert lexer.token.kind == TokenKind.COMP_LESS_THAN_OR_EQUAL
+        lexer = Test.get_lexer('>')
+        lexer.next_lexeme()
+        assert lexer.token.kind == TokenKind.GREATER_THAN_SIGN
+        lexer = Test.get_lexer('>>')
+        lexer.next_lexeme()
+        assert lexer.token.kind == TokenKind.GREATER_THAN_SIGN
+        lexer.next_lexeme()
+        assert lexer.token.kind == TokenKind.GREATER_THAN_SIGN
+        lexer = Test.get_lexer('>=')
+        lexer.next_lexeme()
+        assert lexer.token.kind == TokenKind.GREATER_THAN_SIGN
+        lexer.next_lexeme()
+        assert lexer.token.kind == TokenKind.EQUALS_SIGN
+        lexer = Test.get_lexer('>>=')
+        lexer.next_lexeme()
+        assert lexer.token.kind == TokenKind.GREATER_THAN_SIGN
+        lexer.next_lexeme()
+        assert lexer.token.kind == TokenKind.GREATER_THAN_SIGN
+        lexer.next_lexeme()
+        assert lexer.token.kind == TokenKind.EQUALS_SIGN
+        lexer = Test.get_lexer('gt')
+        lexer.next_lexeme()
+        assert lexer.token.kind == TokenKind.COMP_GREATER_THAN
+        lexer = Test.get_lexer('ge')
+        lexer.next_lexeme()
+        assert lexer.token.kind == TokenKind.COMP_GREATER_THAN_OR_EQUAL
+
+    def test_equality_operators_success(self):
+        lexer = Test.get_lexer('==')
+        lexer.next_lexeme()
+        assert lexer.token.kind == TokenKind.EQUAL
+        lexer = Test.get_lexer('eq')
+        lexer.next_lexeme()
+        assert lexer.token.kind == TokenKind.COMP_EQUAL
+        lexer = Test.get_lexer('!=')
+        lexer.next_lexeme()
+        assert lexer.token.kind == TokenKind.NOT_EQUAL
+        lexer = Test.get_lexer('ne')
+        lexer.next_lexeme()
+        assert lexer.token.kind == TokenKind.COMP_NOT_EQUAL
+
+    def test_assignment_operators_success(self):
+        lexer = Test.get_lexer('=')
+        lexer.next_lexeme()
+        assert lexer.token.kind == TokenKind.EQUALS_SIGN
+        lexer = Test.get_lexer('+=')
+        lexer.next_lexeme()
+        assert lexer.token.kind == TokenKind.ADD_ASSIGNMENT
+        lexer = Test.get_lexer('-=')
+        lexer.next_lexeme()
+        assert lexer.token.kind == TokenKind.SUB_ASSIGNMENT
+        lexer = Test.get_lexer('*=')
+        lexer.next_lexeme()
+        assert lexer.token.kind == TokenKind.MUL_ASSIGNMENT
+        lexer = Test.get_lexer('/=')
+        lexer.next_lexeme()
+        assert lexer.token.kind == TokenKind.DIV_ASSIGNMENT
+        lexer = Test.get_lexer('%=')
+        lexer.next_lexeme()
+        assert lexer.token.kind == TokenKind.MOD_ASSIGNMENT
+        lexer = Test.get_lexer('&=')
+        lexer.next_lexeme()
+        assert lexer.token.kind == TokenKind.BITWISE_AND_ASSIGNMENT
+        lexer = Test.get_lexer('|=')
+        lexer.next_lexeme()
+        assert lexer.token.kind == TokenKind.BITWISE_OR_ASSIGNMENT
+        lexer = Test.get_lexer('^=')
+        lexer.next_lexeme()
+        assert lexer.token.kind == TokenKind.BITWISE_XOR_ASSIGNMENT
+        lexer = Test.get_lexer('~=')
+        lexer.next_lexeme()
+        assert lexer.token.kind == TokenKind.BITWISE_NOT_ASSIGNMENT
+        lexer = Test.get_lexer('<<=')
+        lexer.next_lexeme()
+        assert lexer.token.kind == TokenKind.SHIFT_LEFT_OR_EQUAL
+        lexer = Test.get_lexer('>>=')
+        lexer.next_lexeme()
+        assert lexer.token.kind == TokenKind.GREATER_THAN_SIGN
+        lexer.next_lexeme()
+        assert lexer.token.kind == TokenKind.GREATER_THAN_SIGN
+        lexer.next_lexeme()
+        assert lexer.token.kind == TokenKind.EQUALS_SIGN
 
 
 if __name__ == '__main__':

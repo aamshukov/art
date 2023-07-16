@@ -9,4 +9,4 @@ from enum import IntEnum, auto
 class SymbolKind(IntEnum):
     """
     """
-    UNKNOWN = auto()
+    UNKNOWN = 0

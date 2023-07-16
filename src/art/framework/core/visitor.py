@@ -10,8 +10,13 @@ from art.framework.core.base import Base
 class Visitor(Base):
     """
     """
+    def __init__(self):
+        """
+        """
+        super().__init__()
+
     @abstractmethod
     def visit(self, visitable, *args, **kwargs):
         """
         """
-        super().__init__()
+        raise NotImplemented(self.visit.__qualname__)

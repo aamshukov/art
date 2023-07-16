@@ -51,4 +51,4 @@ class Value(Equatable):
     def validate(self):
         """
         """
-        return True
+        raise NotImplemented(self.validate.__qualname__)

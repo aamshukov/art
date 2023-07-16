@@ -16,7 +16,8 @@ class CustomStreamHandler(logging.StreamHandler):
         try:
             msg = self.format(record)
             stream = self.stream
-            stream.write(msg.replace('ε', 'e').replace('λ', 'e'))
+            stream.write(msg)  # if ε or λ not visible check IDE for UTF-8 encoding ...
+            # stream.write(msg.replace('ε', 'e').replace('λ', 'e'))
             self.flush()
         except RecursionError:
             raise

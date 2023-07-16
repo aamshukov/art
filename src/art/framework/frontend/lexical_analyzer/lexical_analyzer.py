@@ -5,7 +5,7 @@
 from copy import deepcopy
 from collections import deque
 from art.framework.core.entity import Entity
-from art.framework.frontend.token.token import Token
+from art.framework.frontend.token.token_factory import TokenFactory
 from art.framework.frontend.token.token_kind import TokenKind
 
 
@@ -23,7 +23,7 @@ class LexicalAnalyzer(Entity):
         super().__init__(id,  # master lexer, id = 0
                          version=version)
         self._tokenizer = tokenizer
-        self._token = Token(TokenKind.UNKNOWN)  # current lexeme
+        self._token = TokenFactory.unknown_token()  # current lexeme
         self._tokens = deque()  # queue of lookahead (cached) lexemes
         self._prev_token = deepcopy(self._token)  # previous lexeme
         self._statistics = statistics

@@ -22,6 +22,9 @@ class Test(unittest.TestCase):
         def next_lexeme_impl(self):
             self._token = Token(TokenKind.IDENTIFIER)
 
+        def validate(self):
+            raise NotImplemented(self.validate.__qualname__)
+
     def __init__(self, *args, **kwargs):
         super(Test, self).__init__(*args, **kwargs)
 

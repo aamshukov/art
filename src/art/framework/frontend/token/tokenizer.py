@@ -9,8 +9,7 @@ from art.framework.core.entity import Entity
 from art.framework.core.flags import Flags
 from art.framework.core.status import Status
 from art.framework.core.text import Text
-from art.framework.frontend.token.token import Token
-from art.framework.frontend.token.token_kind import TokenKind
+from art.framework.frontend.token.token_factory import TokenFactory
 
 
 class Tokenizer(Entity):
@@ -31,7 +30,7 @@ class Tokenizer(Entity):
         self._end_content = self._start_content + self._content.count  # end of content, sentinel
         self._content_position = self._start_content - 1  # current position in content
         self._lexeme_position = self._start_content  # beginning position of lexeme in content
-        self._token = Token(TokenKind.UNKNOWN)  # current lexeme
+        self._token = TokenFactory.unknown_token()  # current lexeme
         self._snapshots = deque()  # stack of backtracking snapshots - positions
         self._codepoint = Text.eos_codepoint()
         self._escaped = False  # True if codepoint has been derived from escape sequence
@@ -317,7 +316,7 @@ class Tokenizer(Entity):
         self._token.literal = ''.join(chr(codepoint) for codepoint in
                                       self._content.data[self._token.offset: self._token.offset + self._token.length])
         self._token.source = self._content.id
-        self._token.flags = Flags.modify_flags(self._token.flags, Flags.CONTEXTUAL.VISITED, Flags.CLEAR)
+        self._token.flags = Flags.modify_flags(self._token.flags, Flags.PROCESSED, Flags.CLEAR)
 
     @abstractmethod
     def next_lexeme_impl(self):
@@ -339,3 +338,9 @@ class Tokenizer(Entity):
         """
         if self._snapshots:
             self._content_position = self._snapshots.pop()
+
+    @abstractmethod
+    def validate(self):
+        """
+        """
+        raise NotImplemented(self.validate.__qualname__)

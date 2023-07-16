@@ -93,7 +93,7 @@ class Token(Value):
         self._kind = kind
 
     @property
-    def name(self):
+    def label(self):
         """
         """
         return self._kind.name
