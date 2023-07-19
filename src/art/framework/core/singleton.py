@@ -5,7 +5,7 @@
 """ Singleton design pattern """
 
 
-def singleton(класс):
+def singleton(класс):  # noqa
     """
     Singleton decorator.
     """

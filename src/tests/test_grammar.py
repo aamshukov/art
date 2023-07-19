@@ -4,6 +4,8 @@
 import itertools
 import os
 import unittest
+
+from art.framework.core.domain_helper import profile
 from art.framework.core.logger import Logger
 from art.framework.frontend.grammar.grammar import Grammar
 from art.framework.frontend.grammar.grammar_algorithms import GrammarAlgorithms
@@ -1655,8 +1657,14 @@ class Test(unittest.TestCase):
         decorated_grammar = grammar.decorate()
         logger.info(decorated_grammar)
         GrammarAlgorithms.build_nullability_set(grammar)
-        for k in range(1, 4):  # 5+ is too long for python, Ran 1 test in 89.022s
+
+        @profile('Parson build first set...')
+        def fs_profile(_grammar, _k):
+            GrammarAlgorithms.build_first_set(_grammar, _k)
+
+        for k in range(1, 5):  # 5+ is too long for python, Ran 1 test in 89.022s
             print(k)
+            fs_profile(grammar, k)
             GrammarAlgorithms.build_first_set(grammar, k)
             GrammarAlgorithms.build_follow_set(grammar, k)
             GrammarAlgorithms.build_la_set(grammar, k)

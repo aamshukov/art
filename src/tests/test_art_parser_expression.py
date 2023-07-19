@@ -11,10 +11,8 @@ from art.framework.frontend.content.content import Content
 from art.framework.frontend.grammar.grammar import Grammar
 from art.framework.frontend.grammar.grammar_algorithms import GrammarAlgorithms
 from art.framework.frontend.parser.parse_context import ParseContext
-from art.framework.frontend.parser.parse_tree_domain_helper import ParseTreeDomainHelper
-from art.framework.frontend.parser.parse_tree_kind import ParseTreeKind
+from art.framework.frontend.parser.parse_domain_helper import ParseTreeDomainHelper
 from art.framework.frontend.statistics.statistics import Statistics
-from art.framework.frontend.token.token_kind import TokenKind
 from art.framework.frontend.lexical_analyzer.lexical_analyzer import LexicalAnalyzer
 from art.language.art.art_parser import ArtParser
 from art.language.art.art_tokenizer import ArtTokenizer
@@ -22,48 +20,105 @@ from art.language.art.art_tokenizer import ArtTokenizer
 
 class Test(unittest.TestCase):
     expression_grammar = """
-        expression                          : assignment
+        # TYPE
+        TYPE                                : integral_type array_type_rank_specifier_opt
+                                            | type_name array_type_rank_specifier_opt
+                                            | type_parameter
                                             ;
-
-        assignment                          : unary_expression assignment_operator expression
+        
+        type_name                           : identifier type_arguments_opt                                                     # A<T>.B<U>
+                                            | type_name '.' identifier type_arguments_opt
                                             ;
-
+        
+        type_parameters_opt                 : '<' type_parameters '>'
+                                            | ε
+                                            ;
+        
+        type_parameters                     : type_parameter                                                                    # type_parameter (',' type_parameter)*
+                                            | type_parameters ',' type_parameter
+                                            ;
+        
+        type_parameter                      : identifier
+                                            ;
+        
+        type_arguments_opt                  : '<' type_arguments '>'
+                                            | ε
+                                            ;
+        
+        type_arguments                      : type_argument                                                                     # type_argument (',' type_argument)*
+                                            | type_arguments ',' type_argument
+                                            ;
+        
+        type_argument                       : TYPE
+                                            ;
+        
+        
+        array_type_rank_specifier_opt       : array_type_rank_specifier
+                                            | ε
+                                            ;
+        
+        array_type_rank_specifier           : '[' type_array_ranks_opt ']'
+                                            ;
+        
+        type_array_ranks_opt                : type_array_ranks
+                                            | ε
+                                            ;
+        
+        type_array_ranks                    : ','
+                                            | type_array_ranks ','
+                                            ;
+        
+        integral_type_opt                   : integral_type
+                                            | ε
+                                            ;
+        
+        integral_type                       : 'integer'
+                                            | 'int'
+                                            | 'real'
+                                            | 'string'
+                                            | 'boolean'
+                                            | 'bool'
+                                            ;
+        
+        fully_qualified_identifier          : identifier
+                                            | fully_qualified_identifier '.' identifier
+                                            ;
+        
+        identifier                          : 'identifier'
+                                            ;
+        
+        literal                             : 'integer_number_literal'
+                                            | 'real_number_literal'
+                                            | 'string_literal'
+                                            | 'boolean_literal'
+                                            ;
+        
+        
+        
+        # EXPRESSIONS
+        expressions                         : expression
+                                            | expressions ',' expression
+                                            ;
+        
+        expression                          : assignment_expression
+                                            | non_assignment_expression
+                                            ;
+        
+        assignment_expression               : unary_expression assignment_operator expression
+                                            ;
+        
+        non_assignment_expression           : conditional_expression
+                                            ;
+        
         unary_expression                    : primary_expression
                                             | '+' unary_expression
                                             | '-' unary_expression
                                             | '!' unary_expression
-                                            | 'not' unary_expression
                                             | '~' unary_expression
-                                            | pre_increment_expression
-                                            | pre_decrement_expression
-                                            ;
-
-        primary_expression                  : literal                               # 5, 3.14, 'text', true
-                                            | member_access                         # Foo.name, foo.name, geo.point<T>, point<real>
-                                            | post_increment_expression             # i++
-                                            | post_decrement_expression             # i--
-                                            | parenthesized_expression              # '(' expression ')'
+                                            | pre_increment_expression                                                         # ++i
+                                            | pre_decrement_expression                                                         # --i
                                             ;
         
-        member_access                       : fully_qualified_identifier
-                                            | primary_expression '.' identifier
-                                            ;
-        
-        parenthesized_expression            : '(' expression ')'
-                                            ;
-
-        post_increment_expression           : primary_expression '++'
-                                            ;
-        
-        post_decrement_expression           : primary_expression '--'
-                                            ;
-
-        pre_increment_expression            : '++' unary_expression
-                                            ;
-
-        pre_decrement_expression            : '--' unary_expression
-                                            ;
-
         multiplicative_expression           : unary_expression
                                             | multiplicative_expression '*' unary_expression
                                             | multiplicative_expression '/' unary_expression
@@ -77,9 +132,9 @@ class Test(unittest.TestCase):
         
         shift_expression                    : additive_expression
                                             | shift_expression '<<' additive_expression
-                                            | shift_expression '>>' additive_expression
+                                            | shift_expression '>>' additive_expression                                        # > >
                                             ;
-
+        
         relational_expression               : shift_expression
                                             | relational_expression '<' shift_expression
                                             | relational_expression 'lt' shift_expression
@@ -88,7 +143,8 @@ class Test(unittest.TestCase):
                                             | relational_expression '<=' shift_expression
                                             | relational_expression 'le' shift_expression
                                             | relational_expression '>=' shift_expression
-                                            | relational_expression 'gt' shift_expression
+                                            | relational_expression 'ge' shift_expression
+                                            | relational_expression 'is' TYPE
                                             ;
         
         equality_expression                 : relational_expression
@@ -119,7 +175,69 @@ class Test(unittest.TestCase):
                                             | conditional_or_expression '||' conditional_and_expression
                                             | conditional_or_expression 'or' conditional_and_expression
                                             ;
-
+        
+        primary_expression                  : literal                                                                           # 5, 3.14, 'text', true
+                                            | member_access                                                                     # Foo.name, foo.name
+                                            | array_element_access                                                              # array[0]
+                                            | invocation_expression                                                             # foo(...)
+                                            | post_increment_expression                                                         # i++
+                                            | post_decrement_expression                                                         # i--
+                                            | object_creation_expression
+                                            | parenthesized_expression                                                          # '(' expression ')'
+                                            ;
+        
+        conditional_expression              : conditional_or_expression
+                                            | conditional_expression '?' expression ':' expression
+                                            ;
+        
+        member_access                       : primary_expression '.' identifier type_arguments_opt                              # geo.point<T>, point<real>
+                                            ;
+        
+        invocation_expression               : primary_expression '(' arguments_opt ')'
+                                            ;
+        
+        pre_increment_expression            : '++' unary_expression
+                                            ;
+        
+        pre_decrement_expression            : '--' unary_expression
+                                            ;
+        
+        post_increment_expression           : primary_expression '++'
+                                            ;
+        
+        post_decrement_expression           : primary_expression '--'
+                                            ;
+        
+        object_creation_expression          : TYPE '(' arguments_opt ')'
+                                            ;
+        
+        parenthesized_expression            : '(' expression ')'
+                                            ;
+        
+        array_element_access                : primary_expression '[' arguments ']'                                              # except array creation
+                                            ;
+        
+        arguments                           : argument
+                                            | arguments ',' argument
+                                            ;
+        
+        argument                            : argument_name_opt argument_value
+                                            ;
+        
+        argument_name_opt                   : argument_name
+                                            | ε
+                                            ;
+        
+        argument_name                       : identifier ':'
+                                            ;
+        
+        argument_value                      : expression lazy_opt                                                               # lazy parameters evaluation only in invocation_expression
+                                            ;
+        
+        lazy_opt                            : 'lazy'                                                                            # lazy parameters evaluation
+                                            | ε
+                                            ;
+        
         assignment_operator                 : '='
                                             | '+='
                                             | '-='
@@ -129,22 +247,8 @@ class Test(unittest.TestCase):
                                             | '&='
                                             | '|='
                                             | '^='
-                                            | '~='
                                             | '<<='
-                                            | '>>='
-                                            ;
-
-        literal                             : 'integer_number_literal'
-                                            | 'real_number_literal'
-                                            | 'string_literal'
-                                            | 'boolean_literal'
-                                            ;
-
-        fully_qualified_identifier          : identifier
-                                            | fully_qualified_identifier '.' identifier
-                                            ;
-
-        identifier                          : 'identifier'
+                                            | '>>='                                                                             # > >=
                                             ;
 
     """  # noqa
@@ -163,9 +267,10 @@ class Test(unittest.TestCase):
         logger = Logger(path=r'd:\tmp\art', mode='w')
         grammar = Grammar(logger=logger)
         grammar.load(schema)
-        GrammarAlgorithms.build_first_set(grammar, 1)
-        GrammarAlgorithms.build_follow_set(grammar, 1)
-        GrammarAlgorithms.build_la_set(grammar, 1)
+        k = 1
+        GrammarAlgorithms.build_first_set(grammar, k)
+        GrammarAlgorithms.build_follow_set(grammar, k)
+        GrammarAlgorithms.build_la_set(grammar, k)
         decorated_grammar = grammar.decorate()
         logger.info(decorated_grammar)
         decorated_pool = grammar.decorate_pool()

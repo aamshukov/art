@@ -9,9 +9,9 @@ from art.framework.core.status import Status
 from art.framework.frontend.parser.backtracking.\
     recursive_descent.recursive_descent_parser import RecursiveDescentParser
 from art.framework.frontend.parser.parse_tree_factory import ParseTreeFactory
-from art.framework.frontend.parser.parse_tree_kind import ParseTreeKind
 from art.framework.frontend.token.token_factory import TokenFactory
 from art.framework.frontend.token.token_kind import TokenKind
+from art.language.art.art_parse_tree_kind import ArtParseTreeKind
 
 
 class ArtParser(RecursiveDescentParser):
@@ -141,7 +141,7 @@ class ArtParser(RecursiveDescentParser):
                   TokenKind.BITWISE_XOR_ASSIGNMENT |
                   TokenKind.BITWISE_NOT_ASSIGNMENT |
                   TokenKind.SHIFT_LEFT_OR_EQUAL):
-                return ParseTreeFactory.make_tree(ParseTreeKind.ASSIGNMENT_OPERATOR,
+                return ParseTreeFactory.make_tree(ArtParseTreeKind.ASSIGNMENT_OPERATOR,
                                                   self.grammar,
                                                   self._lexical_analyzer.token)
             case _:
@@ -150,21 +150,21 @@ class ArtParser(RecursiveDescentParser):
                                              f'{self._lexical_analyzer.get_content_position()}',
                                              'parser',
                                              Status.INVALID_TOKEN))
-                return ParseTreeFactory.make_tree(ParseTreeKind.UNKNOWN,
+                return ParseTreeFactory.make_tree(ArtParseTreeKind.UNKNOWN,
                                                   self.grammar,
                                                   TokenFactory.UNKNOWN_TOKEN)
 
     def parse_literal(self):
         """
-        literal : integer_number_literal
-                | real_number_literal
-                | string_literal
-                | boolean_literal
+        literal : 'integer_number_literal'
+                | 'real_number_literal'
+                | 'string_literal'
+                | 'boolean_literal'
                 ;
         """
         match self._lexical_analyzer.token.kind:
             case (TokenKind.INTEGER | TokenKind.REAL | TokenKind.STRING | TokenKind.TRUE | TokenKind.FALSE):
-                return ParseTreeFactory.make_tree(ParseTreeKind.LITERAL,
+                return ParseTreeFactory.make_tree(ArtParseTreeKind.LITERAL,
                                                   self.grammar,
                                                   self._lexical_analyzer.token)
             case _:
@@ -173,7 +173,7 @@ class ArtParser(RecursiveDescentParser):
                                              f'{self._lexical_analyzer.get_content_position()}',
                                              'parser',
                                              Status.INVALID_TOKEN))
-                return ParseTreeFactory.make_tree(ParseTreeKind.UNKNOWN,
+                return ParseTreeFactory.make_tree(ArtParseTreeKind.UNKNOWN,
                                                   self.grammar,
                                                   TokenFactory.UNKNOWN_TOKEN)
 
@@ -187,9 +187,9 @@ class ArtParser(RecursiveDescentParser):
                                    ;
         """
         if self.accept(TokenKind.IDENTIFIER):
-            root = tree = ParseTreeFactory.make_tree(ParseTreeKind.FULLY_QUALIFIED_IDENTIFIER,
-                                                     self.grammar,
-                                                     self._lexical_analyzer.prev_token)
+            fq_tree = tree = ParseTreeFactory.make_tree(ArtParseTreeKind.FULLY_QUALIFIED_IDENTIFIER,
+                                                        self.grammar,
+                                                        self._lexical_analyzer.prev_token)
             stack = deque()
             stack.append(self._lexical_analyzer.prev_token)  # push IDENTIFIER
             while not self._lexical_analyzer.eos():
@@ -203,22 +203,22 @@ class ArtParser(RecursiveDescentParser):
             while stack:
                 token = stack.pop()
                 if stack:
-                    fq_kid = ParseTreeFactory.make_tree(ParseTreeKind.FULLY_QUALIFIED_IDENTIFIER,
+                    fq_kid = ParseTreeFactory.make_tree(ArtParseTreeKind.FULLY_QUALIFIED_IDENTIFIER,
                                                         self.grammar,
                                                         token)
                     tree.add_kid(fq_kid)
-                    kid = ParseTreeFactory.make_tree(ParseTreeKind.IDENTIFIER,
+                    kid = ParseTreeFactory.make_tree(ArtParseTreeKind.IDENTIFIER,
                                                      self.grammar,
                                                      token)
                     tree.add_kid(kid)
                     tree = fq_kid
                 else:
-                    kid = ParseTreeFactory.make_tree(ParseTreeKind.IDENTIFIER,
+                    kid = ParseTreeFactory.make_tree(ArtParseTreeKind.IDENTIFIER,
                                                      self.grammar,
                                                      token)
                     tree.add_kid(kid)
         else:
-            root = ParseTreeFactory.make_tree(ParseTreeKind.UNKNOWN,
-                                              self.grammar,
-                                              TokenFactory.UNKNOWN_TOKEN)
-        return root
+            fq_tree = ParseTreeFactory.make_tree(ArtParseTreeKind.UNKNOWN,
+                                                 self.grammar,
+                                                 TokenFactory.UNKNOWN_TOKEN)
+        return fq_tree

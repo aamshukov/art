@@ -3,9 +3,12 @@
 # UI Lab Inc. Arthur Amshukov
 #
 """ Domain helper """
+import functools
 import os
 import sys
 import struct
+import cProfile, pstats, io
+from pstats import SortKey
 from art.framework.core.base import Base
 
 
@@ -93,3 +96,28 @@ class DomainHelper(Base):
         """
         """
         return abs(real1 - real2) <= DomainHelper.epsilon()
+
+
+def profile(message=None):
+    """
+    @profile("Profiling foo()...")
+    def foo():
+        pass
+    """
+    def decorator_profile(func):
+        @functools.wraps(func)
+        def wrapped_function(*args, **kwargs):
+            if message:
+                print(message)
+            pr = cProfile.Profile()
+            pr.enable()
+            result = func(*args, **kwargs)
+            pr.disable()
+            s = io.StringIO()
+            sort_by = SortKey.CUMULATIVE
+            ps = pstats.Stats(pr, stream=s).sort_stats(sort_by)
+            ps.print_stats()
+            print(s.getvalue())
+            return result
+        return wrapped_function
+    return decorator_profile

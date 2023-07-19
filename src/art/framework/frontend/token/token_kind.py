@@ -193,4 +193,8 @@ class TokenKind(IntEnum):
     SINGLE_LINE_COMMENT = auto()  # # //
     MULTI_LINE_COMMENT = auto()  # /* */
 
+    COLUMN = auto()  # column
+    ROW = auto()  # row
+    UNCHECKED = auto()  # unchecked
+
     ERRONEOUS = auto()

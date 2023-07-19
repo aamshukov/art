@@ -112,4 +112,7 @@ class LexicalAnalyzer(Entity):
         Restore the last saved content position for backtracking.
         Usually called by parsers.
         """
+        self._token.reset()
+        self._tokens.clear()
+        self._prev_token.reset()
         self._tokenizer.rewind_to_snapshot()

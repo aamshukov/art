@@ -99,7 +99,7 @@ class ArtTokenizer(Tokenizer):
         result['neg'] = TokenKind.NEG
         result['fn'] = TokenKind.FUNCTION
         result['proc'] = TokenKind.PROCEDURE
-        result['lambda'] = TokenKind.LAMBDA
+        result['lm'] = TokenKind.LAMBDA
         result['lazy'] = TokenKind.LAZY
         result['recursive'] = TokenKind.RECURSIVE
         result['type'] = TokenKind.TYPE
@@ -568,14 +568,13 @@ class ArtTokenizer(Tokenizer):
                 else:  # n == 2
                     self._token.kind = TokenKind.SHIFT_LEFT
         elif Text.greater_than_sign(codepoint):  # '>' '>=' gt, ge as kws
-            # >= >> >>= should be treated one char by one as that might be template recognition in progress
-            # codepoint = self.advance()
-            # if Text.equals_sign(codepoint):
-            #     self._token.kind = TokenKind.GREATER_THAN_OR_EQUAL
-            #     self.advance()
-            # else:
-            self._token.kind = TokenKind.GREATER_THAN_SIGN
-            self.advance()
+            # >=,  > >,  > >=
+            codepoint = self.advance()
+            if Text.equals_sign(codepoint):
+                self._token.kind = TokenKind.GREATER_THAN_OR_EQUAL
+                self.advance()
+            else:
+                self._token.kind = TokenKind.GREATER_THAN_SIGN
         elif Text.dot(codepoint):  # '.' '..' '...', do not consider fraction part like .025
             codepoint = self.advance()
             if Text.dot(codepoint):

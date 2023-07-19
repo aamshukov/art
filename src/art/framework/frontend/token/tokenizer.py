@@ -36,7 +36,7 @@ class Tokenizer(Entity):
         self._escaped = False  # True if codepoint has been derived from escape sequence
         self._statistics = statistics
         self._diagnostics = diagnostics
-        self.advance()  #
+        self.advance()
 
     def __hash__(self):
         """
@@ -337,7 +337,10 @@ class Tokenizer(Entity):
         Usually called by lexical analyzers.
         """
         if self._snapshots:
+            self._token.reset()
             self._content_position = self._snapshots.pop()
+            self._lexeme_position = self._content_position
+            self.advance()
 
     @abstractmethod
     def validate(self):

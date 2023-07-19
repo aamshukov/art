@@ -530,23 +530,19 @@ class Test(unittest.TestCase):
         lexer = Test.get_lexer('>')
         lexer.next_lexeme()
         assert lexer.token.kind == TokenKind.GREATER_THAN_SIGN
-        lexer = Test.get_lexer('>>')
+        lexer = Test.get_lexer('>>')  # >  >
         lexer.next_lexeme()
         assert lexer.token.kind == TokenKind.GREATER_THAN_SIGN
         lexer.next_lexeme()
         assert lexer.token.kind == TokenKind.GREATER_THAN_SIGN
         lexer = Test.get_lexer('>=')
         lexer.next_lexeme()
-        assert lexer.token.kind == TokenKind.GREATER_THAN_SIGN
-        lexer.next_lexeme()
-        assert lexer.token.kind == TokenKind.EQUALS_SIGN
-        lexer = Test.get_lexer('>>=')
+        assert lexer.token.kind == TokenKind.GREATER_THAN_OR_EQUAL
+        lexer = Test.get_lexer('>>=')  # >  >=
         lexer.next_lexeme()
         assert lexer.token.kind == TokenKind.GREATER_THAN_SIGN
         lexer.next_lexeme()
-        assert lexer.token.kind == TokenKind.GREATER_THAN_SIGN
-        lexer.next_lexeme()
-        assert lexer.token.kind == TokenKind.EQUALS_SIGN
+        assert lexer.token.kind == TokenKind.GREATER_THAN_OR_EQUAL
         lexer = Test.get_lexer('gt')
         lexer.next_lexeme()
         assert lexer.token.kind == TokenKind.COMP_GREATER_THAN
@@ -606,9 +602,75 @@ class Test(unittest.TestCase):
         lexer.next_lexeme()
         assert lexer.token.kind == TokenKind.GREATER_THAN_SIGN
         lexer.next_lexeme()
-        assert lexer.token.kind == TokenKind.GREATER_THAN_SIGN
+        assert lexer.token.kind == TokenKind.GREATER_THAN_OR_EQUAL
+
+    def test_dots_operators_success(self):
+        lexer = Test.get_lexer('.')
+        lexer.next_lexeme()
+        assert lexer.token.kind == TokenKind.DOT
+        lexer = Test.get_lexer('..')
+        lexer.next_lexeme()
+        assert lexer.token.kind == TokenKind.RANGE
+        lexer = Test.get_lexer('...')
+        lexer.next_lexeme()
+        assert lexer.token.kind == TokenKind.ELLIPSES
+        lexer = Test.get_lexer('. .')
+        lexer.next_lexeme()
+        assert lexer.token.kind == TokenKind.DOT
+        lexer.next_lexeme()
+        assert lexer.token.kind == TokenKind.WS
+        lexer.next_lexeme()
+        assert lexer.token.kind == TokenKind.DOT
+        lexer = Test.get_lexer('.. ..')
+        lexer.next_lexeme()
+        assert lexer.token.kind == TokenKind.RANGE
+        lexer.next_lexeme()
+        assert lexer.token.kind == TokenKind.WS
+        lexer.next_lexeme()
+        assert lexer.token.kind == TokenKind.RANGE
+        lexer = Test.get_lexer('... ...')
+        lexer.next_lexeme()
+        assert lexer.token.kind == TokenKind.ELLIPSES
+        lexer.next_lexeme()
+        assert lexer.token.kind == TokenKind.WS
+        lexer.next_lexeme()
+        assert lexer.token.kind == TokenKind.ELLIPSES
+
+    def test_plus_success(self):
+        lexer = Test.get_lexer('+')
+        lexer.next_lexeme()
+        assert lexer.token.kind == TokenKind.PLUS_SIGN
+        lexer = Test.get_lexer('++')
+        lexer.next_lexeme()
+        assert lexer.token.kind == TokenKind.INCREMENT
+        lexer = Test.get_lexer('+=')
+        lexer.next_lexeme()
+        assert lexer.token.kind == TokenKind.ADD_ASSIGNMENT
+
+    def test_hyphens_success(self):
+        lexer = Test.get_lexer('-')
+        lexer.next_lexeme()
+        assert lexer.token.kind == TokenKind.HYPHEN_MINUS
+        lexer = Test.get_lexer('--')
+        lexer.next_lexeme()
+        assert lexer.token.kind == TokenKind.DECREMENT
+        lexer = Test.get_lexer('-=')
+        lexer.next_lexeme()
+        assert lexer.token.kind == TokenKind.SUB_ASSIGNMENT
+        lexer = Test.get_lexer('->')
+        lexer.next_lexeme()
+        assert lexer.token.kind == TokenKind.ARROW
+
+    def test_equal_success(self):
+        lexer = Test.get_lexer('=')
         lexer.next_lexeme()
         assert lexer.token.kind == TokenKind.EQUALS_SIGN
+        lexer = Test.get_lexer('==')
+        lexer.next_lexeme()
+        assert lexer.token.kind == TokenKind.EQUAL
+        lexer = Test.get_lexer('=>')
+        lexer.next_lexeme()
+        assert lexer.token.kind == TokenKind.DOUBLE_ARROW
 
 
 if __name__ == '__main__':

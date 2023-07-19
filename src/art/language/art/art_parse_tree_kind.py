@@ -2,11 +2,11 @@
 # -*- encoding: utf-8 -*-
 # UI Lab Inc. Arthur Amshukov
 #
-""" Parse tree kinds """
+""" Art parse tree kinds """
 from enum import IntEnum, auto
 
 
-class ParseTreeKind(IntEnum):
+class ArtParseTreeKind(IntEnum):
     """
     """
     UNKNOWN = auto()

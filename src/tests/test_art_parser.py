@@ -11,11 +11,12 @@ from art.framework.frontend.content.content import Content
 from art.framework.frontend.grammar.grammar import Grammar
 from art.framework.frontend.grammar.grammar_algorithms import GrammarAlgorithms
 from art.framework.frontend.parser.parse_context import ParseContext
-from art.framework.frontend.parser.parse_tree_domain_helper import ParseTreeDomainHelper
-from art.framework.frontend.parser.parse_tree_kind import ParseTreeKind
+from art.framework.frontend.parser.parse_domain_helper import ParseTreeDomainHelper
 from art.framework.frontend.statistics.statistics import Statistics
 from art.framework.frontend.token.token_kind import TokenKind
 from art.framework.frontend.lexical_analyzer.lexical_analyzer import LexicalAnalyzer
+from art.language.art.art_domain_helper import ArtDomainHelper
+from art.language.art.art_parse_tree_kind import ArtParseTreeKind
 from art.language.art.art_parser import ArtParser
 from art.language.art.art_tokenizer import ArtTokenizer
 
@@ -78,7 +79,7 @@ class Test(unittest.TestCase):
         parser.lexical_analyzer.next_lexeme()
         tree = parser.parse_fully_qualified_identifier()
         ParseTreeDomainHelper.generate_graphviz(tree, Test.get_dot_filepath(inspect.currentframe().f_code.co_name))
-        assert tree.kind == ParseTreeKind.UNKNOWN
+        assert tree.kind == ArtParseTreeKind.UNKNOWN
         assert not parser.diagnostics.status
 
     def test_fully_qualified_identifier_1_success(self):
@@ -91,7 +92,7 @@ class Test(unittest.TestCase):
             pass
         tree = parser.parse_fully_qualified_identifier()
         ParseTreeDomainHelper.generate_graphviz(tree, Test.get_dot_filepath(inspect.currentframe().f_code.co_name))
-        tree_str = ParseTreeDomainHelper.to_string(tree)
+        tree_str = ArtDomainHelper.to_string(tree)
         print(tree_str)
         assert tree_str == program.strip(' \n')
         assert parser.diagnostics.status
@@ -106,7 +107,7 @@ class Test(unittest.TestCase):
             pass
         tree = parser.parse_fully_qualified_identifier()
         ParseTreeDomainHelper.generate_graphviz(tree, Test.get_dot_filepath(inspect.currentframe().f_code.co_name))
-        tree_str = ParseTreeDomainHelper.to_string(tree)
+        tree_str = ArtDomainHelper.to_string(tree)
         print(tree_str)
         assert tree_str == program.strip(' \n.')
         assert parser.diagnostics.status
@@ -121,7 +122,7 @@ class Test(unittest.TestCase):
             pass
         tree = parser.parse_fully_qualified_identifier()
         ParseTreeDomainHelper.generate_graphviz(tree, Test.get_dot_filepath(inspect.currentframe().f_code.co_name))
-        tree_str = ParseTreeDomainHelper.to_string(tree)
+        tree_str = ArtDomainHelper.to_string(tree)
         print(tree_str)
         assert tree_str == program.strip(' \n')
         assert parser.diagnostics.status
@@ -136,7 +137,7 @@ class Test(unittest.TestCase):
             pass
         tree = parser.parse_fully_qualified_identifier()
         ParseTreeDomainHelper.generate_graphviz(tree, Test.get_dot_filepath(inspect.currentframe().f_code.co_name))
-        tree_str = ParseTreeDomainHelper.to_string(tree)
+        tree_str = ArtDomainHelper.to_string(tree)
         print(tree_str)
         assert tree_str == program.strip(' \n')
         assert parser.diagnostics.status
@@ -151,7 +152,7 @@ class Test(unittest.TestCase):
             pass
         tree = parser.parse_fully_qualified_identifier()
         ParseTreeDomainHelper.generate_graphviz(tree, Test.get_dot_filepath(inspect.currentframe().f_code.co_name))
-        tree_str = ParseTreeDomainHelper.to_string(tree)
+        tree_str = ArtDomainHelper.to_string(tree)
         print(tree_str)
         assert tree_str == program.strip(' \n')
         assert parser.diagnostics.status
@@ -166,7 +167,7 @@ class Test(unittest.TestCase):
             pass
         tree = parser.parse_fully_qualified_identifier()
         ParseTreeDomainHelper.generate_graphviz(tree, Test.get_dot_filepath(inspect.currentframe().f_code.co_name))
-        tree_str = ParseTreeDomainHelper.to_string(tree)
+        tree_str = ArtDomainHelper.to_string(tree)
         print(tree_str)
         assert tree_str == 'parser.lexical_analyzer'
         assert parser.diagnostics.status
@@ -190,6 +191,6 @@ class Test(unittest.TestCase):
             ParseTreeDomainHelper.generate_graphviz(tree,
                                                     Test.get_dot_filepath(
                                                         f'{inspect.currentframe().f_code.co_name}_{filename}'))
-            tree_str = ParseTreeDomainHelper.to_string(tree)
+            tree_str = ArtDomainHelper.to_string(tree)
             print(tree_str)
             assert parser.diagnostics.status

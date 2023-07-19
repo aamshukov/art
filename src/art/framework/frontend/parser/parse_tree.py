@@ -7,7 +7,6 @@ from art.framework.core.colors import Colors
 from art.framework.core.flags import Flags
 from art.framework.core.graph_algorithms import GraphAlgorithms
 from art.framework.core.tree import Tree
-from art.framework.frontend.parser.parse_tree_kind import ParseTreeKind
 
 
 class ParseTree(Tree):
@@ -15,7 +14,7 @@ class ParseTree(Tree):
     """
     def __init__(self,
                  id,
-                 kind=ParseTreeKind.UNKNOWN,
+                 kind,
                  label='',
                  value=None,  # IR backend symbol
                  attributes=None,
