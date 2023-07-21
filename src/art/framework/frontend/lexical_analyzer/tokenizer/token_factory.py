@@ -6,8 +6,8 @@
 from copy import deepcopy
 
 from art.framework.core.base import Base
-from art.framework.frontend.token.token import Token
-from art.framework.frontend.token.token_kind import TokenKind
+from art.framework.frontend.lexical_analyzer.tokenizer.token import Token
+from art.framework.frontend.lexical_analyzer.tokenizer.token_kind import TokenKind
 
 
 class TokenFactory(Base):

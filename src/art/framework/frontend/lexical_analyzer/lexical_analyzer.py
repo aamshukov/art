@@ -5,8 +5,8 @@
 from copy import deepcopy
 from collections import deque
 from art.framework.core.entity import Entity
-from art.framework.frontend.token.token_factory import TokenFactory
-from art.framework.frontend.token.token_kind import TokenKind
+from art.framework.frontend.lexical_analyzer.tokenizer.token_factory import TokenFactory
+from art.framework.frontend.lexical_analyzer.tokenizer.token_kind import TokenKind
 
 
 class LexicalAnalyzer(Entity):
@@ -116,3 +116,10 @@ class LexicalAnalyzer(Entity):
         self._tokens.clear()
         self._prev_token.reset()
         self._tokenizer.rewind_to_snapshot()
+
+    def discard_snapshot(self):
+        """
+        Discard the last saved content position for backtracking.
+        Usually called by lexical analyzers.
+        """
+        self._tokenizer.discard_snapshot()

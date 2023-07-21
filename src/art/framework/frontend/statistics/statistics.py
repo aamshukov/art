@@ -5,7 +5,7 @@
 """ Statistics """
 from collections import defaultdict
 from art.framework.core.base import Base
-from art.framework.frontend.token.token_kind import TokenKind
+from art.framework.frontend.lexical_analyzer.tokenizer.token_kind import TokenKind
 
 NUMBER_OF_LEXEMES = 'number_of_lexemes'
 NUMBER_OF_KEYWORDS = 'number_of_keywords'
@@ -31,7 +31,7 @@ class Statistics(Base):
                 self._quantities[NUMBER_OF_IDENTIFIERS] += 1
             case TokenKind.CASE | TokenKind.BOOLEAN_KW:
                 self._quantities[NUMBER_OF_KEYWORDS] += 1
-        # ?? print(token)
+        # ?? print(tokenizer)
 
     @property
     def quantities(self):

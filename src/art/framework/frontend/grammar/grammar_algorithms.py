@@ -307,8 +307,10 @@ class GrammarAlgorithms(Base):
         non_terminals = GrammarAlgorithms.collect_non_terminals(grammar)
         for non_terminal in non_terminals:
             sets = list()
-            sets.append(non_terminal.first)
-            sets.append(non_terminal.follow)
+            if non_terminal.first:
+                sets.append(non_terminal.first)
+            if non_terminal.follow:
+                sets.append(non_terminal.follow)
             trunc = GrammarAlgorithms.truncate(grammar, sets, k)
             non_terminal.la.clear()
             non_terminal.la.extend(trunc)

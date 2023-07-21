@@ -3,8 +3,8 @@
 # UI Lab Inc. Arthur Amshukov
 #
 import unittest
-from art.framework.frontend.token.token import Token
-from art.framework.frontend.token.token_kind import TokenKind
+from art.framework.frontend.lexical_analyzer.tokenizer.token import Token
+from art.framework.frontend.lexical_analyzer.tokenizer.token_kind import TokenKind
 from art.framework.frontend.statistics.statistics import Statistics
 from art.framework.frontend.statistics.statistics import (NUMBER_OF_LEXEMES,
                                                           NUMBER_OF_KEYWORDS,

@@ -23,7 +23,10 @@ class ParseTreeDomainHelper(Base):
         What a weird logic... anytree.
         """
         def get_label(symbol):
-            return f'{symbol.label}:{symbol.token.literal}'
+            if symbol.token:
+                return f'{symbol.label}:{symbol.token.literal}'
+            else:
+                return f'{symbol.label}'
 
         if tree:
             preorder, postorder = GraphAlgorithms.calculate_tree_traverses(tree)

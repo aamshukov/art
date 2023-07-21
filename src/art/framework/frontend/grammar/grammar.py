@@ -16,7 +16,7 @@ from art.framework.frontend.grammar.grammar_symbol_kind import GrammarSymbolKind
 from art.framework.frontend.grammar.grammar_tokenizer import GrammarTokenizer
 from art.framework.frontend.lexical_analyzer.lexical_analyzer import LexicalAnalyzer
 from art.framework.frontend.statistics.statistics import Statistics
-from art.framework.frontend.token.token_kind import TokenKind
+from art.framework.frontend.lexical_analyzer.tokenizer.token_kind import TokenKind
 
 
 class Grammar(Base):

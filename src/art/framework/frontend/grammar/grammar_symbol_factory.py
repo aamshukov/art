@@ -4,7 +4,6 @@
 #
 """ Grammar symbol factory """
 from copy import deepcopy
-
 from art.framework.core.base import Base
 from art.framework.core.flags import Flags
 from art.framework.frontend.grammar.grammar_symbol import GrammarSymbol

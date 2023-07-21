@@ -4,8 +4,8 @@
 #
 import unittest
 from art.framework.core.text import Text
-from art.framework.frontend.token.token import Token
-from art.framework.frontend.token.token_kind import TokenKind
+from art.framework.frontend.lexical_analyzer.tokenizer.token import Token
+from art.framework.frontend.lexical_analyzer.tokenizer.token_kind import TokenKind
 
 
 class Test(unittest.TestCase):

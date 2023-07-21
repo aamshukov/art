@@ -12,8 +12,10 @@ from art.framework.frontend.grammar.grammar import Grammar
 from art.framework.frontend.grammar.grammar_algorithms import GrammarAlgorithms
 from art.framework.frontend.parser.parse_context import ParseContext
 from art.framework.frontend.parser.parse_domain_helper import ParseTreeDomainHelper
+from art.framework.frontend.parser.parse_tree_factory import ParseTreeFactory
 from art.framework.frontend.statistics.statistics import Statistics
-from art.framework.frontend.token.token_kind import TokenKind
+from art.framework.frontend.lexical_analyzer.tokenizer.token_factory import TokenFactory
+from art.framework.frontend.lexical_analyzer.tokenizer.token_kind import TokenKind
 from art.framework.frontend.lexical_analyzer.lexical_analyzer import LexicalAnalyzer
 from art.language.art.art_domain_helper import ArtDomainHelper
 from art.language.art.art_parse_tree_kind import ArtParseTreeKind
@@ -37,6 +39,9 @@ class Test(unittest.TestCase):
 
         identifier                 : 'identifier'
                                    ;
+
+        terminal                   : 'terminal'
+                                   ;
     """
 
     def __init__(self, *args, **kwargs):
@@ -47,6 +52,12 @@ class Test(unittest.TestCase):
     @staticmethod
     def get_dot_filepath(filename):
         return rf'd:\tmp\art\{filename}.png'
+
+    @staticmethod
+    def make_tree(kind, grammar):
+        """
+        """
+        return ParseTreeFactory.make_tree(kind, grammar, TokenFactory.UNKNOWN_TOKEN)
 
     @staticmethod
     def get_parser(schema, program):
@@ -76,11 +87,14 @@ class Test(unittest.TestCase):
         program = """
         """
         parser = Test.get_parser(Test.fq_id_grammar, program)
-        parser.lexical_analyzer.next_lexeme()
-        tree = parser.parse_fully_qualified_identifier()
-        ParseTreeDomainHelper.generate_graphviz(tree, Test.get_dot_filepath(inspect.currentframe().f_code.co_name))
-        assert tree.kind == ArtParseTreeKind.UNKNOWN
-        assert not parser.diagnostics.status
+        while (not parser.lexical_analyzer.eos() and
+               parser.lexical_analyzer.next_lexeme().kind != TokenKind.IDENTIFIER):
+            pass
+        if parser.lexical_analyzer.token.kind == TokenKind.IDENTIFIER:
+            tree = parser.parse_fully_qualified_identifier()
+            ParseTreeDomainHelper.generate_graphviz(tree, Test.get_dot_filepath(inspect.currentframe().f_code.co_name))
+            assert tree.kind == ArtParseTreeKind.UNKNOWN
+        assert parser.diagnostics.status
 
     def test_fully_qualified_identifier_1_success(self):
         program = """
@@ -186,7 +200,9 @@ class Test(unittest.TestCase):
                     kind == TokenKind.EOL or
                     kind == TokenKind.EOS):
                 continue
-            tree = parser.parse_literal()
+            root = Test.make_tree(ArtParseTreeKind.UNKNOWN, parser.grammar)
+            tree = parser.consume_literal(root)
+            tree.papa = None
             filename = Grammar.normalize_symbol_name(tree.symbol.token.literal)
             ParseTreeDomainHelper.generate_graphviz(tree,
                                                     Test.get_dot_filepath(

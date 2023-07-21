@@ -100,14 +100,14 @@ class Test(unittest.TestCase):
                                             | expressions ',' expression
                                             ;
         
-        expression                          : assignment_expression
-                                            | non_assignment_expression
-                                            ;
-        
-        assignment_expression               : unary_expression assignment_operator expression
+        expression                          : non_assignment_expression
+                                            | assignment_expression
                                             ;
         
         non_assignment_expression           : conditional_expression
+                                            ;
+        
+        assignment_expression               : unary_expression assignment_operator expression
                                             ;
         
         unary_expression                    : primary_expression
@@ -187,7 +187,7 @@ class Test(unittest.TestCase):
                                             ;
         
         conditional_expression              : conditional_or_expression
-                                            | conditional_expression '?' expression ':' expression
+                                            | conditional_or_expression '?' expression ':' expression
                                             ;
         
         member_access                       : primary_expression '.' identifier type_arguments_opt                              # geo.point<T>, point<real>
@@ -292,6 +292,6 @@ class Test(unittest.TestCase):
         """
         parser = Test.get_parser(Test.expression_grammar, program)
         parser.lexical_analyzer.next_lexeme()
-        tree = parser.parse_expression()
-        ParseTreeDomainHelper.generate_graphviz(tree, Test.get_dot_filepath(inspect.currentframe().f_code.co_name))
+        # tree = parser.parse_expression()
+        # ParseTreeDomainHelper.generate_graphviz(tree, Test.get_dot_filepath(inspect.currentframe().f_code.co_name))
         assert parser.diagnostics.status

@@ -9,7 +9,7 @@ from art.framework.core.entity import Entity
 from art.framework.core.flags import Flags
 from art.framework.core.status import Status
 from art.framework.core.text import Text
-from art.framework.frontend.token.token_factory import TokenFactory
+from art.framework.frontend.lexical_analyzer.tokenizer.token_factory import TokenFactory
 
 
 class Tokenizer(Entity):
@@ -341,6 +341,14 @@ class Tokenizer(Entity):
             self._content_position = self._snapshots.pop()
             self._lexeme_position = self._content_position
             self.advance()
+
+    def discard_snapshot(self):
+        """
+        Discard the last saved content position for backtracking.
+        Usually called by lexical analyzers.
+        """
+        if self._snapshots:
+            self._snapshots.pop()
 
     @abstractmethod
     def validate(self):

@@ -7,7 +7,7 @@ from art.framework.core.diagnostics import Diagnostics
 from art.framework.frontend.data_provider.string_data_provider import StringDataProvider
 from art.framework.frontend.content.content import Content
 from art.framework.frontend.statistics.statistics import Statistics
-from art.framework.frontend.token.token_kind import TokenKind
+from art.framework.frontend.lexical_analyzer.tokenizer.token_kind import TokenKind
 from art.framework.frontend.lexical_analyzer.lexical_analyzer import LexicalAnalyzer
 from art.language.art.art_tokenizer import ArtTokenizer
 

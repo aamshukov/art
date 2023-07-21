@@ -5,8 +5,8 @@
 from collections import deque
 from art.framework.core.status import Status
 from art.framework.core.text import Text
-from art.framework.frontend.token.token_kind import TokenKind
-from art.framework.frontend.token.tokenizer import Tokenizer
+from art.framework.frontend.lexical_analyzer.tokenizer.token_kind import TokenKind
+from art.framework.frontend.lexical_analyzer.tokenizer.tokenizer import Tokenizer
 
 
 class ArtTokenizer(Tokenizer):

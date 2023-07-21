@@ -5,7 +5,6 @@
 """ Parser """
 from abc import abstractmethod
 from art.framework.core.base import Base
-from art.framework.core.status import Status
 
 
 class Parser(Base):
@@ -56,20 +55,6 @@ class Parser(Base):
         """
         """
         return self._diagnostics
-
-    def accept(self, token_kind):
-        """
-        """
-        if self._lexical_analyzer.token.kind == token_kind:
-            result = True
-            self._lexical_analyzer.next_lexeme()
-        else:
-            result = False
-            self._diagnostics.add(Status(f'Expected token {token_kind.name}, mismatch occurred at '
-                                         f'{self._lexical_analyzer.get_content_position()}',
-                                         'parser',
-                                         Status.INVALID_TOKEN))
-        return result
 
     @abstractmethod
     def parse(self,*args, **kwargs):

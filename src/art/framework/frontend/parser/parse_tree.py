@@ -69,12 +69,14 @@ class ParseTree(Tree):
         def default_action(_tree, *_args, **_kwargs):
             visitor.visit(_tree, *_args, **_kwargs)
 
-        preorder_action = kwargs.pop('preorder', '')
+        preorder = kwargs.pop('preorder', False)
+        postorder = kwargs.pop('postorder', False)
+        preorder_action = None
         postorder_action = None
-        if not preorder_action:
-            postorder_action = kwargs.pop('postorder', '')
-            if not postorder_action:
-                preorder_action = default_action
+        if preorder:
+            preorder_action = default_action
+        if postorder:
+            postorder_action = default_action
         GraphAlgorithms.calculate_tree_traverses(self,
                                                  preorder_action=preorder_action,
                                                  postorder_action=postorder_action)
