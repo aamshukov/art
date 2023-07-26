@@ -7,6 +7,7 @@ from anytree import Node
 from anytree.exporter import DotExporter
 from art.framework.core.base import Base
 from art.framework.core.graph_algorithms import GraphAlgorithms
+from art.framework.frontend.lexical_analyzer.tokenizer.token_kind import TokenKind
 
 
 class ParseTreeDomainHelper(Base):
@@ -24,7 +25,16 @@ class ParseTreeDomainHelper(Base):
         """
         def get_label(symbol):
             if symbol.token:
-                return f'{symbol.label}:{symbol.token.literal}'
+                if symbol.token.kind == TokenKind.EOL:
+                    return f'{symbol.label}:EOL'
+                elif symbol.token.kind == TokenKind.WS:
+                    return f'{symbol.label}:WS'
+                elif symbol.token.kind == TokenKind.INDENT:
+                    return f'{symbol.label}:INDENT'
+                elif symbol.token.kind == TokenKind.DEDENT:
+                    return f'{symbol.label}:DEDENT'
+                else:
+                    return f'{symbol.label}:{symbol.token.literal}'
             else:
                 return f'{symbol.label}'
 

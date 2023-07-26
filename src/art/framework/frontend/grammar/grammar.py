@@ -34,6 +34,8 @@ class Grammar(Base):
         self._pool['ε'] = GrammarSymbolFactory.epsilon_symbol()
         self._pool['λ'] = GrammarSymbolFactory.epsilon_symbol()
         self._pool[GrammarSymbolFactory.UNKNOWN_SYMBOL.name] = GrammarSymbolFactory.unknown_symbol()
+        # self._pool['INDENT'] = GrammarSymbolFactory.create('INDENT', GrammarSymbolKind.NON_TERMINAL)
+        # self._pool['DEDENT'] = GrammarSymbolFactory.create('DEDENT', GrammarSymbolKind.NON_TERMINAL)
 
     @property
     def name(self):
@@ -110,7 +112,7 @@ class Grammar(Base):
                 case TokenKind.SEMICOLON:
                     lhs = None
                     rhs.clear()
-                case TokenKind.STRING:
+                case TokenKind.STRING_KW | TokenKind.STRING:
                     rhs.append(token.literal)
                 case TokenKind.SINGLE_LINE_COMMENT:
                     pass

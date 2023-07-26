@@ -15,8 +15,7 @@ class GrammarSymbol(Base):
                  id,
                  name='',
                  symbol_type=GrammarSymbolKind.TERMINAL,
-                 flags=Flags.CLEAR,
-                 version='1.0'):
+                 flags=Flags.CLEAR):
         """
         """
         super().__init__()

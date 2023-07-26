@@ -44,8 +44,7 @@ class GrammarSymbolFactory(Base):
         return GrammarSymbol(GrammarSymbolFactory.get_next_id(),
                              name=name,
                              symbol_type=symbol_type,
-                             flags=flags,
-                             version=version)
+                             flags=flags)
 
     @staticmethod
     def unknown_symbol():

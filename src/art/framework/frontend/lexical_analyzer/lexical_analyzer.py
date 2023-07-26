@@ -72,6 +72,18 @@ class LexicalAnalyzer(Entity):
         """
         return self._token.kind == TokenKind.EOS
 
+    @property
+    def statistics(self):
+        """
+        """
+        return self._statistics
+
+    @property
+    def diagnostics(self):
+        """
+        """
+        return self._diagnostics
+
     def validate(self):
         """
         """

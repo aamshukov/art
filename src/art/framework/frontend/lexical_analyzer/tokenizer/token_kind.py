@@ -28,15 +28,13 @@ class TokenKind(IntEnum):
 
     REAL = auto()  # real number
     REAL_KW = auto()
-    FLOAT_KW = auto()
-    DOUBLE_KW = auto()
-    DECIMAL_KW = auto()
 
     BOOLEAN_KW = auto()
     TRUE = auto()
     FALSE = auto()
 
-    STRING = auto()
+    STRING = auto()     # string literal
+    STRING_KW = auto()  # string type
 
     ENUM = auto()
     STRUCT = auto()
@@ -193,8 +191,9 @@ class TokenKind(IntEnum):
     SINGLE_LINE_COMMENT = auto()  # # //
     MULTI_LINE_COMMENT = auto()  # /* */
 
-    COLUMN = auto()  # column
-    ROW = auto()  # row
-    UNCHECKED = auto()  # unchecked
+    COLUMN_KW = auto()  # column
+    ROW_KW = auto()  # row
+    JAGGED_KW = auto()
+    UNCHECKED_KW = auto()  # unchecked
 
     ERRONEOUS = auto()

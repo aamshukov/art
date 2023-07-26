@@ -201,7 +201,7 @@ class Test(unittest.TestCase):
                     kind == TokenKind.EOS):
                 continue
             root = Test.make_tree(ArtParseTreeKind.UNKNOWN, parser.grammar)
-            tree = parser.consume_literal(root)
+            tree = parser.parse_literal(root)
             tree.papa = None
             filename = Grammar.normalize_symbol_name(tree.symbol.token.literal)
             ParseTreeDomainHelper.generate_graphviz(tree,

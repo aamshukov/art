@@ -32,6 +32,7 @@ class Status(Base):
     INVALID_CHARACTER       = 133 | ERROR_MASK      # noqa
     INVALID_STRING_LITERAL  = 134 | ERROR_MASK      # noqa
     INVALID_TOKEN           = 135 | ERROR_MASK      # noqa
+    INVALID_CLOSING_PAREN   = 136 | ERROR_MASK      # noqa
 
     def __init__(self,
                  text,  # description

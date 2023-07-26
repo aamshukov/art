@@ -24,6 +24,7 @@ class ArtTokenizer(Tokenizer):
         super().__init__(id, content, statistics, diagnostics, version=version)
         self._keywords = ArtTokenizer.populate_keywords()
         self._nesting_level = 0  # parentheses (() [] {}) nesting level
+        self._parens = deque()
         self._beginning_of_line = True
         self._indent_size = indent_size
         self._indents_level = 0  # level of nested indents/dedents
@@ -48,12 +49,12 @@ class ArtTokenizer(Tokenizer):
         result['boolean'] = TokenKind.BOOLEAN_KW
         result['true'] = TokenKind.TRUE
         result['false'] = TokenKind.FALSE
-        result['string'] = TokenKind.STRING
+        result['string'] = TokenKind.STRING_KW
         result['enum'] = TokenKind.ENUM
-        result['struct'] = TokenKind.STRUCT
-        result['record'] = TokenKind.RECORD
-        result['class'] = TokenKind.CLASS
-        result['interface'] = TokenKind.INTERFACE
+        result['struct'] = TokenKind.STRUCT         # mutable aggregation type
+        result['record'] = TokenKind.RECORD         # immutable aggregation type
+        result['class'] = TokenKind.CLASS           # state and behavior
+        result['interface'] = TokenKind.INTERFACE   # protocol
         result['abstract'] = TokenKind.ABSTRACT
         result['mixin'] = TokenKind.MIXIN
         result['import'] = TokenKind.IMPORT
@@ -118,7 +119,10 @@ class ArtTokenizer(Tokenizer):
         result['le'] = TokenKind.COMP_LESS_THAN_OR_EQUAL
         result['gt'] = TokenKind.COMP_GREATER_THAN
         result['ge'] = TokenKind.COMP_GREATER_THAN_OR_EQUAL
-
+        result['column'] = TokenKind.COLUMN_KW
+        result['row'] = TokenKind.ROW_KW
+        result['jagged'] = TokenKind.JAGGED_KW
+        result['unchecked'] = TokenKind.UNCHECKED_KW
         return result
 
     def lookup(self, name):
@@ -493,29 +497,43 @@ class ArtTokenizer(Tokenizer):
             self.scan_identifier()
         elif Text.ascii_hexadecimal_digit(codepoint):  # covers all ASCII digits bin, oct, dec, hex
             self.scan_number()
-        elif Text.left_parenthesis(codepoint):  # '('
+        elif (Text.left_parenthesis(codepoint) or  # '('
+              Text.left_square_bracket(codepoint) or  # '['
+              Text.left_curly_bracket(codepoint)):  # '{'
             self._nesting_level += 1
-            self._token.kind = TokenKind.LEFT_PARENTHESIS
+            self._parens.append((codepoint, self._content_position))
+            if Text.left_parenthesis(codepoint):  # '('
+                self._token.kind = TokenKind.LEFT_PARENTHESIS
+            elif Text.left_square_bracket(codepoint):  # '['
+                self._token.kind = TokenKind.LEFT_SQUARE_BRACKET
+            elif Text.left_curly_bracket(codepoint):  # '{'
+                self._token.kind = TokenKind.LEFT_CURLY_BRACKET
             self.advance()
-        elif Text.right_parenthesis(codepoint):  # ')'
-            self._nesting_level -= 1
-            self._token.kind = TokenKind.RIGHT_PARENTHESIS
-            self.advance()
-        elif Text.left_square_bracket(codepoint):  # '['
-            self._nesting_level += 1
-            self._token.kind = TokenKind.LEFT_SQUARE_BRACKET
-            self.advance()
-        elif Text.right_square_bracket(codepoint):  # ']'
-            self._nesting_level -= 1
-            self._token.kind = TokenKind.RIGHT_SQUARE_BRACKET
-            self.advance()
-        elif Text.left_curly_bracket(codepoint):  # '{'
-            self._nesting_level += 1
-            self._token.kind = TokenKind.LEFT_CURLY_BRACKET
-            self.advance()
-        elif Text.right_curly_bracket(codepoint):  # '}'
-            self._nesting_level -= 1
-            self._token.kind = TokenKind.RIGHT_CURLY_BRACKET
+        elif (Text.right_parenthesis(codepoint) or  # ')'
+              Text.right_square_bracket(codepoint) or  # ']'
+              Text.right_curly_bracket(codepoint)):  # '}'
+            if self._nesting_level:
+                self._nesting_level -= 1
+                left_paren, position = self._parens.pop()
+                if not (Text.left_parenthesis(left_paren) and Text.right_parenthesis(codepoint) or
+                        Text.left_square_bracket(left_paren) and Text.right_square_bracket(codepoint) or
+                        Text.left_curly_bracket(left_paren) and Text.right_curly_bracket(codepoint)):
+                    self._diagnostics.add(Status(f'Closing {chr(codepoint)} at '
+                                                 f'{self.content.get_location(self._content_position)} does not match '
+                                                 f'{chr(left_paren)} at {self.content.get_location(position)}',
+                                                 'tokenizer',
+                                                 Status.INVALID_CLOSING_PAREN))
+            else:
+                self._diagnostics.add(Status(f'Unmatched {chr(codepoint)} at '
+                                             f'{self.content.get_location(self._content_position)}',
+                                             'tokenizer',
+                                             Status.INVALID_CLOSING_PAREN))
+            if Text.right_parenthesis(codepoint):  # ')':
+                self._token.kind = TokenKind.RIGHT_PARENTHESIS
+            elif Text.right_square_bracket(codepoint):  # ']'
+                self._token.kind = TokenKind.RIGHT_SQUARE_BRACKET
+            elif Text.right_curly_bracket(codepoint):  # '}'
+                self._token.kind = TokenKind.RIGHT_CURLY_BRACKET
             self.advance()
         elif self._codepoint == 0x0000000D:  # fast path for \r\n
             self.advance()
