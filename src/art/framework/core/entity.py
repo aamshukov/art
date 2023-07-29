@@ -4,23 +4,32 @@
 #
 """ Entity type """
 from abc import abstractmethod
+from art.framework.core.flags import Flags
 from art.framework.core.value import Value
 
 
 class Entity(Value):
     """
     """
-    def __init__(self, id, version='1.0'):
+    def __init__(self,
+                 id,
+                 value=None,
+                 attributes=None,
+                 flags=Flags.CLEAR,
+                 version='1.0'):
         """
         """
-        super().__init__(version)
-        self._id = id
+        super().__init__(value, version)
+        self.id = id
+        self.attributes = attributes if attributes else dict()
+        self.flags = flags
 
     @abstractmethod
     def __hash__(self):
         """
         """
-        result = super().__hash__() ^ hash(self._id)
+        result = super().__hash__()
+        result ^= hash(self.id)
         return result
 
     @abstractmethod
@@ -28,7 +37,7 @@ class Entity(Value):
         """
         """
         result = (super().__eq__(other) and
-                  self._id == other.id)
+                  self.id == other.id)
         return result
 
     @abstractmethod
@@ -36,7 +45,7 @@ class Entity(Value):
         """
         """
         result = (super().__lt__(other) and
-                  self._id < other.id)
+                  self.id < other.id)
         return result
 
     @abstractmethod
@@ -44,14 +53,8 @@ class Entity(Value):
         """
         """
         result = (super().__le__(other) and
-                  self._id <= other.id)
+                  self.id <= other.id)
         return result
-
-    @property
-    def id(self):
-        """
-        """
-        return self._id
 
     @abstractmethod
     def validate(self):

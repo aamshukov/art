@@ -2,9 +2,9 @@
 # UI Lab Inc. Arthur Amshukov
 #
 """ Tree """
+from art.framework.core.domain_helper import DomainHelper
 from art.framework.core.flags import Flags
 from art.framework.core.colors import Colors
-from art.framework.core.text import Text
 from art.framework.core.entity import Entity
 from art.framework.core.visitable import Visitable
 
@@ -15,29 +15,25 @@ class Tree(Entity, Visitable):
     def __init__(self,
                  id,
                  label='',
+                 papa=None,
                  value=None,
                  attributes=None,
                  flags=Flags.CLEAR,
                  color=Colors.UNKNOWN,
-                 papa=None,
                  version='1.0'):
         """
         """
-        super().__init__(id, version)
-        self._label = label
-        self._value = value
-        self._attributes = attributes
-        self._flags = flags
-        self._color = color
-        self._papa = papa
-        self._kids = list()
+        super().__init__(id, value, attributes, flags, version)
+        self.label = label
+        self.color = color
+        self.papa = papa
+        self.kids = list()
 
     def __repr__(self):
         """
         """
-        return f"{type(self).__name__}:{self._id}:{self._label}:{self._version}:" \
-               f"{self._value}:[{self._attributes}]:{self._flags}:" \
-               f"{self._color}:{self._papa}:[{self._kids}]]"
+        return f"{type(self).__name__}:{self.id}:{self.label}:{self.value}:" \
+               f"({DomainHelper.dict_to_string(self.attributes)}):{self.version}"
 
     __str__ = __repr__
 
@@ -45,123 +41,41 @@ class Tree(Entity, Visitable):
         """
         """
         result = super().__hash__()
-        result ^= hash(self._label)
-        result ^= hash(self._value)
+        result ^= hash(self.label)
         return result
 
     def __eq__(self, other):
         """
         """
-        result = (super().__eq__(other) and
-                  Text.equal(self._label, other.label) and
-                  self._value == other.value)
-        return result
+        return super().__eq__(other)
 
     def __lt__(self, other):
         """
         """
-        result = (super().__lt__(other) and
-                  Text.compare(self._label, other.label) < 0 and
-                  self._value < other.value)
-        return result
+        return super().__lt__(other)
 
     def __le__(self, other):
         """
         """
-        result = (super().__le__(other) and
-                  Text.compare(self._label, other.label) <= 0 and
-                  self._value <= other.value)
-        return result
-
-    @property
-    def label(self):
-        """
-        """
-        return self._label
-
-    @label.setter
-    def label(self, label):
-        """
-        """
-        self._label = label
-
-    @property
-    def value(self):
-        """
-        """
-        return self._value
-
-    @value.setter
-    def value(self, value):
-        """
-        """
-        self._value = value
-
-    @property
-    def attributes(self):
-        """
-        """
-        return self._attributes
-
-    @attributes.setter
-    def attributes(self, attributes):
-        """
-        """
-        self._attributes = attributes
-
-    @property
-    def flags(self):
-        """
-        """
-        return self._flags
-
-    @flags.setter
-    def flags(self, flags):
-        """
-        """
-        self._flags = flags
-
-    @property
-    def color(self):
-        """
-        """
-        return self._color
-
-    @color.setter
-    def color(self, color):
-        """
-        """
-        self._color = color
-
-    @property
-    def papa(self):
-        return self._papa
-
-    @papa.setter
-    def papa(self, papa):
-        self._papa = papa
-
-    @property
-    def kids(self):
-        return tuple(self._kids)
+        return super().__le__(other)
 
     def insert_kid(self, kid, index=0):
         """
         """
         kid.papa = self
-        self._kids.insert(index, kid)
+        self.kids.insert(index, kid)
 
     def add_kid(self, kid):
         """
         """
         kid.papa = self
-        self._kids.append(kid)
+        self.kids.append(kid)
 
     def remove_kid(self, kid):
         """
         """
         kid.papa = None
-        self._kids.remove(kid)
+        self.kids.remove(kid)
 
     def validate(self):
         """
@@ -171,4 +85,4 @@ class Tree(Entity, Visitable):
     def accept(self, visitor, *args, **kwargs):
         """
         """
-        pass
+        raise NotImplemented(self.accept.__qualname__)

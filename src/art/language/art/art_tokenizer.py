@@ -3,6 +3,7 @@
 #
 """ Art tokenizer """
 from collections import deque
+from art.framework.core.flags import Flags
 from art.framework.core.status import Status
 from art.framework.core.text import Text
 from art.framework.frontend.lexical_analyzer.tokenizer.token_kind import TokenKind
@@ -18,19 +19,29 @@ class ArtTokenizer(Tokenizer):
                  statistics,
                  diagnostics,
                  indent_size=4,
+                 value=None,
+                 attributes=None,
+                 flags=Flags.CLEAR,
                  version='1.0'):
         """
         """
-        super().__init__(id, content, statistics, diagnostics, version=version)
-        self._keywords = ArtTokenizer.populate_keywords()
-        self._nesting_level = 0  # parentheses (() [] {}) nesting level
-        self._parens = deque()
-        self._beginning_of_line = True
-        self._indent_size = indent_size
-        self._indents_level = 0  # level of nested indents/dedents
-        self._pending_indents = 0  # indents (if > 0) or dedents (if < 0) - from Python source code
-        self._indents = deque()  # stack of indents, off-side rule support, Peter Landin
-        self._indents.append(0)
+        super().__init__(id,
+                         content,
+                         statistics,
+                         diagnostics,
+                         value,
+                         attributes,
+                         flags,
+                         version)
+        self.keywords = ArtTokenizer.populate_keywords()
+        self.nesting_level = 0    # parentheses (() [] {}) nesting level
+        self.parens = deque()
+        self.beginning_of_line = True
+        self.indent_size = indent_size
+        self.indents_level = 0    # level of nested indents/dedents
+        self.pending_indents = 0  # indents (if > 0) or dedents (if < 0) - from Python source code
+        self.indents = deque()    # stack of indents, off-side rule support, Peter Landin
+        self.indents.append(0)
 
     @staticmethod
     def populate_keywords():
@@ -128,8 +139,8 @@ class ArtTokenizer(Tokenizer):
     def lookup(self, name):
         """
         """
-        if name in self._keywords:
-            return self._keywords[name]
+        if name in self.keywords:
+            return self.keywords[name]
         else:
             return TokenKind.IDENTIFIER
 
@@ -139,9 +150,9 @@ class ArtTokenizer(Tokenizer):
         it means in any case return TokenKind.WS.
         """
         self.advance()
-        while Text.whitespace(self._codepoint):
+        while Text.whitespace(self.codepoint):
             self.advance()
-        self._token.kind = TokenKind.WS
+        self.token.kind = TokenKind.WS
 
     @staticmethod
     def identifier_start(codepoint):
@@ -183,14 +194,14 @@ class ArtTokenizer(Tokenizer):
         """
         """
         self.advance()
-        while self.identifier_part(self._codepoint):
+        while self.identifier_part(self.codepoint):
             self.advance()
-        self._token.kind = TokenKind.IDENTIFIER
+        self.token.kind = TokenKind.IDENTIFIER
 
     def comment_start(self):
         """
         """
-        crr = self._codepoint
+        crr = self.codepoint
         nxt = self.peek()
         return (crr == 0x00000023 or                          # #
                 (crr == 0x0000002F and nxt == 0x0000002F) or  # //
@@ -200,45 +211,45 @@ class ArtTokenizer(Tokenizer):
         """
         https://docs.python.org/3/reference/lexical_analysis.html#indentation
         """
-        content_position = self._content_position
-        codepoint = self._codepoint
-        if self._beginning_of_line:
-            self._beginning_of_line = False
-            if self._content_position < self._end_content:
+        content_position = self.content_position
+        codepoint = self.codepoint
+        if self.beginning_of_line:
+            self.beginning_of_line = False
+            if self.content_position < self.end_content:
                 indent = 0
-                while (self._content_position < self._end_content and
-                       self._codepoint == 0x00000020):  # ' ':
+                while (self.content_position < self.end_content and
+                       self.codepoint == 0x00000020):  # ' ':
                     self.advance()
                     indent += 1
-                ignore = ((indent >= 0 and Text.eol(self._codepoint)) or  # blank line, either '\n' or '   \n'
+                ignore = ((indent >= 0 and Text.eol(self.codepoint)) or  # blank line, either '\n' or '   \n'
                           self.comment_start())  # comment
-                if not ignore and self._nesting_level == 0:
-                    if indent == self._indents[self._indents_level]:
+                if not ignore and self.nesting_level == 0:
+                    if indent == self.indents[self.indents_level]:
                         pass
-                    elif indent > self._indents[self._indents_level]:
-                        self._indents_level += 1
-                        self._pending_indents += 1
-                        self._indents.append(indent)
-                    else:  # indent < self._indents[self._indents_level]
-                        while (self._indents_level > 0 and
-                               indent < self._indents[self._indents_level]):
-                            self._indents_level -= 1
-                            self._pending_indents -= 1
-                            self._indents.pop()
-                        if indent != self._indents[self._indents_level]:
-                            self._token.kind = TokenKind.CORRUPTED_DEDENT
-        if self._pending_indents != 0:
-            if self._pending_indents < 0:
-                self._pending_indents += 1
-                self._token.kind = TokenKind.DEDENT
+                    elif indent > self.indents[self.indents_level]:
+                        self.indents_level += 1
+                        self.pending_indents += 1
+                        self.indents.append(indent)
+                    else:  # indent < self.indents[self.indents_level]
+                        while (self.indents_level > 0 and
+                               indent < self.indents[self.indents_level]):
+                            self.indents_level -= 1
+                            self.pending_indents -= 1
+                            self.indents.pop()
+                        if indent != self.indents[self.indents_level]:
+                            self.token.kind = TokenKind.CORRUPTED_DEDENT
+        if self.pending_indents != 0:
+            if self.pending_indents < 0:
+                self.pending_indents += 1
+                self.token.kind = TokenKind.DEDENT
             else:
-                self._pending_indents -= 1
-                self._token.kind = TokenKind.INDENT
+                self.pending_indents -= 1
+                self.token.kind = TokenKind.INDENT
         else:
-            self._content_position = content_position  # rollback
-            self._codepoint = codepoint
-        return (self._token.kind == TokenKind.INDENT or
-                self._token.kind == TokenKind.DEDENT)
+            self.content_position = content_position  # rollback
+            self.codepoint = codepoint
+        return (self.token.kind == TokenKind.INDENT or
+                self.token.kind == TokenKind.DEDENT)
 
     @staticmethod
     def digits_separator(codepoint):
@@ -277,7 +288,7 @@ class ArtTokenizer(Tokenizer):
         """
         """
         octal_prefix = False  # true if 0xxx
-        codepoint = self._codepoint
+        codepoint = self.codepoint
         if Text.ascii_zero_digit(codepoint):  # only consider ASCII numbers
             match self.advance():
                 case (0x00000062 | 0x00000042):  # b or B
@@ -308,19 +319,19 @@ class ArtTokenizer(Tokenizer):
         """
         digits = 0
         exponent_sign = False
-        value.append(self._codepoint)
+        value.append(self.codepoint)
         self.advance()  # consume e or E
-        while not Text.eos(self._codepoint):
-            if Text.ascii_decimal_digit(self._codepoint):
+        while not Text.eos(self.codepoint):
+            if Text.ascii_decimal_digit(self.codepoint):
                 digits += 1
-                value.append(self._codepoint)
+                value.append(self.codepoint)
                 self.advance()
                 continue
-            elif ArtTokenizer.exponent_sign(self._codepoint):
+            elif ArtTokenizer.exponent_sign(self.codepoint):
                 digits = 0
                 if not exponent_sign:
                     exponent_sign = True
-                    value.append(self._codepoint)
+                    value.append(self.codepoint)
                     self.advance()
                     continue
             break
@@ -333,19 +344,19 @@ class ArtTokenizer(Tokenizer):
         """
         separators = 0
         parse_exponent_result = True
-        value.append(self._codepoint)
+        value.append(self.codepoint)
         self.advance()  # consume .
-        while not Text.eos(self._codepoint):
-            if Text.ascii_decimal_digit(self._codepoint):
+        while not Text.eos(self.codepoint):
+            if Text.ascii_decimal_digit(self.codepoint):
                 separators = 0
-                value.append(self._codepoint)
+                value.append(self.codepoint)
                 self.advance()
                 continue
-            elif ArtTokenizer.digits_separator(self._codepoint):
+            elif ArtTokenizer.digits_separator(self.codepoint):
                 separators += 1
                 self.advance()
                 continue
-            elif ArtTokenizer.exponent_start(self._codepoint):
+            elif ArtTokenizer.exponent_start(self.codepoint):
                 parse_exponent_result = self.parse_exponent(value)
             break
         return not separators and parse_exponent_result
@@ -372,35 +383,35 @@ class ArtTokenizer(Tokenizer):
         real = False  # is real number
         valid = True  # track erroneous or not status
         separators = 0
-        if not octal_prefix and ArtTokenizer.number_control_codepoint(self._codepoint):
+        if not octal_prefix and ArtTokenizer.number_control_codepoint(self.codepoint):
             valid = False  # separator(s) and others cannot start number
         if valid:
-            content_position = self._content_position
-            codepoint = self._codepoint
+            content_position = self.content_position
+            codepoint = self.codepoint
             n = 2 if octal_prefix else 1  # if octal (0xxx) and not real - rescan in real octal mode
             for k in range(n):  # mimic goto
                 if k > 0:
-                    self._content_position = content_position
-                    self._codepoint = codepoint
+                    self.content_position = content_position
+                    self.codepoint = codepoint
                     digits = Text.ascii_octal_digit
                     value = value[:1]
-                while not Text.eos(self._codepoint):
-                    if digits(self._codepoint):
+                while not Text.eos(self.codepoint):
+                    if digits(self.codepoint):
                         separators = 0
-                        value.append(self._codepoint)
+                        value.append(self.codepoint)
                         self.advance()
                         continue
-                    elif ArtTokenizer.digits_separator(self._codepoint):
+                    elif ArtTokenizer.digits_separator(self.codepoint):
                         separators += 1
                         self.advance()
                         continue
-                    elif ArtTokenizer.fraction_start(self._codepoint):
+                    elif ArtTokenizer.fraction_start(self.codepoint):
                         if radix == 10 or octal_prefix:  # only octal or decimal
                             valid = self.parse_fraction(value)
                             real = True
                         else:
                             valid = False
-                    elif ArtTokenizer.exponent_start(self._codepoint):
+                    elif ArtTokenizer.exponent_start(self.codepoint):
                         if radix == 10 or octal_prefix:  # only octal or decimal
                             valid = self.parse_exponent(value)
                             real = True
@@ -415,36 +426,36 @@ class ArtTokenizer(Tokenizer):
             try:
                 value = ''.join(map(str, map(chr, value)))
                 if real:
-                    self._token.value = float(value)   # first to parse
-                    self._token.kind = TokenKind.REAL  # then tag
+                    self.token.value = float(value)   # first to parse
+                    self.token.kind = TokenKind.REAL  # then tag
                 else:
-                    self._token.value = int(value, radix)  # first to parse
-                    self._token.kind = TokenKind.INTEGER   # then tag
+                    self.token.value = int(value, radix)  # first to parse
+                    self.token.kind = TokenKind.INTEGER   # then tag
             except ValueError as ex:
                 valid = False
         if not valid:
-            self._diagnostics.add(Status(f'Invalid numeric literal at '
-                                         f'{self.content.get_location(self._content_position)}',
-                                         'tokenizer',
-                                         Status.INVALID_REAL_LITERAL if real else Status.INVALID_INT_LITERAL))
+            self.diagnostics.add(Status(f'Invalid numeric literal at '
+                                        f'{self.content.get_location(self.content_position)}',
+                                        f'tokenizer:{self.id}',
+                                        Status.INVALID_REAL_LITERAL if real else Status.INVALID_INT_LITERAL))
 
     def scan_string(self, quote):
         """
         """
         self.advance()
-        while (not Text.eol(self._codepoint) and
-               not Text.eos(self._codepoint) and
-               self._codepoint != quote or
-               (self._codepoint == quote and self._escaped)):
+        while (not Text.eol(self.codepoint) and
+               not Text.eos(self.codepoint) and
+               self.codepoint != quote or
+               (self.codepoint == quote and self.escaped)):
             self.advance()
-        if self._codepoint == quote:
+        if self.codepoint == quote:
             self.advance()
-            self._token.kind = TokenKind.STRING
+            self.token.kind = TokenKind.STRING
         else:
-            self._diagnostics.add(Status(f'Unclosed string literal at '
-                                         f'{self.content.get_location(self._content_position)}',
-                                         'tokenizer',
-                                         Status.INVALID_STRING_LITERAL))
+            self.diagnostics.add(Status(f'Unclosed string literal at '
+                                        f'{self.content.get_location(self.content_position)}',
+                                        f'tokenizer:{self.id}',
+                                        Status.INVALID_STRING_LITERAL))
 
     def scan_comments(self, single_line):
         """
@@ -453,14 +464,14 @@ class ArtTokenizer(Tokenizer):
         """
         self.advance()
         if single_line:
-            while (not Text.eol(self._codepoint) and
-                   not Text.eos(self._codepoint)):
+            while (not Text.eol(self.codepoint) and
+                   not Text.eos(self.codepoint)):
                 self.advance()
-            self._token.kind = TokenKind.SINGLE_LINE_COMMENT
+            self.token.kind = TokenKind.SINGLE_LINE_COMMENT
         else:
             level = 1  # nesting level
-            while not Text.eos(self._codepoint):
-                crr = self._codepoint
+            while not Text.eos(self.codepoint):
+                crr = self.codepoint
                 nxt = self.peek()
                 if crr == 0x0000002F and nxt == 0x0000002A:  # /*, exact codepoints
                     self.advance()
@@ -475,7 +486,7 @@ class ArtTokenizer(Tokenizer):
                 else:
                     self.advance()
             if level == 0:
-                self._token.kind = TokenKind.MULTI_LINE_COMMENT
+                self.token.kind = TokenKind.MULTI_LINE_COMMENT
 
     def next_lexeme_impl(self):
         """
@@ -485,12 +496,12 @@ class ArtTokenizer(Tokenizer):
         generated FSA (goto transitions) which recognizes keywords without lookup,
         recognizes integers and real (float/double) numbers, comments, etc.
         """
-        if self._indent_size:
+        if self.indent_size:
             if self.process_indentation():
                 return
-        codepoint = self._codepoint
+        codepoint = self.codepoint
         if codepoint == Text.eos_codepoint():
-            self._token.kind = TokenKind.EOS
+            self.token.kind = TokenKind.EOS
         elif Text.whitespace(codepoint):
             self.consume_whitespaces()
         elif self.identifier_start(codepoint):
@@ -500,68 +511,68 @@ class ArtTokenizer(Tokenizer):
         elif (Text.left_parenthesis(codepoint) or  # '('
               Text.left_square_bracket(codepoint) or  # '['
               Text.left_curly_bracket(codepoint)):  # '{'
-            self._nesting_level += 1
-            self._parens.append((codepoint, self._content_position))
+            self.nesting_level += 1
+            self.parens.append((codepoint, self.content_position))
             if Text.left_parenthesis(codepoint):  # '('
-                self._token.kind = TokenKind.LEFT_PARENTHESIS
+                self.token.kind = TokenKind.LEFT_PARENTHESIS
             elif Text.left_square_bracket(codepoint):  # '['
-                self._token.kind = TokenKind.LEFT_SQUARE_BRACKET
+                self.token.kind = TokenKind.LEFT_SQUARE_BRACKET
             elif Text.left_curly_bracket(codepoint):  # '{'
-                self._token.kind = TokenKind.LEFT_CURLY_BRACKET
+                self.token.kind = TokenKind.LEFT_CURLY_BRACKET
             self.advance()
         elif (Text.right_parenthesis(codepoint) or  # ')'
               Text.right_square_bracket(codepoint) or  # ']'
               Text.right_curly_bracket(codepoint)):  # '}'
-            if self._nesting_level:
-                self._nesting_level -= 1
-                left_paren, position = self._parens.pop()
+            if self.nesting_level:
+                self.nesting_level -= 1
+                left_paren, position = self.parens.pop()
                 if not (Text.left_parenthesis(left_paren) and Text.right_parenthesis(codepoint) or
                         Text.left_square_bracket(left_paren) and Text.right_square_bracket(codepoint) or
                         Text.left_curly_bracket(left_paren) and Text.right_curly_bracket(codepoint)):
-                    self._diagnostics.add(Status(f'Closing {chr(codepoint)} at '
-                                                 f'{self.content.get_location(self._content_position)} does not match '
+                    self.diagnostics.add(Status(f'Closing {chr(codepoint)} at '
+                                                 f'{self.content.get_location(self.content_position)} does not match '
                                                  f'{chr(left_paren)} at {self.content.get_location(position)}',
-                                                 'tokenizer',
-                                                 Status.INVALID_CLOSING_PAREN))
+                                                 f'tokenizer:{self.id}',
+                                                Status.INVALID_CLOSING_PAREN))
             else:
-                self._diagnostics.add(Status(f'Unmatched {chr(codepoint)} at '
-                                             f'{self.content.get_location(self._content_position)}',
-                                             'tokenizer',
-                                             Status.INVALID_CLOSING_PAREN))
+                self.diagnostics.add(Status(f'Unmatched {chr(codepoint)} at '
+                                             f'{self.content.get_location(self.content_position)}',
+                                             f'tokenizer:{self.id}',
+                                            Status.INVALID_CLOSING_PAREN))
             if Text.right_parenthesis(codepoint):  # ')':
-                self._token.kind = TokenKind.RIGHT_PARENTHESIS
+                self.token.kind = TokenKind.RIGHT_PARENTHESIS
             elif Text.right_square_bracket(codepoint):  # ']'
-                self._token.kind = TokenKind.RIGHT_SQUARE_BRACKET
+                self.token.kind = TokenKind.RIGHT_SQUARE_BRACKET
             elif Text.right_curly_bracket(codepoint):  # '}'
-                self._token.kind = TokenKind.RIGHT_CURLY_BRACKET
+                self.token.kind = TokenKind.RIGHT_CURLY_BRACKET
             self.advance()
-        elif self._codepoint == 0x0000000D:  # fast path for \r\n
+        elif self.codepoint == 0x0000000D:  # fast path for \r\n
             self.advance()
-            if self._codepoint == 0x0000000A:  # if \r\n
+            if self.codepoint == 0x0000000A:  # if \r\n
                 self.advance()
-            self._beginning_of_line = True
-            self._token.kind = TokenKind.EOL
+            self.beginning_of_line = True
+            self.token.kind = TokenKind.EOL
         elif Text.eol(codepoint):
-            self._beginning_of_line = True
-            self._token.kind = TokenKind.EOL
+            self.beginning_of_line = True
+            self.token.kind = TokenKind.EOL
             self.advance()
         elif Text.equals_sign(codepoint):  # '=' '==' '=>' eq as kw
             codepoint = self.advance()
             if Text.equals_sign(codepoint):
-                self._token.kind = TokenKind.EQUAL
+                self.token.kind = TokenKind.EQUAL
                 self.advance()
             elif Text.greater_than_sign(codepoint):
-                self._token.kind = TokenKind.DOUBLE_ARROW
+                self.token.kind = TokenKind.DOUBLE_ARROW
                 self.advance()
             else:
-                self._token.kind = TokenKind.EQUALS_SIGN
+                self.token.kind = TokenKind.EQUALS_SIGN
         elif Text.exclamation_mark(codepoint):  # '!' '!=' ne as kw
             codepoint = self.advance()
             if Text.equals_sign(codepoint):
-                self._token.kind = TokenKind.NOT_EQUAL
+                self.token.kind = TokenKind.NOT_EQUAL
                 self.advance()
             else:
-                self._token.kind = TokenKind.EXCLAMATION_MARK
+                self.token.kind = TokenKind.EXCLAMATION_MARK
         elif Text.less_than_sign(codepoint):  # '<' '<<' '<=' '<<=' '<=>' lt, le as kws
             n = 1
             for _ in range(2):
@@ -573,147 +584,147 @@ class ArtTokenizer(Tokenizer):
             if Text.equals_sign(codepoint):
                 codepoint = self.advance()
                 if Text.greater_than_sign(codepoint):
-                    self._token.kind = TokenKind.SPACESHIP
+                    self.token.kind = TokenKind.SPACESHIP
                     self.advance()
                 else:
                     if n == 1:
-                        self._token.kind = TokenKind.LESS_THAN_OR_EQUAL
+                        self.token.kind = TokenKind.LESS_THAN_OR_EQUAL
                     else:  # n == 2
-                        self._token.kind = TokenKind.SHIFT_LEFT_OR_EQUAL
+                        self.token.kind = TokenKind.SHIFT_LEFT_OR_EQUAL
             else:
                 if n == 1:
-                    self._token.kind = TokenKind.LESS_THAN_SIGN
+                    self.token.kind = TokenKind.LESS_THAN_SIGN
                 else:  # n == 2
-                    self._token.kind = TokenKind.SHIFT_LEFT
+                    self.token.kind = TokenKind.SHIFT_LEFT
         elif Text.greater_than_sign(codepoint):  # '>' '>=' gt, ge as kws
             # >=,  > >,  > >=
             codepoint = self.advance()
             if Text.equals_sign(codepoint):
-                self._token.kind = TokenKind.GREATER_THAN_OR_EQUAL
+                self.token.kind = TokenKind.GREATER_THAN_OR_EQUAL
                 self.advance()
             else:
-                self._token.kind = TokenKind.GREATER_THAN_SIGN
+                self.token.kind = TokenKind.GREATER_THAN_SIGN
         elif Text.dot(codepoint):  # '.' '..' '...', do not consider fraction part like .025
             codepoint = self.advance()
             if Text.dot(codepoint):
                 codepoint = self.advance()
                 if Text.dot(codepoint):
-                    self._token.kind = TokenKind.ELLIPSES
+                    self.token.kind = TokenKind.ELLIPSES
                     self.advance()
                 else:
-                    self._token.kind = TokenKind.RANGE
+                    self.token.kind = TokenKind.RANGE
             else:
-                self._token.kind = TokenKind.DOT
+                self.token.kind = TokenKind.DOT
         elif Text.plus_sign(codepoint):  # '+' '++' '+='
             codepoint = self.advance()
             if Text.plus_sign(codepoint):
-                self._token.kind = TokenKind.INCREMENT
+                self.token.kind = TokenKind.INCREMENT
                 self.advance()
             elif Text.equals_sign(codepoint):
-                self._token.kind = TokenKind.ADD_ASSIGNMENT
+                self.token.kind = TokenKind.ADD_ASSIGNMENT
                 self.advance()
             else:
-                self._token.kind = TokenKind.PLUS_SIGN
+                self.token.kind = TokenKind.PLUS_SIGN
         elif Text.hyphen_minus(codepoint):  # '-' '--' '-=' '->'
             codepoint = self.advance()
             if Text.hyphen_minus(codepoint):
-                self._token.kind = TokenKind.DECREMENT
+                self.token.kind = TokenKind.DECREMENT
                 self.advance()
             elif Text.equals_sign(codepoint):
-                self._token.kind = TokenKind.SUB_ASSIGNMENT
+                self.token.kind = TokenKind.SUB_ASSIGNMENT
                 self.advance()
             elif Text.greater_than_sign(codepoint):
-                self._token.kind = TokenKind.ARROW
+                self.token.kind = TokenKind.ARROW
                 self.advance()
             else:
-                self._token.kind = TokenKind.HYPHEN_MINUS
+                self.token.kind = TokenKind.HYPHEN_MINUS
         elif Text.asterisk(codepoint):  # '*' '*='
             codepoint = self.advance()
             if Text.equals_sign(codepoint):
-                self._token.kind = TokenKind.MUL_ASSIGNMENT
+                self.token.kind = TokenKind.MUL_ASSIGNMENT
                 self.advance()
             else:
-                self._token.kind = TokenKind.ASTERISK
+                self.token.kind = TokenKind.ASTERISK
         elif Text.forward_slash(codepoint):  # '/' '/=' '//' '/*'
             codepoint = self.advance()
             if Text.equals_sign(codepoint):
-                self._token.kind = TokenKind.DIV_ASSIGNMENT
+                self.token.kind = TokenKind.DIV_ASSIGNMENT
                 self.advance()
             elif Text.forward_slash(codepoint):
                 self.scan_comments(single_line=True)
             elif Text.asterisk(codepoint):
                 self.scan_comments(single_line=False)
             else:
-                self._token.kind = TokenKind.FORWARD_SLASH
+                self.token.kind = TokenKind.FORWARD_SLASH
         elif Text.percent_sign(codepoint):  # '%' '%='
             codepoint = self.advance()
             if Text.equals_sign(codepoint):
-                self._token.kind = TokenKind.MOD_ASSIGNMENT
+                self.token.kind = TokenKind.MOD_ASSIGNMENT
                 self.advance()
             else:
-                self._token.kind = TokenKind.PERCENT_SIGN
+                self.token.kind = TokenKind.PERCENT_SIGN
         elif Text.ampersand(codepoint):  # '&' '&='
             codepoint = self.advance()
             if Text.equals_sign(codepoint):
-                self._token.kind = TokenKind.BITWISE_AND_ASSIGNMENT
+                self.token.kind = TokenKind.BITWISE_AND_ASSIGNMENT
                 self.advance()
             else:
-                self._token.kind = TokenKind.BITWISE_AND
+                self.token.kind = TokenKind.BITWISE_AND
         elif Text.vertical_line(codepoint):  # '|' '|='
             codepoint = self.advance()
             if Text.equals_sign(codepoint):
-                self._token.kind = TokenKind.BITWISE_OR_ASSIGNMENT
+                self.token.kind = TokenKind.BITWISE_OR_ASSIGNMENT
                 self.advance()
             else:
-                self._token.kind = TokenKind.BITWISE_OR
+                self.token.kind = TokenKind.BITWISE_OR
         elif Text.circumflex_accent(codepoint):  # '^' '^='
             codepoint = self.advance()
             if Text.equals_sign(codepoint):
-                self._token.kind = TokenKind.BITWISE_XOR_ASSIGNMENT
+                self.token.kind = TokenKind.BITWISE_XOR_ASSIGNMENT
                 self.advance()
             else:
-                self._token.kind = TokenKind.BITWISE_XOR
+                self.token.kind = TokenKind.BITWISE_XOR
         elif Text.circumflex_accent(codepoint):  # '~' '~=' neg as kw
             codepoint = self.advance()
             if Text.equals_sign(codepoint):
-                self._token.kind = TokenKind.BITWISE_XOR_ASSIGNMENT
+                self.token.kind = TokenKind.BITWISE_XOR_ASSIGNMENT
                 self.advance()
             else:
-                self._token.kind = TokenKind.BITWISE_XOR
+                self.token.kind = TokenKind.BITWISE_XOR
         elif Text.tilde(codepoint):  # '~'
             codepoint = self.advance()
             if Text.equals_sign(codepoint):
-                self._token.kind = TokenKind.BITWISE_NOT_ASSIGNMENT
+                self.token.kind = TokenKind.BITWISE_NOT_ASSIGNMENT
                 self.advance()
             else:
-                self._token.kind = TokenKind.BITWISE_NOT
+                self.token.kind = TokenKind.BITWISE_NOT
         elif Text.colon(codepoint):  # ':' '::'
             codepoint = self.advance()
             if Text.colon(codepoint):
-                self._token.kind = TokenKind.COLONS
+                self.token.kind = TokenKind.COLONS
                 self.advance()
             else:
-                self._token.kind = TokenKind.COLON
+                self.token.kind = TokenKind.COLON
         elif Text.semicolon(codepoint):  # ';'
-            self._token.kind = TokenKind.SEMICOLON
+            self.token.kind = TokenKind.SEMICOLON
             self.advance()
         elif Text.comma(codepoint):  # ','
-            self._token.kind = TokenKind.COMMA
+            self.token.kind = TokenKind.COMMA
             self.advance()
         elif Text.question_mark(codepoint):  # '?'
-            self._token.kind = TokenKind.QUESTION_MARK
+            self.token.kind = TokenKind.QUESTION_MARK
             self.advance()
         elif Text.commercial_at(codepoint):  # '@'
-            self._token.kind = TokenKind.COMMERCIAL_AT
+            self.token.kind = TokenKind.COMMERCIAL_AT
             self.advance()
         elif Text.grave_accent(codepoint):  # '`'
-            self._token.kind = TokenKind.GRAVE_ACCENT
+            self.token.kind = TokenKind.GRAVE_ACCENT
             self.advance()
         elif Text.back_slash(codepoint):  # '\\'
-            self._diagnostics.add(Status(f'Loose "\\" character at '
-                                         f'{self.content.get_location(self._content_position)}',
-                                         'tokenizer',
-                                         Status.INVALID_CHARACTER))
+            self.diagnostics.add(Status(f'Loose "\\" character at '
+                                         f'{self.content.get_location(self.content_position)}',
+                                         f'tokenizer:{self.id}',
+                                        Status.INVALID_CHARACTER))
             self.advance()
         elif Text.apostrophe(codepoint):  # '''
             self.scan_string(codepoint)
@@ -722,18 +733,18 @@ class ArtTokenizer(Tokenizer):
         elif Text.number_sign(codepoint):  # '#'
             self.scan_comments(single_line=True)
         else:
-            self._diagnostics.add(Status(f'Invalid character at '
-                                         f'{self.content.get_location(self._content_position)}',
-                                         'tokenizer',
-                                         Status.INVALID_UNICODE_ESCAPE))
+            self.diagnostics.add(Status(f'Invalid character at '
+                                         f'{self.content.get_location(self.content_position)}',
+                                         f'tokenizer:{self.id}',
+                                        Status.INVALID_UNICODE_ESCAPE))
             self.advance()
 
     def epilog(self):
         """
         """
         super().epilog()
-        if self._token.kind == TokenKind.IDENTIFIER:  # check if it is keyword
-            self._token.kind = self.lookup(self._token.literal)
+        if self.token.kind == TokenKind.IDENTIFIER:  # check if it is keyword
+            self.token.kind = self.lookup(self.token.literal)
 
     def validate(self):
         """

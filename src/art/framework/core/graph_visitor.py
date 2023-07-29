@@ -14,7 +14,7 @@ class GraphVisitor(Visitor):
         """
         """
         super().__init__()
-        self._graph = graph
+        self.graph = graph
 
     def __repr__(self):
         return self.__class__.__name__
@@ -25,4 +25,4 @@ class GraphVisitor(Visitor):
     def visit(self, vertex, *args, **kwargs):
         """
         """
-        pass
+        raise NotImplemented(self.visit.__qualname__)

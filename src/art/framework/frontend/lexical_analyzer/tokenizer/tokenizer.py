@@ -20,29 +20,34 @@ class Tokenizer(Entity):
                  content,
                  statistics,
                  diagnostics,
+                 value=None,
+                 attributes=None,
+                 flags=Flags.CLEAR,
                  version='1.0'):
         """
         """
         super().__init__(id,  # master lexer, id = 0
-                         version=version)
-        self._content = content  # loaded content
-        self._start_content = 0  # beginning of content
-        self._end_content = self._start_content + self._content.count  # end of content, sentinel
-        self._content_position = self._start_content - 1  # current position in content
-        self._lexeme_position = self._start_content  # beginning position of lexeme in content
-        self._token = TokenFactory.unknown_token()  # current lexeme
-        self._snapshots = deque()  # stack of backtracking snapshots - positions
-        self._codepoint = Text.eos_codepoint()
-        self._escaped = False  # True if codepoint has been derived from escape sequence
-        self._statistics = statistics
-        self._diagnostics = diagnostics
+                         value,
+                         attributes,
+                         flags,
+                         version)
+        self.content = content  # loaded content
+        self.start_content = 0  # beginning of content
+        self.end_content = self.start_content + self.content.count  # end of content, sentinel
+        self.content_position = self.start_content - 1  # current position in content
+        self.lexeme_position = self.start_content  # beginning position of lexeme in content
+        self.token = TokenFactory.unknown_token()  # current lexeme
+        self.snapshots = deque()  # stack of backtracking snapshots - positions
+        self.codepoint = Text.eos_codepoint()
+        self.escaped = False  # True if codepoint has been derived from escape sequence
+        self.statistics = statistics
+        self.diagnostics = diagnostics
         self.advance()
 
     def __hash__(self):
         """
         """
-        result = super().__hash__()
-        return result
+        return super().__hash__()
 
     def __eq__(self, other):
         """
@@ -60,34 +65,10 @@ class Tokenizer(Entity):
         return super().__le__(other)
 
     @property
-    def codepoint(self):
-        """
-        """
-        return self._codepoint
-
-    @property
     def character(self):
         """
         """
-        return chr(self._codepoint)
-
-    @property
-    def content(self):
-        """
-        """
-        return self._content
-
-    @property
-    def content_position(self):
-        """
-        """
-        return self._content_position
-
-    @property
-    def token(self):
-        """
-        """
-        return self._token
+        return chr(self.codepoint)
 
     def calculate_codepoint(self, content_position, n):
         """
@@ -97,23 +78,23 @@ class Tokenizer(Entity):
         result = 0
         valid = True
         for k in range(n):
-            if content_position == self._end_content:
+            if content_position == self.end_content:
                 result = 0
                 valid = False
-                self._diagnostics.add(Status(f'Invalid unicode escape sequence length at '
+                self.diagnostics.add(Status(f'Invalid unicode escape sequence length at '
                                              f'{self.content.get_location(content_position)}',
                                              'tokenizer',
-                                             Status.INVALID_UNICODE_ESCAPE))
+                                            Status.INVALID_UNICODE_ESCAPE))
                 break
-            codepoint = self._content.data[content_position]
+            codepoint = self.content.data[content_position]
             if Text.hexadecimal_digit(codepoint):
                 result = (result << 4) | Text.ascii_digit(codepoint)
                 content_position += 1
             else:
-                self._diagnostics.add(Status(f'Invalid unicode escape sequence (digits) at '
+                self.diagnostics.add(Status(f'Invalid unicode escape sequence (digits) at '
                                              f'{self.content.get_location(content_position)}',
                                              'tokenizer',
-                                             Status.INVALID_UNICODE_ESCAPE))
+                                            Status.INVALID_UNICODE_ESCAPE))
                 result = 0
                 valid = False
                 break
@@ -137,8 +118,8 @@ class Tokenizer(Entity):
         At this point current position points to '\\'.
         """
         def squash_unicode_prefixes(_content_position):
-            while (_content_position < self._end_content and  # consume (squash) unicode escape prefixes as in Java
-                   Tokenizer.unicode_escape_prefix(self._content.data[_content_position])):
+            while (_content_position < self.end_content and  # consume (squash) unicode escape prefixes as in Java
+                   Tokenizer.unicode_escape_prefix(self.content.data[_content_position])):
                 _content_position += 1
             return _content_position
 
@@ -157,23 +138,23 @@ class Tokenizer(Entity):
                         if valid and Text.low_surrogate(low_surrogate):
                             result = Text.make_codepoint(high_surrogate, low_surrogate)
                         else:
-                            self._diagnostics.add(Status(f'Invalid unicode escape sequence, invalid low surrogate '
+                            self.diagnostics.add(Status(f'Invalid unicode escape sequence, invalid low surrogate '
                                                          f'at {self.content.get_location(content_position)}',
                                                          'tokenizer',
-                                                         Status.INVALID_UNICODE_ESCAPE))
+                                                        Status.INVALID_UNICODE_ESCAPE))
                     else:
-                        self._diagnostics.add(Status(f'Invalid unicode escape sequence, missing low surrogate '
+                        self.diagnostics.add(Status(f'Invalid unicode escape sequence, missing low surrogate '
                                                      f'at {self.content.get_location(content_position)}',
                                                      'tokenizer',
-                                                     Status.INVALID_UNICODE_ESCAPE))
+                                                    Status.INVALID_UNICODE_ESCAPE))
                 else:
                     if Text.ascii(codepoint) or not Text.low_surrogate(codepoint):
                         result = codepoint
                     else:
-                        self._diagnostics.add(Status(f'Invalid unicode escape sequence, invalid high surrogate '
+                        self.diagnostics.add(Status(f'Invalid unicode escape sequence, invalid high surrogate '
                                                      f'at {self.content.get_location(content_position)}',
                                                      'tokenizer',
-                                                     Status.INVALID_UNICODE_ESCAPE))
+                                                    Status.INVALID_UNICODE_ESCAPE))
             else:  # mode == U
                 result = codepoint
         return result, content_position - 1
@@ -181,8 +162,8 @@ class Tokenizer(Entity):
     def consume_escape(self):
         """
         """
-        content_position = self._content_position + 1  # skip '\'
-        codepoint = self._content.data[content_position]
+        content_position = self.content_position + 1  # skip '\'
+        codepoint = self.content.data[content_position]
         match codepoint:
             case 0x00000061:  # 'a'
                 codepoint = 0x07
@@ -209,19 +190,19 @@ class Tokenizer(Entity):
                 # NAME in the Unicode.
                 # NOT IMPLEMENTED
                 codepoint = Text.ERRONEOUS_CODEPOINT
-                self._diagnostics.add(Status(f'Escape \\N(name) is not implemented, at '
-                                             f'{self.content.get_location(self._content_position)}',
+                self.diagnostics.add(Status(f'Escape \\N(name) is not implemented, at '
+                                             f'{self.content.get_location(self.content_position)}',
                                              'tokenizer',
-                                             Status.INVALID_LITERAL))
+                                            Status.INVALID_LITERAL))
             case 'x':
                 # \xh
                 # \xhh
                 # NOT IMPLEMENTED
                 codepoint = Text.ERRONEOUS_CODEPOINT
-                self._diagnostics.add(Status(f'Escape \\xhh is not implemented, at '
-                                             f'{self.content.get_location(self._content_position)}',
+                self.diagnostics.add(Status(f'Escape \\xhh is not implemented, at '
+                                             f'{self.content.get_location(self.content_position)}',
                                              'tokenizer',
-                                             Status.INVALID_LITERAL))
+                                            Status.INVALID_LITERAL))
             case (0x00000030 |  # 0
                   0x00000031 |  # 1
                   0x00000032 |  # 2
@@ -241,10 +222,10 @@ class Tokenizer(Entity):
                         content_position += 1
                         codepoint = codepoint * 8 + Text.ascii_digit(d3)
             case _:
-                self._diagnostics.add(Status(f'Invalid escape literal at '
-                                             f'{self.content.get_location(self._content_position)}',
-                                             'tokenizer',
-                                             Status.INVALID_LITERAL))
+                self.diagnostics.add(Status(f'Invalid escape literal at '
+                                            f'{self.content.get_location(self.content_position)}',
+                                            'tokenizer',
+                                            Status.INVALID_LITERAL))
                 codepoint = Text.ERRONEOUS_CODEPOINT
         return codepoint, content_position
 
@@ -252,32 +233,32 @@ class Tokenizer(Entity):
         """
         Content is represented as string of codepoints.
         """
-        self._escaped = False
-        self._content_position += 1
-        if self._content_position < self._end_content:
-            self._codepoint = self._content.data[self._content_position]
-            if Text.back_slash(self._codepoint):
+        self.escaped = False
+        self.content_position += 1
+        if self.content_position < self.end_content:
+            self.codepoint = self.content.data[self.content_position]
+            if Text.back_slash(self.codepoint):
                 prefix = self.peek()
                 if Tokenizer.unicode_escape_prefix(prefix):  # '\' might start unicode escape sequence
                     mode = 'u' if prefix == 0x00000075 else 'U'
-                    self._codepoint, self._content_position =\
-                        self.consume_unicode_escape(mode, self._content_position)
+                    self.codepoint, self.content_position =\
+                        self.consume_unicode_escape(mode, self.content_position)
                 else:
-                    self._codepoint, self._content_position = self.consume_escape()
-                self._escaped = True
+                    self.codepoint, self.content_position = self.consume_escape()
+                self.escaped = True
         else:
-            self._codepoint = Text.eos_codepoint()
-        if self._content_position > self._end_content:
-            self._content_position = self._end_content
-        assert Text.valid_codepoint(self._codepoint)
-        return self._codepoint
+            self.codepoint = Text.eos_codepoint()
+        if self.content_position > self.end_content:
+            self.content_position = self.end_content
+        assert Text.valid_codepoint(self.codepoint)
+        return self.codepoint
 
     def peek(self):
         """
         Lookahead.
         """
-        if self._content_position + 1 < self._end_content:
-            result = self._content.data[self._content_position + 1]
+        if self.content_position + 1 < self.end_content:
+            result = self.content.data[self.content_position + 1]
         else:
             result = Text.eos_codepoint()
         return result
@@ -286,8 +267,8 @@ class Tokenizer(Entity):
         """
         Lookahead at.
         """
-        if content_position + 1 < self._end_content:
-            result = self._content.data[content_position + 1]
+        if content_position + 1 < self.end_content:
+            result = self.content.data[content_position + 1]
         else:
             result = Text.eos_codepoint()
         return result
@@ -298,25 +279,25 @@ class Tokenizer(Entity):
         self.prolog()
         self.next_lexeme_impl()
         self.epilog()
-        return deepcopy(self._token)
+        return deepcopy(self.token)
 
     def prolog(self):
         """
         """
-        self._token.reset()
-        self._lexeme_position = self._content_position
+        self.token.reset()
+        self.lexeme_position = self.content_position
 
     def epilog(self):
         """
         """
-        if self._content_position > self._end_content:
-            self._content_position = self._end_content
-        self._token.offset = self._lexeme_position - self._start_content
-        self._token.length = self._content_position - self._lexeme_position
-        self._token.literal = ''.join(chr(codepoint) for codepoint in
-                                      self._content.data[self._token.offset: self._token.offset + self._token.length])
-        self._token.source = self._content.id
-        self._token.flags = Flags.modify_flags(self._token.flags, Flags.PROCESSED, Flags.CLEAR)
+        if self.content_position > self.end_content:
+            self.content_position = self.end_content
+        self.token.offset = self.lexeme_position - self.start_content
+        self.token.length = self.content_position - self.lexeme_position
+        self.token.literal = ''.join(chr(codepoint) for codepoint in
+                                     self.content.data[self.token.offset: self.token.offset + self.token.length])
+        self.token.source = self.content.source
+        self.token.flags = Flags.modify_flags(self.token.flags, Flags.PROCESSED, Flags.CLEAR)
 
     @abstractmethod
     def next_lexeme_impl(self):
@@ -329,17 +310,17 @@ class Tokenizer(Entity):
         Snapshot the current content position for backtracking.
         Usually called by lexical analyzers.
         """
-        self._snapshots.append(self._content_position)
+        self.snapshots.append(self.content_position)
 
     def rewind_to_snapshot(self):
         """
         Restore the last saved content position for backtracking.
         Usually called by lexical analyzers.
         """
-        if self._snapshots:
-            self._token.reset()
-            self._content_position = self._snapshots.pop()
-            self._lexeme_position = self._content_position
+        if self.snapshots:
+            self.token.reset()
+            self.content_position = self.snapshots.pop()
+            self.lexeme_position = self.content_position
             self.advance()
 
     def discard_snapshot(self):
@@ -347,8 +328,8 @@ class Tokenizer(Entity):
         Discard the last saved content position for backtracking.
         Usually called by lexical analyzers.
         """
-        if self._snapshots:
-            self._snapshots.pop()
+        if self.snapshots:
+            self.snapshots.pop()
 
     @abstractmethod
     def validate(self):

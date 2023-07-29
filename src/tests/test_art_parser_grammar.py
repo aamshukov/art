@@ -4,6 +4,8 @@
 #
 import inspect
 import unittest
+
+from art.framework.core.domain_helper import DomainHelper
 from art.framework.core.logger import Logger
 from art.framework.core.diagnostics import Diagnostics
 from art.framework.frontend.data_provider.string_data_provider import StringDataProvider
@@ -15,6 +17,7 @@ from art.framework.frontend.parser.parse_context import ParseContext
 from art.framework.frontend.parser.parse_domain_helper import ParseTreeDomainHelper
 from art.framework.frontend.statistics.statistics import Statistics
 from art.framework.frontend.lexical_analyzer.lexical_analyzer import LexicalAnalyzer
+from art.language.art.art_ast import ArtAst
 from art.language.art.art_domain_helper import ArtDomainHelper
 from art.language.art.art_parse_tree_kind import ArtParseTreeKind
 from art.language.art.art_parser import ArtParser
@@ -24,9 +27,9 @@ from art.language.art.art_tokenizer import ArtTokenizer
 class Test(unittest.TestCase):
     syntactic_grammar = """
     # TYPE
-    TYPE                                : integral_type array_type_specifier_opt
-                                        | type_name array_type_specifier_opt
-                                        | type_parameter
+    TYPE                                : integral_type array_type_rank_specifier_opt
+                                        | type_name array_type_rank_specifier_opt
+                                        | type_parameter array_type_rank_specifier_opt
                                         ;
     
     type_name                           : identifier type_argument_seq_opt                                                  # A<T>
@@ -59,6 +62,21 @@ class Test(unittest.TestCase):
                                         ;
     
     type_argument                       : TYPE
+                                        ;
+    
+    array_type_rank_specifier_opt       : array_type_rank_specifier
+                                        | ε
+                                        ;
+    
+    array_type_rank_specifier           : '[' array_type_ranks_opt ']'
+                                        ;
+    
+    array_type_ranks_opt                : array_type_ranks
+                                        | ε
+                                        ;
+    
+    array_type_ranks                    : ','
+                                        | array_type_ranks ','
                                         ;
     
     array_type_specifier_opt            : array_type_specifier
@@ -320,7 +338,8 @@ class Test(unittest.TestCase):
     
     terminal                            : 'terminal'                                                                        # wrapper for terminals
                                         ;
-
+    
+    
     INDENT                              : 'indent'
                                         ;
     
@@ -328,45 +347,52 @@ class Test(unittest.TestCase):
                                         ;
 
     """  # noqa
+    grammar = None
 
     def __init__(self, *args, **kwargs):
         """
         """
         super(Test, self).__init__(*args, **kwargs)
 
+    @classmethod
+    def setUp(cls):
+        DomainHelper.increase_recursion_limit()
+        if not cls.grammar:
+            k = 1
+            logger = Logger(path=r'd:\tmp\art', mode='w')
+            grammar = Grammar(logger=logger)
+            grammar.load(Test.syntactic_grammar)
+            GrammarAlgorithms.build_first_set(grammar, k)
+            GrammarAlgorithms.build_follow_set(grammar, k)
+            GrammarAlgorithms.build_la_set(grammar, k)
+            decorated_grammar = grammar.decorate()
+            logger.info(decorated_grammar)
+            decorated_pool = grammar.decorate_pool()
+            logger.info(decorated_pool)
+            cls.grammar = grammar
+
     @staticmethod
     def get_dot_filepath(filename):
         return rf'd:\tmp\art\{filename}.png'
 
     @staticmethod
-    def get_parser(schema, program):
-        logger = Logger(path=r'd:\tmp\art', mode='w')
-        grammar = Grammar(logger=logger)
-        grammar.load(schema)
-        k = 1
-        GrammarAlgorithms.build_first_set(grammar, k)
-        GrammarAlgorithms.build_follow_set(grammar, k)
-        GrammarAlgorithms.build_la_set(grammar, k)
-        decorated_grammar = grammar.decorate()
-        logger.info(decorated_grammar)
-        decorated_pool = grammar.decorate_pool()
-        logger.info(decorated_pool)
+    def get_parser(program):
         dp = StringDataProvider(program)
         data = dp.load()
-        content = Content(0, data, '')
+        content = Content(data, '')
         content.build_line_map()
         statistics = Statistics()
         diagnostics = Diagnostics()
         tokenizer = ArtTokenizer(0, content, statistics, diagnostics)
         lexer = LexicalAnalyzer(0, tokenizer, statistics, diagnostics)
         context = ParseContext()
-        parser = ArtParser(context, lexer, grammar, statistics, diagnostics)
+        parser = ArtParser(context, lexer, Test.grammar, statistics, diagnostics)
         return parser
 
     def test_expression_1_success(self):
         program = """
         """
-        parser = Test.get_parser(Test.syntactic_grammar, program)
+        parser = Test.get_parser(program)
         parser.lexical_analyzer.next_lexeme()
         # tree = parser.parse_expression()
         # ParseTreeDomainHelper.generate_graphviz(tree, Test.get_dot_filepath(inspect.currentframe().f_code.co_name))
@@ -376,7 +402,7 @@ class Test(unittest.TestCase):
         program = """
         T
         """
-        parser = Test.get_parser(Test.syntactic_grammar, program)
+        parser = Test.get_parser(program)
         parser.lexical_analyzer.next_lexeme()
         tree = parser.parse_type()
         filename = Grammar.normalize_symbol_name(tree.symbol.grammar_symbol.name)
@@ -384,3 +410,109 @@ class Test(unittest.TestCase):
                                                 Test.get_dot_filepath(
                                                     f'{inspect.currentframe().f_code.co_name}_{filename}'))
         assert parser.diagnostics.status
+        ast = ArtAst.type_cst_to_ast(tree, parser.grammar)
+        ParseTreeDomainHelper.generate_graphviz(ast,
+                                                Test.get_dot_filepath(
+                                                    f'{inspect.currentframe().f_code.co_name}_{filename}.ast'))
+
+    def test_type_2_success(self):
+        program = """
+        int
+        """
+        parser = Test.get_parser(program)
+        parser.lexical_analyzer.next_lexeme()
+        tree = parser.parse_type()
+        filename = Grammar.normalize_symbol_name(tree.symbol.grammar_symbol.name)
+        ParseTreeDomainHelper.generate_graphviz(tree,
+                                                Test.get_dot_filepath(
+                                                    f'{inspect.currentframe().f_code.co_name}_{filename}'))
+        assert parser.diagnostics.status
+        ast = ArtAst.type_cst_to_ast(tree, parser.grammar)
+        ParseTreeDomainHelper.generate_graphviz(ast,
+                                                Test.get_dot_filepath(
+                                                    f'{inspect.currentframe().f_code.co_name}_{filename}.ast'))
+
+    def test_type_3_success(self):
+        program = """
+        A < T >
+        """
+        parser = Test.get_parser(program)
+        parser.lexical_analyzer.next_lexeme()
+        tree = parser.parse_type()
+        filename = Grammar.normalize_symbol_name(tree.symbol.grammar_symbol.name)
+        ParseTreeDomainHelper.generate_graphviz(tree,
+                                                Test.get_dot_filepath(
+                                                    f'{inspect.currentframe().f_code.co_name}_{filename}'))
+        assert parser.diagnostics.status
+        ast = ArtAst.type_cst_to_ast(tree, parser.grammar)
+        ParseTreeDomainHelper.generate_graphviz(ast,
+                                                Test.get_dot_filepath(
+                                                    f'{inspect.currentframe().f_code.co_name}_{filename}.ast'))
+
+    def test_type_4_success(self):
+        program = """
+        A < T > . B < U > . C < D < E < X >>>
+        """
+        parser = Test.get_parser(program)
+        parser.lexical_analyzer.next_lexeme()
+        tree = parser.parse_type()
+        filename = Grammar.normalize_symbol_name(tree.symbol.grammar_symbol.name)
+        ParseTreeDomainHelper.generate_graphviz(tree,
+                                                Test.get_dot_filepath(
+                                                    f'{inspect.currentframe().f_code.co_name}_{filename}'))
+        assert parser.diagnostics.status
+        ast = ArtAst.type_cst_to_ast(tree, parser.grammar)
+        ParseTreeDomainHelper.generate_graphviz(ast,
+                                                Test.get_dot_filepath(
+                                                    f'{inspect.currentframe().f_code.co_name}_{filename}.ast'))
+
+    def test_type_5_success(self):
+        program = """
+        A < T[] > [ ]
+        """
+        parser = Test.get_parser(program)
+        parser.lexical_analyzer.next_lexeme()
+        tree = parser.parse_type()
+        filename = Grammar.normalize_symbol_name(tree.symbol.grammar_symbol.name)
+        ParseTreeDomainHelper.generate_graphviz(tree,
+                                                Test.get_dot_filepath(
+                                                    f'{inspect.currentframe().f_code.co_name}_{filename}'))
+        assert parser.diagnostics.status
+        ast = ArtAst.type_cst_to_ast(tree, parser.grammar)
+        ParseTreeDomainHelper.generate_graphviz(ast,
+                                                Test.get_dot_filepath(
+                                                    f'{inspect.currentframe().f_code.co_name}_{filename}.ast'))
+
+    def test_type_6_success(self):
+        program = """
+        R.K . A < T.R <int>[] > . S.U <real[]>  . G. B.V <bool [,, ]> . W <A<H>> . Q.X <J,P>  [ , , ,  , ]
+        """
+        parser = Test.get_parser(program)
+        parser.lexical_analyzer.next_lexeme()
+        tree = parser.parse_type()
+        filename = Grammar.normalize_symbol_name(tree.symbol.grammar_symbol.name)
+        ParseTreeDomainHelper.generate_graphviz(tree,
+                                                Test.get_dot_filepath(
+                                                    f'{inspect.currentframe().f_code.co_name}_{filename}'))
+        assert parser.diagnostics.status
+        ast = ArtAst.type_cst_to_ast(tree, parser.grammar)
+        ParseTreeDomainHelper.generate_graphviz(ast,
+                                                Test.get_dot_filepath(
+                                                    f'{inspect.currentframe().f_code.co_name}_{filename}.ast'))
+
+    def test_type_7_success(self):
+        program = """
+        A < K . B < U [ , ] > [ , , ]  >[ , , , ]
+        """
+        parser = Test.get_parser(program)
+        parser.lexical_analyzer.next_lexeme()
+        tree = parser.parse_type()
+        filename = Grammar.normalize_symbol_name(tree.symbol.grammar_symbol.name)
+        ParseTreeDomainHelper.generate_graphviz(tree,
+                                                Test.get_dot_filepath(
+                                                    f'{inspect.currentframe().f_code.co_name}_{filename}'))
+        assert parser.diagnostics.status
+        ast = ArtAst.type_cst_to_ast(tree, parser.grammar)
+        ParseTreeDomainHelper.generate_graphviz(ast,
+                                                Test.get_dot_filepath(
+                                                    f'{inspect.currentframe().f_code.co_name}_{filename}.ast'))

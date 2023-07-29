@@ -58,23 +58,25 @@ class ArtDomainHelper(Base):
                 """
                 """
                 super().__init__(_tree)
-                self._data_sink = ''
+                self.data_sink = ''
 
             @property
             def data(self):
                 """
                 """
-                return self._data_sink
+                return self.data_sink
 
-            def visit(self, _tree, *args, **kwargs):
+            def visit(self, tree, *args, **kwargs):  # noqa
                 """
                 """
-                if _tree.kind == ArtParseTreeKind.IDENTIFIER:
-                    self._data_sink = f'{self._data_sink}{_tree.symbol.token.literal}'
-                elif _tree.kind == ArtParseTreeKind.TERMINAL and _tree.symbol.token.kind == TokenKind.DOT:
-                    self._data_sink = f'{self._data_sink}{_tree.symbol.token.literal}'
-                return self._data_sink
+                if tree.kind == ArtParseTreeKind.IDENTIFIER:
+                    self.data_sink = f'{self.data_sink}{tree.symbol.token.literal}'
+                elif tree.kind == ArtParseTreeKind.TERMINAL and tree.symbol.token.kind == TokenKind.DOT:
+                    self.data_sink = f'{self.data_sink}{tree.symbol.token.literal}'
+                for kid in tree.kids:
+                    kid.accept(visitor, *args, **kwargs)
+                return self.data_sink
 
         visitor = FqIdVisitor(tree)
-        tree.accept(visitor, preorder=True)
+        tree.accept(visitor)
         return visitor.data

@@ -27,21 +27,13 @@ class Grammar(Base):
         """
         """
         super().__init__()
-        self._name = name
-        self._logger = logger
-        self._rules = list()
-        self._pool = dict()  # name:symbol mapping
-        self._pool['ε'] = GrammarSymbolFactory.epsilon_symbol()
-        self._pool['λ'] = GrammarSymbolFactory.epsilon_symbol()
-        self._pool[GrammarSymbolFactory.UNKNOWN_SYMBOL.name] = GrammarSymbolFactory.unknown_symbol()
-        # self._pool['INDENT'] = GrammarSymbolFactory.create('INDENT', GrammarSymbolKind.NON_TERMINAL)
-        # self._pool['DEDENT'] = GrammarSymbolFactory.create('DEDENT', GrammarSymbolKind.NON_TERMINAL)
-
-    @property
-    def name(self):
-        """
-        """
-        return self._name
+        self.name = name
+        self.logger = logger
+        self.rules = list()
+        self.pool = dict()  # name:symbol mapping
+        self.pool['ε'] = GrammarSymbolFactory.epsilon_symbol()
+        self.pool['λ'] = GrammarSymbolFactory.epsilon_symbol()
+        self.pool[GrammarSymbolFactory.UNKNOWN_SYMBOL.name] = GrammarSymbolFactory.unknown_symbol()
 
     @property
     @lru_cache
@@ -49,26 +41,14 @@ class Grammar(Base):
         """
         Return start symbol of the grammar.
         """
-        assert self._rules, 'Rules must not be empty.'
-        return self._rules[0].lhs
-
-    @property
-    def rules(self):
-        """
-        """
-        return self._rules
-
-    @property
-    def pool(self):
-        """
-        """
-        return self._pool
+        assert self.rules, 'Rules must not be empty.'
+        return self.rules[0].lhs
 
     @property
     def epsilon(self):
         """
         """
-        return self._pool['ε']
+        return self.pool['ε']
 
     def load_file(self, filepath):
         """
@@ -82,7 +62,7 @@ class Grammar(Base):
         """
         dp = StringDataProvider(content)
         data = dp.load()
-        content = Content(0, data, 'grammar-lexer')
+        content = Content(data, 'grammar-lexer')
         content.build_line_map()
         diagnostics = Diagnostics()
         statistics = Statistics()
@@ -126,14 +106,14 @@ class Grammar(Base):
     def assemble_rule(self, lhs_name, rhs_names):
         """
        """
-        rule = GrammarRule(len(self._rules) + 1, '')
+        rule = GrammarRule(len(self.rules) + 1, '')
         rule.lhs = self.get_symbol(lhs_name)
         rule.lhs.rules.append(rule)
         for rhs_name in rhs_names:
             rule.rhs.append(self.get_symbol(rhs_name))
         rhs = [s.name for s in rule.rhs]
         rule.name = f"{rule.lhs.name}  ->  {'  '.join(rhs)}"
-        self._rules.append(rule)
+        self.rules.append(rule)
 
     def get_symbol(self, name):
         """
@@ -142,11 +122,11 @@ class Grammar(Base):
         stype = Grammar.get_symbol_type(name)
         if stype == GrammarSymbolKind.NON_TERMINAL:
             normalized_name = normalized_name.upper()
-        if normalized_name in self._pool:
-            result = self._pool[normalized_name]
+        if normalized_name in self.pool:
+            result = self.pool[normalized_name]
         else:
             result = GrammarSymbolFactory.create(normalized_name, stype)
-            self._pool[normalized_name] = result
+            self.pool[normalized_name] = result
         return result
 
     @staticmethod
@@ -175,14 +155,14 @@ class Grammar(Base):
         """
         """
         normalized_name = Grammar.normalize_symbol_name(name)
-        return self._pool[normalized_name]
+        return self.pool[normalized_name]
 
     def decorate(self):
         """
         """
         result = ""
         lhs = GrammarSymbol(0, '')
-        for rule in self._rules:
+        for rule in self.rules:
             if lhs != rule.lhs:
                 lhs = rule.lhs
                 result += '\n'
@@ -193,6 +173,6 @@ class Grammar(Base):
         """
         """
         result = ""
-        for symbol in self._pool.values():
+        for symbol in self.pool.values():
             result = f'{result}{symbol.decorate(full=True)}\n'
         return result

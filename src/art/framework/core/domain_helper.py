@@ -7,6 +7,7 @@ import functools
 import os
 import sys
 import struct
+import json
 import cProfile, pstats, io
 from pstats import SortKey
 from art.framework.core.base import Base
@@ -96,6 +97,28 @@ class DomainHelper(Base):
         """
         """
         return abs(real1 - real2) <= DomainHelper.epsilon()
+
+    @staticmethod
+    def increase_recursion_limit():
+        """
+        """
+        sys.setrecursionlimit(8192)
+
+    @staticmethod
+    def dict_to_string(dictionary, flatten=True):
+        """
+        """
+        assert dictionary is not None, "Invalid argument 'dictionary'."
+        result = json.dumps(dictionary, indent=(0 if flatten else 4))
+        if flatten:
+            result = DomainHelper.flatten_json(result)
+        return result
+
+    @staticmethod
+    def flatten_json(json_text):
+        """
+        """
+        return json_text.replace('\n', '')
 
 
 def profile(message=None):

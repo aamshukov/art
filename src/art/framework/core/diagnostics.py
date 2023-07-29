@@ -14,8 +14,8 @@ class Diagnostics(Base):
         """
         """
         super().__init__()
-        self._statuses = list()  # list of Status objects
-        self._spurious_errors = spurious_errors  # how many spurious error before termination
+        self.statuses = list()  # list of Status objects
+        self.spurious_errors = spurious_errors  # how many spurious error before termination
 
     @property
     def status(self):
@@ -27,7 +27,7 @@ class Diagnostics(Base):
     def successes(self):
         """
         """
-        return [status for status in self._statuses
+        return [status for status in self.statuses
                 if not (status.custom_code & Status.INFO_MASK) == Status.INFO_MASK and
                 not (status.custom_code & Status.WARNING_MASK) == Status.WARNING_MASK and
                 not (status.custom_code & Status.ERROR_MASK) == Status.ERROR_MASK and
@@ -37,47 +37,41 @@ class Diagnostics(Base):
     def infos(self):
         """
         """
-        return [status for status in self._statuses
+        return [status for status in self.statuses
                 if (status.custom_code & Status.INFO_MASK) == Status.INFO_MASK]
 
     @property
     def warnings(self):
         """
         """
-        return [status for status in self._statuses
+        return [status for status in self.statuses
                 if (status.custom_code & Status.WARNING_MASK) == Status.WARNING_MASK]
 
     @property
     def errors(self):
         """
         """
-        return [status for status in self._statuses
+        return [status for status in self.statuses
                 if (status.custom_code & Status.ERROR_MASK) == Status.ERROR_MASK]
 
     @property
     def fatal_errors(self):
         """
         """
-        return [status for status in self._statuses
+        return [status for status in self.statuses
                 if (status.custom_code & Status.FATAL_ERROR_MASK) == Status.FATAL_ERROR_MASK]
-
-    @property
-    def statuses(self):
-        """
-        """
-        return self._statuses
 
     @property
     def last_status(self):
         """
         """
-        if self._statuses:
-            return self._statuses[-1]
+        if self.statuses:
+            return self.statuses[-1]
         else:
             return Status(Diagnostics.__name__, Diagnostics.__name__)
 
     def add(self, status):
         """
         """
-        if len(self._statuses) < self._spurious_errors:
-            self._statuses.append(status)
+        if len(self.statuses) < self.spurious_errors:
+            self.statuses.append(status)

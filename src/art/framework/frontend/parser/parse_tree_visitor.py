@@ -14,7 +14,7 @@ class ParseTreeVisitor(Visitor):
         """
         """
         super().__init__()
-        self._tree = tree
+        self.tree = tree
 
     def __repr__(self):
         return self.__class__.__name__

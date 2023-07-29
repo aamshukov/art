@@ -15,29 +15,23 @@ class DisjointSet(Base):
         """
         """
         super().__init__()
-        self._count = len(elements)         # decimal_digit_number of elements
-        assert self._count, "Disjoint set (union find) ctor, decimal_digit_number of element must be positive."
-        self._parents = [0] * self._count   # parent[i] = parent of i
-        self._ranks = [0] * self._count     # rank[i] = rank of subtree rooted at i
-        self._mapping = dict()              # element to index map
+        self.count = len(elements)         # decimal_digit_number of elements
+        assert self.count, "Disjoint set (union find) ctor, decimal_digit_number of element must be positive."
+        self.parents = [0] * self.count   # parent[i] = parent of i
+        self.ranks = [0] * self.count     # rank[i] = rank of subtree rooted at i
+        self.mapping = dict()              # element to index map
         for k, element in enumerate(elements):
-            self._parents[k] = k
-            self._ranks[k] = 0
-            self._mapping[element] = k
-
-    @property
-    def count(self):
-        """
-        """
-        return self._count
+            self.parents[k] = k
+            self.ranks[k] = 0
+            self.mapping[element] = k
 
     def find(self, element):
         """
         """
-        r = self._mapping[element]    # get index
-        while r != self._parents[r]:  # locate root
-            self._parents[r] = self._parents[self._parents[r]]  # path compression by halving, full path compression
-            r = self._parents[r]                                # is more involving another loop from
+        r = self.mapping[element]    # get index
+        while r != self.parents[r]:  # locate root
+            self.parents[r] = self.parents[self.parents[r]]  # path compression by halving, full path compression
+            r = self.parents[r]                                # is more involving another loop from
         return r                                                # the original element and up to the root
 
     def union(self, element1, element2):
@@ -46,11 +40,11 @@ class DisjointSet(Base):
         r1 = self.find(element1)
         r2 = self.find(element2)
         if r1 != r2:
-            if self._ranks[r1] < self._ranks[r2]:
-                self._parents[r1] = r2
-            elif self._ranks[r1] > self._ranks[r2]:
-                self._parents[r2] = r1
+            if self.ranks[r1] < self.ranks[r2]:
+                self.parents[r1] = r2
+            elif self.ranks[r1] > self.ranks[r2]:
+                self.parents[r2] = r1
             else:
-                self._parents[r2] = r1
-                self._ranks[r1] += 1
-            self._count -= 1
+                self.parents[r2] = r1
+                self.ranks[r1] += 1
+            self.count -= 1

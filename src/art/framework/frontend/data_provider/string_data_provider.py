@@ -16,14 +16,14 @@ class StringDataProvider(DataProvider):
         assert data is not None, "Invalid argument 'data'"
         super().__init__()
         if raw_bytes:
-            self._data = data.decode('UTF-8')
+            self.data = data.decode('UTF-8')
         else:
-            self._data = data
+            self.data = data
 
     def load(self, to_codepoints=True):
         """
         """
         if to_codepoints:
-            return Text.string_to_codepoints(self._data)
+            return Text.string_to_codepoints(self.data)
         else:
-            return self._data
+            return self.data

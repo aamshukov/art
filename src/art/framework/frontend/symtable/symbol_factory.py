@@ -4,7 +4,6 @@
 #
 """ IR symbol factory """
 from copy import deepcopy
-
 from art.framework.core.base import Base
 from art.framework.core.flags import Flags
 from art.framework.frontend.symtable.symbol import Symbol
@@ -32,14 +31,18 @@ class SymbolFactory(Base):
 
     @staticmethod
     def create(label='',
+               value=None,
+               attributes=None,
                flags=Flags.CLEAR,
                version='1.0'):
         """
         """
         return Symbol(SymbolFactory.get_next_id(),
-                      label=label,
-                      flags=flags,
-                      version=version)
+                      label,
+                      value,
+                      attributes,
+                      flags,
+                      version)
 
     @staticmethod
     def unknown_symbol():

@@ -13,10 +13,4 @@ class ParseContext(Context):
         """
         """
         super().__init__()
-        self._trees = list()
-
-    @property
-    def trees(self):
-        """
-        """
-        return self._trees
+        self.trees = list()

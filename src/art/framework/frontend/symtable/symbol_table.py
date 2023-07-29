@@ -13,5 +13,5 @@ class SymbolTable(Base):
         """
         """
         super().__init__()
-        self._scopes = None  # root of scope tree, might represent 'global' scope
-        self._scope = None  # current scope, level
+        self.scopes = None  # root of scope tree, might represent 'global' scope
+        self.scope = None   # current scope, level

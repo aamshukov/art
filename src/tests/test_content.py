@@ -14,7 +14,7 @@ class Test(unittest.TestCase):
         dp = StringDataProvider('')
         data = dp.load()
         assert len(data) == 0
-        content = Content(0, data, '')
+        content = Content(data, '')
         assert len(data) == content.count
         assert data == content.data
 
@@ -22,25 +22,25 @@ class Test(unittest.TestCase):
         dp = StringDataProvider('A')
         data = dp.load()
         assert len(data) == 1
-        content = Content(0, data, '')
+        content = Content(data, '')
         assert len(data) == content.count
         assert data == content.data
         dp = StringDataProvider('Я')
         data = dp.load()
         assert len(data) == 1
-        content = Content(0, data, '')
+        content = Content(data, '')
         assert len(data) == content.count
         assert data == content.data
         dp = StringDataProvider('乇')
         data = dp.load()
         assert len(data) == 1
-        content = Content(0, data, '')
+        content = Content(data, '')
         assert len(data) == content.count
         assert data == content.data
         dp = StringDataProvider('သ')
         data = dp.load()
         assert len(data) == 1
-        content = Content(0, data, '')
+        content = Content(data, '')
         assert len(data) == content.count
         assert data == content.data
 
@@ -48,25 +48,25 @@ class Test(unittest.TestCase):
         dp = StringDataProvider('AB')
         data = dp.load()
         assert len(data) == 2
-        content = Content(0, data, '')
+        content = Content(data, '')
         assert len(data) == content.count
         assert data == content.data
         dp = StringDataProvider('Яд')
         data = dp.load()
         assert len(data) == 2
-        content = Content(0, data, '')
+        content = Content(data, '')
         assert len(data) == content.count
         assert data == content.data
         dp = StringDataProvider('ಠ益')
         data = dp.load()
         assert len(data) == 2
-        content = Content(0, data, '')
+        content = Content(data, '')
         assert len(data) == content.count
         assert data == content.data
         dp = StringDataProvider('်ဂ')
         data = dp.load()
         assert len(data) == 2
-        content = Content(0, data, '')
+        content = Content(data, '')
         assert len(data) == content.count
         assert data == content.data
 
@@ -74,25 +74,25 @@ class Test(unittest.TestCase):
         dp = StringDataProvider('AcB')
         data = dp.load()
         assert len(data) == 3
-        content = Content(0, data, '')
+        content = Content(data, '')
         assert len(data) == content.count
         assert data == content.data
         dp = StringDataProvider('Яхд')
         data = dp.load()
         assert len(data) == 3
-        content = Content(0, data, '')
+        content = Content(data, '')
         assert len(data) == content.count
         assert data == content.data
         dp = StringDataProvider('ಠノ彡')
         data = dp.load()
         assert len(data) == 3
-        content = Content(0, data, '')
+        content = Content(data, '')
         assert len(data) == content.count
         assert data == content.data
         dp = StringDataProvider('ို့')
         data = dp.load()
         assert len(data) == 3
-        content = Content(0, data, '')
+        content = Content(data, '')
         assert len(data) == content.count
         assert data == content.data
         bs = str.encode('ို့', 'utf-8')
@@ -100,7 +100,7 @@ class Test(unittest.TestCase):
         data0 = dp.load()
         assert len(data) == 3
         assert data_equal(data, 'ို့')
-        content = Content(0, data, '')
+        content = Content(data, '')
         assert len(data) == content.count
         assert data == content.data
 
@@ -108,7 +108,7 @@ class Test(unittest.TestCase):
         dp = FileDataProvider(r'data/ascii-0.txt')
         data = dp.load()
         assert len(data) == 0
-        content = Content(0, data, '')
+        content = Content(data, '')
         assert len(data) == content.count
         assert data_equal(data, content.data)
 
@@ -117,7 +117,7 @@ class Test(unittest.TestCase):
         data = dp.load()
         assert len(data) == 1
         assert data_equal(data, 'A')
-        content = Content(0, data, '')
+        content = Content(data, '')
         assert len(data) == content.count
         assert data == content.data
 
@@ -126,7 +126,7 @@ class Test(unittest.TestCase):
         data = dp.load()
         assert len(data) == 2
         assert data_equal(data, 'AB')
-        content = Content(0, data, '')
+        content = Content(data, '')
         assert len(data) == content.count
         assert data == content.data
 
@@ -134,7 +134,7 @@ class Test(unittest.TestCase):
         dp = FileDataProvider(r'data/utf8-0.txt')
         data = dp.load()
         assert len(data) == 0
-        content = Content(0, data, '')
+        content = Content(data, '')
         assert len(data) == content.count
         assert data == content.data
 
@@ -143,7 +143,7 @@ class Test(unittest.TestCase):
         data = dp.load()
         assert len(data) == 1
         assert data_equal(data, '彡')
-        content = Content(0, data, '')
+        content = Content(data, '')
         assert len(data) == content.count
         assert data == content.data
 
@@ -152,7 +152,7 @@ class Test(unittest.TestCase):
         data = dp.load()
         assert len(data) == 2
         assert data_equal(data, '်ဂ')
-        content = Content(0, data, '')
+        content = Content(data, '')
         assert len(data) == content.count
         assert data == content.data
 
@@ -161,7 +161,7 @@ class Test(unittest.TestCase):
         data = dp.load()
         assert len(data) == 3
         assert data_equal(data, 'дЕA')
-        content = Content(0, data, '')
+        content = Content(data, '')
         assert len(data) == content.count
         assert data == content.data
 
@@ -170,7 +170,7 @@ class Test(unittest.TestCase):
         data = dp.load()
         assert len(data) == 4
         assert data_equal(data, '你叫什么')
-        content = Content(0, data, '')
+        content = Content(data, '')
         assert len(data) == content.count
         assert data == content.data
 
@@ -193,7 +193,7 @@ class Test(unittest.TestCase):
         data = dp.load()
         assert len(data) == len(Test.TEXT)
         assert data_equal(data, Test.TEXT)
-        content = Content(0, data, '')
+        content = Content(data, '')
         assert len(data) == content.count
         assert data == content.data
 
@@ -202,7 +202,7 @@ class Test(unittest.TestCase):
         data = dp.load()
         assert len(data) == len(Test.TEXT)
         assert data_equal(data, Test.TEXT)
-        content = Content(0, data, '')
+        content = Content(data, '')
         assert len(data) == content.count
         assert data == content.data
 
@@ -211,7 +211,7 @@ class Test(unittest.TestCase):
         data = dp.load()
         assert len(data) == len(Test.TEXT)
         assert data_equal(data, Test.TEXT)
-        content = Content(0, data, '')
+        content = Content(data, '')
         assert len(data) == content.count
         assert data == content.data
 
@@ -220,7 +220,7 @@ class Test(unittest.TestCase):
         data = dp.load()
         assert len(data) == len(Test.TEXT)
         assert data_equal(data, Test.TEXT)
-        content = Content(0, data, '')
+        content = Content(data, '')
         assert len(data) == content.count
         assert data == content.data
 
@@ -229,62 +229,62 @@ class Test(unittest.TestCase):
         data = dp.load()
         assert len(data) == len(Test.TEXT)
         assert data_equal(data, Test.TEXT)
-        content = Content(0, data, '')
+        content = Content(data, '')
         assert len(data) == content.count
         assert data == content.data
 
     def test_content_build_line_map_success(self):
         dp = StringDataProvider('')  # line map has no entries
         data = dp.load()
-        content = Content(0, data, '')
+        content = Content(data, '')
         assert len(data) == content.count
         assert data == content.data
         content.build_line_map()
         dp = StringDataProvider('Line 1')  # line map has 1 entry
         data = dp.load()
-        content = Content(0, data, '')
+        content = Content(data, '')
         assert len(data) == content.count
         assert data == content.data
         content.build_line_map()
         dp = StringDataProvider('Line 1\n')  # line map has 1 entry
         data = dp.load()
-        content = Content(0, data, '')
+        content = Content(data, '')
         assert len(data) == content.count
         assert data == content.data
         content.build_line_map()
         dp = StringDataProvider('Line 1\n\n\n')  # line map has 3 entries
         data = dp.load()
-        content = Content(0, data, '')
+        content = Content(data, '')
         assert len(data) == content.count
         assert data == content.data
         content.build_line_map()
         dp = StringDataProvider('Line 1\nLine 2\nLine 3')  # line map has 3 entries
         data = dp.load()
-        content = Content(0, data, '')
+        content = Content(data, '')
         assert len(data) == content.count
         assert data == content.data
         content.build_line_map()
         dp = StringDataProvider('Line 1\nLine 2\nLine 3\n')  # line map has 3 entries
         data = dp.load()
-        content = Content(0, data, '')
+        content = Content(data, '')
         assert len(data) == content.count
         assert data == content.data
         content.build_line_map()
         dp = StringDataProvider('Line 1\n\nLine 3\n\nLine5')  # line map has 5 entries
         data = dp.load()
-        content = Content(0, data, '')
+        content = Content(data, '')
         assert len(data) == content.count
         assert data == content.data
         content.build_line_map()
         dp = StringDataProvider(Test.TEXT)
         data = dp.load()
-        content = Content(0, data, '')
+        content = Content(data, '')
         assert len(data) == content.count
         assert data == content.data
         content.build_line_map()
         dp = StringDataProvider('Lin\te 1\n\nLi\t\t\tne 3\n\nLin\t\t\t\te5')  # line map has 5 entries
         data = dp.load()
-        content = Content(0, data, '')
+        content = Content(data, '')
         assert len(data) == content.count
         assert data == content.data
         content.build_line_map()
@@ -292,7 +292,7 @@ class Test(unittest.TestCase):
     def test_content_location_success(self):
         dp = StringDataProvider(Test.TABBED_TEXT)
         data = dp.load()
-        content = Content(0, data, '')
+        content = Content(data, '')
         assert len(data) == content.count
         assert data == content.data
         content.build_line_map()
@@ -315,7 +315,7 @@ class Test(unittest.TestCase):
     def test_content_location_no_tabs_success(self):
         dp = StringDataProvider(Test.TABBED_TEXT)
         data = dp.load()
-        content = Content(0, data, '', tab_size=0)
+        content = Content(data, '', tab_size=0)
         assert len(data) == content.count
         assert data == content.data
         content.build_line_map()
@@ -341,7 +341,7 @@ class Test(unittest.TestCase):
         assert len(data) == 29
         assert type(data) is list
         assert type(data[0]) is int
-        content = Content(0, data, '')
+        content = Content(data, '')
         assert len(data) == content.count
 
 

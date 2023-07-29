@@ -14,16 +14,4 @@ class Context(Base):
         """
         """
         super().__init__()
-        self._status = Status('Context initialization', 'context')
-
-    @property
-    def status(self):
-        """
-        """
-        return self._status
-
-    @status.setter
-    def status(self, status):
-        """
-        """
-        self._status = status
+        self.status = Status('Context initialization', 'context')

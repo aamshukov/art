@@ -4,7 +4,6 @@
 #
 """ Token factory """
 from copy import deepcopy
-
 from art.framework.core.base import Base
 from art.framework.frontend.lexical_analyzer.tokenizer.token import Token
 from art.framework.frontend.lexical_analyzer.tokenizer.token_kind import TokenKind
@@ -21,12 +20,16 @@ class TokenFactory(Base):
         super().__init__()
 
     @staticmethod
-    def create(kind, source='', version='1.0'):
+    def create(kind,
+               source='',
+               value=0,
+               version='1.0'):
         """
         """
-        return Token(kind=kind,
-                     source=source,
-                     version=version)
+        return Token(kind,
+                     source,
+                     value,
+                     version)
 
     @staticmethod
     def unknown_token():

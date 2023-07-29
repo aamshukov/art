@@ -2,8 +2,9 @@
 # UI Lab Inc. Arthur Amshukov
 #
 """ Grammar rule """
+from art.framework.core.domain_helper import DomainHelper
 from art.framework.core.entity import Entity
-from art.framework.core.text import Text
+from art.framework.core.flags import Flags
 
 
 class GrammarRule(Entity):
@@ -16,18 +17,22 @@ class GrammarRule(Entity):
     def __init__(self,
                  id,
                  name='',
+                 value=None,
+                 attributes=None,
+                 flags=Flags.CLEAR,
                  version='1.0'):
         """
         """
-        super().__init__(id, version)
-        self._name = name
-        self._lhs = None
-        self._rhs = list()
+        super().__init__(id, value, attributes, flags, version)
+        self.name = name
+        self.lhs = None
+        self.rhs = list()
 
     def __repr__(self):
         """
         """
-        return f"{type(self).__name__}:{self._name}:{self._version}:"
+        return f"{type(self).__name__}:{self.id}:{self.name}:{self.value}:" \
+               f"({DomainHelper.dict_to_string(self.attributes)}):{self.version}"
 
     __str__ = __repr__
 
@@ -35,69 +40,33 @@ class GrammarRule(Entity):
         """
         """
         result = super().__hash__()
-        result ^= hash(self._name)
+        result ^= hash(self.name)
         return result
 
     def __eq__(self, other):
         """
         """
-        result = (super().__eq__(other) and
-                  Text.equal(self._name, other.label))
-        return result
+        return super().__eq__(other)
 
     def __lt__(self, other):
         """
         """
-        result = (super().__lt__(other) and
-                  Text.compare(self._name, other.label) < 0)
-        return result
+        return super().__lt__(other)
 
     def __le__(self, other):
         """
         """
-        result = (super().__le__(other) and
-                  Text.compare(self._name, other.label) <= 0)
-        return result
-
-    @property
-    def name(self):
-        """
-        """
-        return self._name
-
-    @name.setter
-    def name(self, name):
-        """
-        """
-        self._name = name
-
-    @property
-    def lhs(self):
-        """
-        """
-        return self._lhs
-
-    @lhs.setter
-    def lhs(self, lhs):
-        """
-        """
-        self._lhs = lhs
-
-    @property
-    def rhs(self):
-        """
-        """
-        return self._rhs
+        return super().__le__(other)
 
     def empty(self):
         """
         """
-        assert self._lhs, 'LHS must not be empty.'
-        assert self._rhs, 'RHS must not be empty.'
-        return (self._lhs and
-                self._lhs.non_terminal and
-                self._rhs and
-                self._rhs[0].epsilon)
+        assert self.lhs, 'LHS must not be empty.'
+        assert self.rhs, 'RHS must not be empty.'
+        return (self.lhs and
+                self.lhs.non_terminal and
+                self.rhs and
+                self.rhs[0].epsilon)
 
     def validate(self):
         """
@@ -107,7 +76,7 @@ class GrammarRule(Entity):
     def decorate(self):
         """
         """
-        lhs = self._lhs.decorate()
-        rhs = [s.decorate() for s in self._rhs]
+        lhs = self.lhs.decorate()
+        rhs = [s.decorate() for s in self.rhs]
         result = f"{lhs}  ->  {'  '.join(rhs)}"
         return result

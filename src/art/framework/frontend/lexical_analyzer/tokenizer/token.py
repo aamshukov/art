@@ -12,23 +12,26 @@ from art.framework.frontend.lexical_analyzer.tokenizer.token_kind import TokenKi
 class Token(Value):
     """
     """
-    def __init__(self, kind, source='', version='1.0'):
+    def __init__(self,
+                 kind,
+                 source='',
+                 value=0,
+                 version='1.0'):
         """
         """
-        super().__init__(version)
-        self._kind = kind  # type of lexeme
-        self._offset = 0  # offset in context (absolute address)
-        self._length = 0  # length of lexeme
-        self._literal = ''  # string or char literal (if unicode - always decoded), numeric value, etc.
-        self._value = 0
-        self._source = source  # lexical analyser which recognizes this lexeme, could be from different files
-        self._flags = Flags.CLEAR | Flags.GENUINE
+        super().__init__(value, version)
+        self.kind = kind  # type of lexeme
+        self.offset = 0  # offset in context (absolute address)
+        self.length = 0  # length of lexeme
+        self.literal = ''  # string or char literal (if unicode - always decoded), numeric value, etc.
+        self.source = source  # lexical analyser which recognizes this lexeme, could be from different files
+        self.flags = Flags.CLEAR | Flags.GENUINE
 
     def __repr__(self):
         """
         """
-        return f"{self._kind.name.ljust(16)}: '{self._literal}', '{self._value}', {self._offset}," \
-               f"{self._length}, '{self._source}', {self._flags}, {self.version}"
+        return f"{self.kind.name.ljust(16)}: '{self.literal}', '{self.value}', {self.offset}," \
+               f"{self.length}, '{self.source}', {self.flags}, {self.version}"
 
     __str__ = __repr__
 
@@ -36,139 +39,55 @@ class Token(Value):
         """
         """
         result = (super().__hash__() ^
-                  hash(self._kind) ^
-                  hash(self._offset) ^
-                  hash(self._length) ^
-                  hash(self._literal) ^
-                  hash(self._value) ^
-                  hash(self._source))
+                  hash(self.kind) ^
+                  hash(self.offset) ^
+                  hash(self.length) ^
+                  hash(self.literal) ^
+                  hash(self.value) ^
+                  hash(self.source))
         return result
 
     def __eq__(self, other):
         """
         """
         result = (super().__eq__(other) and
-                  self._kind == other.kind and
-                  self._offset == other.offset and
-                  self._length == other.length and
-                  Text.equal(self._literal, other.literal) and
-                  self._value == other.value and
-                  self._source == other.source)
+                  self.kind == other.kind and
+                  self.offset == other.offset and
+                  self.length == other.length and
+                  Text.equal(self.literal, other.literal) and
+                  self.value == other.value and
+                  self.source == other.source)
         return result
 
     def __lt__(self, other):
         """
         """
         result = (super().__lt__(other) and
-                  self._kind < other.kind and
-                  self._offset < other.offset and
-                  self._length < other.length and
-                  Text.compare(self._literal, other.literal) < 0 and
-                  self._value < other.value and
-                  self._source < other.source)
+                  self.kind < other.kind and
+                  self.offset < other.offset and
+                  self.length < other.length and
+                  Text.compare(self.literal, other.literal) < 0 and
+                  self.value < other.value and
+                  self.source < other.source)
         return result
 
     def __le__(self, other):
         """
         """
         result = (super().__le__(other) and
-                  self._kind <= other.kind and
-                  self._offset <= other.offset and
-                  self._length <= other.length and
-                  Text.compare(self._literal, other.literal) <= 0 and
-                  self._value <= other.value and
-                  self._source <= other.source)
+                  self.kind <= other.kind and
+                  self.offset <= other.offset and
+                  self.length <= other.length and
+                  Text.compare(self.literal, other.literal) <= 0 and
+                  self.value <= other.value and
+                  self.source <= other.source)
         return result
-
-    @property
-    def kind(self):
-        """
-        """
-        return self._kind
-
-    @kind.setter
-    def kind(self, kind):
-        """
-        """
-        self._kind = kind
 
     @property
     def label(self):
         """
         """
-        return self._kind.name
-
-    @property
-    def offset(self):
-        """
-        """
-        return self._offset
-
-    @offset.setter
-    def offset(self, offset):
-        """
-        """
-        self._offset = offset
-
-    @property
-    def length(self):
-        """
-        """
-        return self._length
-
-    @length.setter
-    def length(self, length):
-        """
-        """
-        self._length = length
-
-    @property
-    def literal(self):
-        """
-        """
-        return self._literal
-
-    @literal.setter
-    def literal(self, literal):
-        """
-        """
-        self._literal = literal
-
-    @property
-    def value(self):
-        """
-        """
-        return self._value
-
-    @value.setter
-    def value(self, value):
-        """
-        """
-        self._value = value
-
-    @property
-    def source(self):
-        """
-        """
-        return self._source
-
-    @source.setter
-    def source(self, source):
-        """
-        """
-        self._source = source
-
-    @property
-    def flags(self):
-        """
-        """
-        return self._flags
-
-    @flags.setter
-    def flags(self, flags):
-        """
-        """
-        self._flags = flags
+        return self.kind.name
 
     def validate(self):
         """
@@ -178,21 +97,21 @@ class Token(Value):
     def accept(self, token):
         """
         """
-        self._kind = token.kind
-        self._offset = token.offset
-        self._length = token.length
-        self._literal = token.literal
-        self._value = token.value
-        self._source = token.source
-        self._flags = token.flags
+        self.kind = token.kind
+        self.offset = token.offset
+        self.length = token.length
+        self.literal = token.literal
+        self.value = token.value
+        self.source = token.source
+        self.flags = token.flags
 
     def reset(self):
         """
         """
-        self._kind = TokenKind.UNKNOWN
-        self._offset = 0
-        self._length = 0
-        self._literal = ''
-        self._value = 0
-        self._source = ''
-        self._flags = Flags.CLEAR | Flags.GENUINE
+        self.kind = TokenKind.UNKNOWN
+        self.offset = 0
+        self.length = 0
+        self.literal = ''
+        self.value = 0
+        self.source = ''
+        self.flags = Flags.CLEAR | Flags.GENUINE

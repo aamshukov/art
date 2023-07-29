@@ -3,6 +3,7 @@
 # UI Lab Inc. Arthur Amshukov
 #
 """ Edge """
+from art.framework.core.domain_helper import DomainHelper
 from art.framework.core.flags import Flags
 from art.framework.core.entity import Entity
 
@@ -19,95 +20,42 @@ class Edge(Entity):
                  version='1.0'):
         """
         """
-        super().__init__(id, version)
-        self._endpoints = [endpoint for endpoint in endpoints]
-        self._value = value
-        self._attributes = attributes
-        self._flags = flags
+        super().__init__(id, value, attributes, flags, version)
+        self.endpoints = [endpoint for endpoint in endpoints]
 
     def __repr__(self):
         """
         """
-        return f"{type(self).__name__}:{self._id}:{self._value}:{self._flags}:{self._version}" \
-               f"[{self._attributes}]:({self._endpoints})"
+        return f"{type(self).__name__}:{self.id}:{self.value}:" \
+               f"({DomainHelper.dict_to_string(self.attributes)}):{self.endpoints}:{self.version}"
 
     __str__ = __repr__
 
     def __hash__(self):
         """
         """
-        result = super().__hash__()
-        return result
+        return super().__hash__()
 
     def __eq__(self, other):
         """
         """
-        result = (super().__eq__(other) and
-                  tuple(self._endpoints) == tuple(other.endpoints) and
-                  self._value == other.value)
-        return result
+        return super().__eq__(other)
 
     def __lt__(self, other):
         """
         """
-        result = (super().__lt__(other) and
-                  self._value < other.value)
-        return result
+        return super().__lt__(other)
 
     def __le__(self, other):
         """
         """
-        result = (super().__le__(other) and
-                  self._value <= other.value)
-        return result
-
-    @property
-    def endpoints(self):
-        """
-        """
-        return self._endpoints
+        return super().__le__(other)
 
     @property
     def uv(self):
         """
         """
-        return self._endpoints[0], self._endpoints[1]
-
-    @property
-    def value(self):
-        """
-        """
-        return self._value
-
-    @value.setter
-    def value(self, value):
-        """
-        """
-        self._value = value
-
-    @property
-    def attributes(self):
-        """
-        """
-        return self._attributes
-
-    @attributes.setter
-    def attributes(self, attributes):
-        """
-        """
-        self._attributes = attributes
-
-    @property
-    def flags(self):
-        """
-        """
-        return self._flags
-
-    @flags.setter
-    def flags(self, flags):
-        """
-        """
-        self._flags = flags
+        return self.endpoints[0], self.endpoints[1]
 
     def validate(self):
         """

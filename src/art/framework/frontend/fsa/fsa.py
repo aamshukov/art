@@ -2,7 +2,7 @@
 # UI Lab Inc. Arthur Amshukov
 #
 """ FSA """
-import os
+from art.framework.core.flags import Flags
 from art.framework.core.text import Text
 from art.framework.core.graph import Graph
 
@@ -11,26 +11,17 @@ class Fsa(Graph):
     """
     """
     def __init__(self,
-                 id,
+                 id=0,
                  label='',
+                 value=None,       # graph specific value
+                 attributes=None,  # graph specific attributes
+                 flags=Flags.CLEAR,
                  version='1.0'):
         """
         """
-        super().__init__(id, label, digraph=True, version=version)
-        self._start_state = None
-        self._final_states = list()
-
-    @property
-    def start_state(self):
-        """
-        """
-        return self._start_state
-
-    @start_state.setter
-    def start_state(self, state):
-        """
-        """
-        self._start_state = state
+        super().__init__(id, label, value, attributes, flags, digraph=True, version=version)
+        self.start_state = None
+        self.final_states = list()
 
     @property
     def states(self):
@@ -38,17 +29,11 @@ class Fsa(Graph):
         """
         return self.vertices
 
-    @property
-    def final_states(self):
-        """
-        """
-        return self._final_states
-
     def add_final_state(self, state):
         """
         """
         assert not self.is_final_state(state), "State already exists in final states."
-        self._final_states.append(state)
+        self.final_states.append(state)
 
     def is_start_state(self, id):
         """
@@ -93,20 +78,10 @@ class Fsa(Graph):
         return ''
 
     @staticmethod
-    def epsilon():
-        """
-        """
-        return 'ε'
+    def epsilon_transition(predicate):
+        return Text.epsilon(predicate)
 
-    @staticmethod
-    def is_epsilon_transition(predicate):
-        return Text.equal(predicate, Fsa.epsilon())
-
-    @staticmethod
-    def epsilon_transition():
-        return Fsa.epsilon()
-
-    def combine(self, fsas):
+    def combine(self, fsas):  # noqa
         """
         Combines given FSAs into a FSA
           ... 15 ----> 16 ...

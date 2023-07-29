@@ -5,6 +5,7 @@
 from copy import deepcopy
 from collections import deque
 from art.framework.core.entity import Entity
+from art.framework.core.flags import Flags
 from art.framework.frontend.lexical_analyzer.tokenizer.token_factory import TokenFactory
 from art.framework.frontend.lexical_analyzer.tokenizer.token_kind import TokenKind
 
@@ -17,23 +18,28 @@ class LexicalAnalyzer(Entity):
                  tokenizer,
                  statistics,
                  diagnostics,
+                 value=None,
+                 attributes=None,
+                 flags=Flags.CLEAR,
                  version='1.0'):
         """
         """
         super().__init__(id,  # master lexer, id = 0
-                         version=version)
-        self._tokenizer = tokenizer
-        self._token = TokenFactory.unknown_token()  # current lexeme
-        self._tokens = deque()  # queue of lookahead (cached) lexemes
-        self._prev_token = deepcopy(self._token)  # previous lexeme
-        self._statistics = statistics
-        self._diagnostics = diagnostics
+                         value,
+                         attributes,
+                         flags,
+                         version)
+        self.tokenizer = tokenizer
+        self.token = TokenFactory.unknown_token()  # current lexeme
+        self.tokens = deque()  # queue of lookahead (cached) lexemes
+        self.prev_token = deepcopy(self.token)  # previous lexeme
+        self.statistics = statistics
+        self.diagnostics = diagnostics
 
     def __hash__(self):
         """
         """
-        result = super().__hash__()
-        return result
+        return super().__hash__()
 
     def __eq__(self, other):
         """
@@ -50,39 +56,15 @@ class LexicalAnalyzer(Entity):
         """
         return super().__le__(other)
 
-    @property
-    def token(self):
-        """
-        """
-        return self._token
-
-    @property
-    def prev_token(self):
-        """
-        """
-        return self._prev_token
-
     def eol(self):
         """
         """
-        return self._token.kind == TokenKind.EOL
+        return self.token.kind == TokenKind.EOL
 
     def eos(self):
         """
         """
-        return self._token.kind == TokenKind.EOS
-
-    @property
-    def statistics(self):
-        """
-        """
-        return self._statistics
-
-    @property
-    def diagnostics(self):
-        """
-        """
-        return self._diagnostics
+        return self.token.kind == TokenKind.EOS
 
     def validate(self):
         """
@@ -92,46 +74,92 @@ class LexicalAnalyzer(Entity):
     def get_content_position(self):
         """
         """
-        return self._tokenizer.content.get_location(self._tokenizer.content_position)
+        return self.tokenizer.content.get_location(self.tokenizer.content_position)
 
     def next_lexeme(self):
         """
         """
-        self._prev_token = deepcopy(self._token)
-        if self._tokens:
-            self._token = self._tokens.popleft()
+        self.prev_token = deepcopy(self.token)
+        if self.tokens:
+            self.token = self.tokens.popleft()
         else:
-            self._token = self._tokenizer.next_lexeme()
-        self._statistics.update_stats(self._token)
-        return self._token
+            self.token = self.tokenizer.next_lexeme()
+        self.statistics.update_stats(self.token)
+        return self.token
 
-    def lookahead_lexeme(self):
+    def lookahead_lexeme(self, skip=None):
         """
         """
-        token = self._tokenizer.next_lexeme()
-        self._tokens.append(token)
+        if skip:
+            i = 0
+            n = len(self.tokens)
+            while i < n and self.tokens[i].kind in skip:
+                i += 1
+            if i < len(self.tokens):
+                token = self.tokens[i]
+            else:
+                saved_token = deepcopy(self.token)
+                saved_prev_token = deepcopy(self.prev_token)
+                token = self.tokenizer.next_lexeme()
+                self.tokens.append(token)
+                while token.kind in skip:
+                    token = self.tokenizer.next_lexeme()
+                    self.tokens.append(token)
+                self.token = saved_token
+                self.prev_token = saved_prev_token
+        else:
+            if self.tokens:
+                token = self.tokens[0]
+            else:
+                saved_token = deepcopy(self.token)
+                saved_prev_token = deepcopy(self.prev_token)
+                token = self.tokenizer.next_lexeme()
+                self.tokens.append(token)
+                self.token = saved_token
+                self.prev_token = saved_prev_token
         return token
+
+    def lookahead_lexemes(self, k=1):
+        """
+        """
+        assert k > 0, f"Number of look ahead tokens must be greater than zero, {k} specified."
+        tokens = list()
+        i = 0
+        n = len(self.tokens)
+        while i < n:
+            tokens.append(self.tokens[i])
+            i += 1
+        saved_token = deepcopy(self.token)
+        saved_prev_token = deepcopy(self.prev_token)
+        while i < k:
+            token = self.tokenizer.next_lexeme()
+            tokens.append(token)
+            self.tokens.append(token)
+            i += 1
+        self.token = saved_token
+        self.prev_token = saved_prev_token
+        return tokens
 
     def take_snapshot(self):
         """
         Snapshot the current content position for backtracking.
         Usually called by parsers.
         """
-        self._tokenizer.take_snapshot()
+        self.tokenizer.take_snapshot()
 
     def rewind_to_snapshot(self):
         """
         Restore the last saved content position for backtracking.
         Usually called by parsers.
         """
-        self._token.reset()
-        self._tokens.clear()
-        self._prev_token.reset()
-        self._tokenizer.rewind_to_snapshot()
+        self.token.reset()
+        self.tokens.clear()
+        self.prev_token.reset()
+        self.tokenizer.rewind_to_snapshot()
 
     def discard_snapshot(self):
         """
         Discard the last saved content position for backtracking.
         Usually called by lexical analyzers.
         """
-        self._tokenizer.discard_snapshot()
+        self.tokenizer.discard_snapshot()

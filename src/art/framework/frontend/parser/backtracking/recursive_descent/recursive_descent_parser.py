@@ -23,6 +23,20 @@ class RecursiveDescentParser(Parser):
                          grammar,
                          statistics,
                          diagnostics)
+        self.recursion_level = 0
+
+    def inc_recursion_level(self):
+        """
+        """
+        self.recursion_level += 1
+        return self.recursion_level
+
+    def dec_recursion_level(self):
+        """
+        """
+        self.recursion_level -= 1
+        assert self.recursion_level >= 0, f"Internal parser error. Recursion level: {self.recursion_level}."
+        return self.recursion_level
 
     @abstractmethod
     def parse(self, *args, **kwargs):

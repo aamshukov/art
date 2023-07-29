@@ -18,7 +18,7 @@ class Test(unittest.TestCase):
             os.makedirs(Test.DOT_PATH)
 
     def test_fsa_success(self):
-        fsa = Fsa(0)
+        fsa = Fsa()
         s1 = FsaState(1, '1', 1)
         s2 = FsaState(2, '2', 2)
         fsa.start_state = s1

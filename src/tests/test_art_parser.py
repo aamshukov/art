@@ -73,7 +73,7 @@ class Test(unittest.TestCase):
         logger.info(decorated_pool)
         dp = StringDataProvider(program)
         data = dp.load()
-        content = Content(0, data, '')
+        content = Content(data, '')
         content.build_line_map()
         statistics = Statistics()
         diagnostics = Diagnostics()

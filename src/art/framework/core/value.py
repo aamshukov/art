@@ -11,41 +11,39 @@ from art.framework.core.equatable import Equatable
 class Value(Equatable):
     """
     """
-    def __init__(self, version='1.0'):
+    def __init__(self, value=None, version='1.0'):
         """
         """
         super().__init__()
-        self._version = version.strip()
+        self.value = value
+        self.version = version.strip()
 
     @abstractmethod
     def __hash__(self):
         """
         """
-        return hash(self._version)
+        return hash(self.value) ^ hash(self.version)
 
     @abstractmethod
     def __eq__(self, other):
         """
         """
-        return Text.equal(self._version, other.version)
+        return (self.value == other.value and
+                Text.equal(self.version, other.version))
 
     @abstractmethod
     def __lt__(self, other):
         """
         """
-        return Text.compare(self._version, other.version) < 0
+        return (self.value < other.value and
+                Text.compare(self.version, other.version) < 0)
 
     @abstractmethod
     def __le__(self, other):
         """
         """
-        return Text.compare(self._version, other.version) <= 0
-
-    @property
-    def version(self):
-        """
-        """
-        return self._version
+        return (self.value <= other.value and
+                Text.compare(self.version, other.version) <= 0)
 
     @abstractmethod
     def validate(self):

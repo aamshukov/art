@@ -21,5 +21,5 @@ class CustomStreamHandler(logging.StreamHandler):
             self.flush()
         except RecursionError:
             raise
-        except Exception:
+        except:  # noqa
             self.handleError(record)

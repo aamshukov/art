@@ -859,3 +859,138 @@ from pstats import SortKey
         print(s.getvalue())
 
 
+https://stackoverflow.com/questions/5061582/setting-stacksize-in-a-python-script
+import resource, sys
+resource.setrlimit(resource.RLIMIT_STACK, (2**29,-1))
+sys.setrecursionlimit(10**6)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    def accept(self, visitor, *args, **kwargs):
+        """
+        """
+        def accept_action(_tree):
+            visitor.visit(_tree, *args, **kwargs)
+
+        preorder = kwargs.pop('preorder', False)
+        postorder = kwargs.pop('postorder', False)
+        preorder_action = None
+        postorder_action = None
+        if preorder:
+            preorder_action = accept_action
+        if postorder:
+            postorder_action = accept_action
+        GraphAlgorithms.calculate_tree_traverses(self,
+                                                 preorder_action=preorder_action,
+                                                 postorder_action=postorder_action)
+
+    # def accept(self, visitor, *args, **kwargs):
+    #     """
+    #     """
+    #     recursive = False
+    #     if 'recursive' in kwargs:
+    #         recursive = kwargs['recursive']
+    #     if recursive:
+    #         if (self._flags & Flags.VISITED) != Flags.VISITED:
+    #             self._flags = Flags.modify_flags(self._flags, Flags.VISITED, Flags.CLEAR)
+    #             visitor.visit(self, *args, **kwargs)
+    #             for kid in self._kids:
+    #                 if (kid.flags & Flags.VISITED) != Flags.VISITED:
+    #                     kid.accept(visitor, *args, **kwargs)
+    #     else:
+    #         def default_action(_tree, *_args, **_kwargs):
+    #             visitor.visit(_tree, *_args, **_kwargs)
+    #
+    #         preorder_action = kwargs.pop('preorder', '')
+    #         postorder_action = None
+    #         if not preorder_action:
+    #             postorder_action = kwargs.pop('postorder', '')
+    #             if not postorder_action:
+    #                 preorder_action = default_action
+    #         GraphAlgorithms.calculate_tree_traverses(self,
+    #                                                  preorder_action=preorder_action,
+    #                                                  postorder_action=postorder_action)
+
+
+
+
+
+
+
+
+
+            def visit(self, cst, *args, **kwargs):  # noqa
+                """
+                """
+                # papa = None
+                stack = deque()
+                # stack.append(TypeVisitor.TvpPair(cst, 1, papa))
+                self.ast = papa = self.make_tree(cst)
+                for kid in reversed(cst.kids):
+                    if (TypeVisitor.accepted_non_terminal(kid.kind) or
+                            TypeVisitor.accepted_terminal(kid.kind)):
+                        stack.append(TypeVisitor.TvpPair(kid, 1, papa))
+                while stack:
+                    pair = stack.pop()
+                    if pair.value == 1:
+                        pair.value += 1
+                        stack.append(pair)
+                        papa = self.make_tree(pair.tree, pair.papa)
+                        if papa:
+                            # if self.ast.kind == ArtParseTreeKind.UNKNOWN:
+                            #     self.ast = papa
+                            for kid in reversed(pair.tree.kids):
+                                if (TypeVisitor.accepted_non_terminal(kid.kind) or
+                                        TypeVisitor.accepted_terminal(kid.kind)):
+                                    stack.append(TypeVisitor.TvpPair(kid, 1, papa))
+                    elif pair.value == 2:
+                        pair.value += 1
+                        stack.append(pair)
+
+
+
+
+
+
+
+
+
+
+    def accept(self, visitor, *args, **kwargs):
+        """
+        """
+        if (self._flags & Flags.VISITED) != Flags.VISITED:
+            self._flags = Flags.modify_flags(self._flags, Flags.VISITED, Flags.CLEAR)
+            visitor.visit(self, *args, **kwargs)
+            for adjacence in self.adjacencies:
+                if (adjacence.vertex.flags & Flags.VISITED) != Flags.VISITED:
+                    adjacence.vertex.accept(visitor, *args, **kwargs)
+
+
+
+
+
+

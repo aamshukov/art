@@ -37,14 +37,19 @@ class GrammarSymbolFactory(Base):
     @staticmethod
     def create(name='',
                symbol_type=GrammarSymbolKind.TERMINAL,
+               value=None,
+               attributes=None,
                flags=Flags.CLEAR,
                version='1.0'):
         """
         """
         return GrammarSymbol(GrammarSymbolFactory.get_next_id(),
-                             name=name,
-                             symbol_type=symbol_type,
-                             flags=flags)
+                             name,
+                             symbol_type,
+                             value,
+                             attributes,
+                             flags,
+                             version)
 
     @staticmethod
     def unknown_symbol():

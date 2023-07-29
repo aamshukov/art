@@ -15,7 +15,7 @@ class FileDataProvider(DataProvider):
         """
         """
         super().__init__()
-        self._source = source
+        self.source = source
 
     def load(self, to_codepoints=True):
         """
@@ -24,7 +24,7 @@ class FileDataProvider(DataProvider):
         encoding = 'UTF-8'
         bom = None
         offset = 0
-        with open(self._source, 'rb', buffering=0) as stream:
+        with open(self.source, 'rb', buffering=0) as stream:
             bom = stream.read(4)
         if bom is not None:
             if len(bom) >= 3 and bom[0] == 0xEF and bom[1] == 0xBB and bom[2] == 0xBF:
@@ -43,7 +43,7 @@ class FileDataProvider(DataProvider):
                     encoding = 'UTF-16LE'
                 offset = 2
         text = ''
-        with open(self._source, 'rt', encoding=encoding, newline=os.linesep) as stream:
+        with open(self.source, 'rt', encoding=encoding, newline=os.linesep) as stream:
             stream.seek(offset, os.SEEK_SET)
             text = stream.read()
         if to_codepoints:

@@ -22,7 +22,7 @@ class Test(unittest.TestCase):
     def get_lexer(program):
         dp = StringDataProvider(program)
         data = dp.load()
-        content = Content(0, data, '')
+        content = Content(data, '')
         content.build_line_map()
         diagnostics = Diagnostics()
         statistics = Statistics()

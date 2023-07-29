@@ -218,16 +218,16 @@ class GraphAlgorithms(Base):
                     stack.append(adjacence.vertex)  # push
 
     @staticmethod
-    def calculate_tree_traverses(tree, preorder_action=None, postorder_action=None):
+    def calculate_tree_traverses(tree, preorder_action=None, postorder_action=None, *args, **kwargs):
         """
         Calculates preorder and postorder paths of the tree.
         """
         class Pair:
             __slots__ = ['tree', 'value']
 
-            def __init__(self, tree, value):
-                self.tree = tree
-                self.value = value
+            def __init__(self, _tree, _value):
+                self.tree = _tree
+                self.value = _value
 
         preorder = list()
         postorder = list()
@@ -238,7 +238,7 @@ class GraphAlgorithms(Base):
             if pair.value == 1:
                 preorder.append(pair.tree)
                 if preorder_action:
-                    preorder_action(pair.tree)
+                    preorder_action(pair.tree, *args, **kwargs)
                 pair.value += 1
                 stack.append(pair)
                 for kid in reversed(pair.tree.kids):
@@ -249,7 +249,7 @@ class GraphAlgorithms(Base):
             else:  # pair.value == 3
                 postorder.append(pair.tree)
                 if postorder_action:
-                    postorder_action(pair.tree)
+                    postorder_action(pair.tree, *args, **kwargs)
         return preorder, postorder
 
     @staticmethod

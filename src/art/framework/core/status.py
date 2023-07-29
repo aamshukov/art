@@ -45,52 +45,10 @@ class Status(Base):
         """
         """
         super().__init__()
-        self._text = text
-        self._contributor = contributor
-        self._custom_code = custom_code
-        self._system_code = system_code
-        self._library_code = library_code
-        self._correlation_id = correlation_id
-        self._timestamp = datetime.datetime.now().timestamp()
-
-    @property
-    def text(self):
-        """
-        """
-        return self._text
-
-    @property
-    def contributor(self):
-        """
-        """
-        return self._contributor
-
-    @property
-    def custom_code(self):
-        """
-        """
-        return self._custom_code
-
-    @property
-    def system_code(self):
-        """
-        """
-        return self._system_code
-
-    @property
-    def library_code(self):
-        """
-        """
-        return self._library_code
-
-    @property
-    def correlation_id(self):
-        """
-        """
-        return self._correlation_id
-
-    @property
-    def timestamp(self):
-        """
-        """
-        return self._timestamp
+        self.text = text
+        self.contributor = contributor
+        self.custom_code = custom_code
+        self.system_code = system_code
+        self.library_code = library_code
+        self.correlation_id = correlation_id
+        self.timestamp = datetime.datetime.now().timestamp()
