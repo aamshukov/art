@@ -3,6 +3,8 @@
 # UI Lab Inc. Arthur Amshukov
 #
 """ Scope """
+from art.framework.core.colors import Colors
+from art.framework.core.flags import Flags
 from art.framework.core.tree import Tree
 from art.framework.frontend.symtable.scope.scope_kind import ScopeKind
 
@@ -10,29 +12,26 @@ from art.framework.frontend.symtable.scope.scope_kind import ScopeKind
 class Scope(Tree):
     """
     """
-    def __init__(self, id, level, version='1.0'):
+    def __init__(self,
+                 id,
+                 level,
+                 label='',
+                 papa=None,
+                 value=None,
+                 attributes=None,
+                 flags=Flags.CLEAR,
+                 version='1.0'):
         """
         """
-        super().__init__(id, version)
-        self._kind = ScopeKind.UNKNOWN_SCOPE
-        self._level = level  # depth
-        self._symbols = dict()  # name:symbol
-        self._types = dict()  # synthetic (introduced) types
-
-    @property
-    def kind(self):
-        """
-        """
-        return self._kind
-
-    @property
-    def level(self):
-        """
-        """
-        return self._level
-
-    @property
-    def symbols(self):
-        """
-        """
-        return self._symbols
+        super().__init__(id,
+                         label,
+                         papa,
+                         value,
+                         attributes,
+                         flags,
+                         Colors.UNKNOWN,
+                         version)
+        self.kind = ScopeKind.UNKNOWN_SCOPE
+        self.level = level  # depth
+        self.symbols = dict()  # name:symbol
+        self.types = dict()  # synthetic (introduced) types

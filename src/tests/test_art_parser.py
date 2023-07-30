@@ -17,10 +17,10 @@ from art.framework.frontend.statistics.statistics import Statistics
 from art.framework.frontend.lexical_analyzer.tokenizer.token_factory import TokenFactory
 from art.framework.frontend.lexical_analyzer.tokenizer.token_kind import TokenKind
 from art.framework.frontend.lexical_analyzer.lexical_analyzer import LexicalAnalyzer
-from art.language.art.art_domain_helper import ArtDomainHelper
-from art.language.art.art_parse_tree_kind import ArtParseTreeKind
-from art.language.art.art_parser import ArtParser
-from art.language.art.art_tokenizer import ArtTokenizer
+from art.language.art.helpers.art_domain_helper import ArtDomainHelper
+from art.language.art.parser.art_parse_tree_kind import ArtParseTreeKind
+from art.language.art.parser.art_parser import ArtParser
+from art.language.art.parser.art_tokenizer import ArtTokenizer
 
 
 class Test(unittest.TestCase):

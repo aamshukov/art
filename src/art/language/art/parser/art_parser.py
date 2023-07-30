@@ -8,8 +8,8 @@ from art.framework.core.status import Status
 from art.framework.frontend.parser.backtracking.\
     recursive_descent.recursive_descent_parser import RecursiveDescentParser
 from art.framework.frontend.lexical_analyzer.tokenizer.token_kind import TokenKind
-from art.language.art.art_ast import ArtAst
-from art.language.art.art_parse_tree_kind import ArtParseTreeKind
+from art.language.art.ast.art_ast import ArtAst
+from art.language.art.parser.art_parse_tree_kind import ArtParseTreeKind
 
 
 class ArtParser(RecursiveDescentParser):

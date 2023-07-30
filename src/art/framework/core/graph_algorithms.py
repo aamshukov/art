@@ -11,6 +11,7 @@ from art.framework.core.colors import Colors
 from art.framework.core.domain_helper import DomainHelper
 from art.framework.core.base import Base
 from art.framework.core.disjoint_set import DisjointSet
+from art.framework.core.platform import Platform
 from art.framework.core.vertex import Vertex
 
 
@@ -315,8 +316,8 @@ class GraphAlgorithms(Base):
         Also returns previously visited vertices to reconstruct paths.
         https://www.youtube.com/watch?v=pSqmAO-m7Lk&list=PLDV1Zeh2NRsDGO4--qE8yH72HFL1Km93P&index=18
         """
-        dst_distance = DomainHelper.get_max_int()
-        distances = defaultdict(lambda: DomainHelper.get_max_int())
+        dst_distance = Platform.get_max_int()
+        distances = defaultdict(lambda: Platform.get_max_int())
         distances[src_vertex] = 0
         prev_vertices = defaultdict(lambda: None)
         pqueue = list()  # priority queue
@@ -347,7 +348,7 @@ class GraphAlgorithms(Base):
         _, prev_vertices, dst_distance =\
             GraphAlgorithms.calculate_shortest_distances_dijkstra(src_vertex, dst_vertex)
         path = list()
-        if dst_distance != DomainHelper.get_max_int():  # check if start and end vertices disconnected
+        if dst_distance != Platform.get_max_int():  # check if start and end vertices disconnected
             path.append(dst_vertex)
             prev_vertex = prev_vertices[dst_vertex]
             while True:

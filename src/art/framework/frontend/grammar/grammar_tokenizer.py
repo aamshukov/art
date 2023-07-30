@@ -3,7 +3,7 @@
 #
 """ Grammar Tokenizer """
 from art.framework.core.flags import Flags
-from art.language.art.art_tokenizer import ArtTokenizer
+from art.language.art.parser.art_tokenizer import ArtTokenizer
 
 
 class GrammarTokenizer(ArtTokenizer):

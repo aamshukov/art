@@ -11,6 +11,7 @@ import json
 import cProfile, pstats, io
 from pstats import SortKey
 from art.framework.core.base import Base
+from art.framework.core.platform import Platform
 
 
 class DomainHelper(Base):
@@ -47,18 +48,6 @@ class DomainHelper(Base):
         print('')
 
     @staticmethod
-    def get_max_int():
-        """
-        """
-        return sys.maxsize
-
-    @staticmethod
-    def get_int_size():
-        """
-        """
-        return (sys.maxsize + 1).bit_length()
-
-    @staticmethod
     def generate_random_bytes(length):
         """
         """
@@ -87,16 +76,10 @@ class DomainHelper(Base):
         return string.rjust(size, filler)
 
     @staticmethod
-    def epsilon():
-        """
-        """
-        return sys.float_info.epsilon
-
-    @staticmethod
     def real_numbers_equal(real1, real2):
         """
         """
-        return abs(real1 - real2) <= DomainHelper.epsilon()
+        return abs(real1 - real2) <= Platform.epsilon()
 
     @staticmethod
     def increase_recursion_limit():

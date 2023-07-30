@@ -7,7 +7,7 @@ from abc import abstractmethod
 from collections import deque
 from art.framework.frontend.parser.parse_tree_factory import ParseTreeFactory
 from art.framework.frontend.parser.parse_tree_visitor import ParseTreeVisitor
-from art.language.art.art_parse_tree_kind import ArtParseTreeKind
+from art.language.art.parser.art_parse_tree_kind import ArtParseTreeKind
 
 
 class ArtCstToAstVisitor(ParseTreeVisitor):

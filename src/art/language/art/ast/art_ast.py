@@ -5,8 +5,8 @@
 """ Art parser Ast routines """
 from art.framework.core.base import Base
 from art.framework.frontend.parser.parse_tree_factory import ParseTreeFactory
-from art.language.art.art_cst_to_ast_visitor import ArtCstToAstVisitor
-from art.language.art.art_parse_tree_kind import ArtParseTreeKind
+from art.language.art.ast.art_cst_to_ast_visitor import ArtCstToAstVisitor
+from art.language.art.parser.art_parse_tree_kind import ArtParseTreeKind
 
 
 class ArtAst(Base):
