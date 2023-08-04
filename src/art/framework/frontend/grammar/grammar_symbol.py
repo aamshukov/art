@@ -7,6 +7,7 @@ from art.framework.core.entity import Entity
 from art.framework.core.flags import Flags
 from art.framework.frontend.grammar.grammar_symbol_associativity import GrammarSymbolAssociativity
 from art.framework.frontend.grammar.grammar_symbol_kind import GrammarSymbolKind
+from art.framework.frontend.lexical_analyzer.tokenizer.token_kind import TokenKind
 
 
 class GrammarSymbol(Entity):
@@ -16,6 +17,7 @@ class GrammarSymbol(Entity):
                  id,
                  name='',
                  symbol_type=GrammarSymbolKind.TERMINAL,
+                 token_kind=TokenKind.UNKNOWN,
                  value=None,
                  attributes=None,
                  flags=Flags.CLEAR,
@@ -25,6 +27,7 @@ class GrammarSymbol(Entity):
         super().__init__(id, value, attributes, flags, version)
         self.name = name  # name (label) of the symbol
         self.type = symbol_type
+        self.token = token_kind
         self.rules = list()  # rules this symbol belongs too, only fot non-terminals
         self.associativity = GrammarSymbolAssociativity.LEFT
         self.nullable = False  # if A ->* ε or TERMINAL
@@ -106,7 +109,9 @@ class GrammarSymbol(Entity):
         """
         result = ''
         for s in sets:
+            sr = ''
             for sym in s:
-                result = f'{result} {sym.name}'
-            result = f'{result},'
+                sr += f' {sym.name}'
+            sr = f'{{{sr.strip()}}}'
+            result = f'{result}, {sr}'
         return result.strip(' ,')

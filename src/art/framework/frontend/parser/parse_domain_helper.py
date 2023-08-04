@@ -66,8 +66,8 @@ class ParseTreeDomainHelper(Base):
                 papa = None
                 if node.papa:
                     papa = cached_nodes[node.papa.id]
-                new_node = Node(f'{get_label(node.symbol)}:{node.id}:'
-                                f'attrs({DomainHelper.dict_to_string(node.attributes)})', parent=papa)
+                new_node = cached_nodes[node.id]
+                new_node.parent = papa
                 kids = [cached_nodes[kid.id] for kid in node.kids]
                 new_node.children = kids
                 nodes.append(new_node)

@@ -8,6 +8,7 @@ from art.framework.core.domain_helper import profile
 from art.framework.core.logger import Logger
 from art.framework.frontend.grammar.grammar import Grammar
 from art.framework.frontend.grammar.grammar_algorithms import GrammarAlgorithms
+from art.language.art.grammar.art_grammar import ArtGrammar
 
 
 class Test(unittest.TestCase):
@@ -47,13 +48,13 @@ class Test(unittest.TestCase):
 
         """
         logger = Logger(path=r'd:\tmp\art', mode='w')
-        grammar = Grammar(logger=logger)
+        grammar = ArtGrammar(logger=logger)
         grammar.load(schema)
         decorated_grammar = grammar.decorate()
         logger.info(decorated_grammar)
         decorated_pool = grammar.decorate_pool()
         logger.info(decorated_pool)
-        assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 8
+        assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 9
         assert len(GrammarAlgorithms.collect_terminals(grammar)) == 10
 
     def test_build_nullability_set_sudkamp_0_success(self):
@@ -66,13 +67,13 @@ class Test(unittest.TestCase):
                 ;
         """
         logger = Logger(path=r'd:\tmp\art', mode='w')
-        grammar = Grammar(logger=logger)
+        grammar = ArtGrammar(logger=logger)
         grammar.load(schema)
         decorated_grammar = grammar.decorate()
         logger.info(decorated_grammar)
         decorated_pool = grammar.decorate_pool()
         logger.info(decorated_pool)
-        assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 2
+        assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 3
         assert len(GrammarAlgorithms.collect_terminals(grammar)) == 2
         nullables = GrammarAlgorithms.build_nullability_set(grammar)
         assert len(nullables) == 1
@@ -94,13 +95,13 @@ class Test(unittest.TestCase):
                 ;
         """
         logger = Logger(path=r'd:\tmp\art', mode='w')
-        grammar = Grammar(logger=logger)
+        grammar = ArtGrammar(logger=logger)
         grammar.load(schema)
         decorated_grammar = grammar.decorate()
         logger.info(decorated_grammar)
         decorated_pool = grammar.decorate_pool()
         logger.info(decorated_pool)
-        assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 4
+        assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 5
         assert len(GrammarAlgorithms.collect_terminals(grammar)) == 3
         nullables = GrammarAlgorithms.build_nullability_set(grammar)
         assert len(nullables) == 3
@@ -121,13 +122,13 @@ class Test(unittest.TestCase):
                 ;
         """
         logger = Logger(path=r'd:\tmp\art', mode='w')
-        grammar = Grammar(logger=logger)
+        grammar = ArtGrammar(logger=logger)
         grammar.load(schema)
         decorated_grammar = grammar.decorate()
         logger.info(decorated_grammar)
         decorated_pool = grammar.decorate_pool()
         logger.info(decorated_pool)
-        assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 4
+        assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 5
         assert len(GrammarAlgorithms.collect_terminals(grammar)) == 3
         nullables = GrammarAlgorithms.build_nullability_set(grammar)
         assert len(nullables) == 4
@@ -150,13 +151,13 @@ class Test(unittest.TestCase):
                 ;
         """
         logger = Logger(path=r'd:\tmp\art', mode='w')
-        grammar = Grammar(logger=logger)
+        grammar = ArtGrammar(logger=logger)
         grammar.load(schema)
         decorated_grammar = grammar.decorate()
         logger.info(decorated_grammar)
         decorated_pool = grammar.decorate_pool()
         logger.info(decorated_pool)
-        assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 5
+        assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 6
         assert len(GrammarAlgorithms.collect_terminals(grammar)) == 3
         nullables = GrammarAlgorithms.build_nullability_set(grammar)
         assert len(nullables) == 2
@@ -178,13 +179,13 @@ class Test(unittest.TestCase):
                ;
         """
         logger = Logger(path=r'd:\tmp\art', mode='w')
-        grammar = Grammar(logger=logger)
+        grammar = ArtGrammar(logger=logger)
         grammar.load(schema)
         decorated_grammar = grammar.decorate()
         logger.info(decorated_grammar)
         decorated_pool = grammar.decorate_pool()
         logger.info(decorated_pool)
-        assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 4
+        assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 5
         assert len(GrammarAlgorithms.collect_terminals(grammar)) == 2
         nullables = GrammarAlgorithms.build_nullability_set(grammar)
         assert len(nullables) == 2
@@ -200,13 +201,13 @@ class Test(unittest.TestCase):
               ;
         """
         logger = Logger(path=r'd:\tmp\art', mode='w')
-        grammar = Grammar(logger=logger)
+        grammar = ArtGrammar(logger=logger)
         grammar.load(schema)
         decorated_grammar = grammar.decorate()
         logger.info(decorated_grammar)
         decorated_pool = grammar.decorate_pool()
         logger.info(decorated_pool)
-        assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 2
+        assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 3
         assert len(GrammarAlgorithms.collect_terminals(grammar)) == 1
         nullables = GrammarAlgorithms.build_nullability_set(grammar)
         assert len(nullables) == 2
@@ -224,13 +225,13 @@ class Test(unittest.TestCase):
                 ;
         """
         logger = Logger(path=r'd:\tmp\art', mode='w')
-        grammar = Grammar(logger=logger)
+        grammar = ArtGrammar(logger=logger)
         grammar.load(schema)
         decorated_grammar = grammar.decorate()
         logger.info(decorated_grammar)
         decorated_pool = grammar.decorate_pool()
         logger.info(decorated_pool)
-        assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 2
+        assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 3
         assert len(GrammarAlgorithms.collect_terminals(grammar)) == 3
         nullables = GrammarAlgorithms.build_nullability_set(grammar)
         assert len(nullables) == 1
@@ -245,13 +246,13 @@ class Test(unittest.TestCase):
                 ;
         """
         logger = Logger(path=r'd:\tmp\art', mode='w')
-        grammar = Grammar(logger=logger)
+        grammar = ArtGrammar(logger=logger)
         grammar.load(schema)
         decorated_grammar = grammar.decorate()
         logger.info(decorated_grammar)
         decorated_pool = grammar.decorate_pool()
         logger.info(decorated_pool)
-        assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 2
+        assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 3
         assert len(GrammarAlgorithms.collect_terminals(grammar)) == 2
         nullables = GrammarAlgorithms.build_nullability_set(grammar)
         assert len(nullables) == 1
@@ -273,13 +274,13 @@ class Test(unittest.TestCase):
                 ;
         """
         logger = Logger(path=r'd:\tmp\art', mode='w')
-        grammar = Grammar(logger=logger)
+        grammar = ArtGrammar(logger=logger)
         grammar.load(schema)
         decorated_grammar = grammar.decorate()
         logger.info(decorated_grammar)
         decorated_pool = grammar.decorate_pool()
         logger.info(decorated_pool)
-        assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 4
+        assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 5
         assert len(GrammarAlgorithms.collect_terminals(grammar)) == 1
         nullables = GrammarAlgorithms.build_nullability_set(grammar)
         assert len(nullables) == 4
@@ -295,13 +296,13 @@ class Test(unittest.TestCase):
                 ;
         """
         logger = Logger(path=r'd:\tmp\art', mode='w')
-        grammar = Grammar(logger=logger)
+        grammar = ArtGrammar(logger=logger)
         grammar.load(schema)
         decorated_grammar = grammar.decorate()
         logger.info(decorated_grammar)
         decorated_pool = grammar.decorate_pool()
         logger.info(decorated_pool)
-        assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 2
+        assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 3
         assert len(GrammarAlgorithms.collect_terminals(grammar)) == 1
         nullables = GrammarAlgorithms.build_nullability_set(grammar)
         assert len(nullables) == 2
@@ -325,13 +326,13 @@ class Test(unittest.TestCase):
                 ;
         """
         logger = Logger(path=r'd:\tmp\art', mode='w')
-        grammar = Grammar(logger=logger)
+        grammar = ArtGrammar(logger=logger)
         grammar.load(schema)
         decorated_grammar = grammar.decorate()
         logger.info(decorated_grammar)
         decorated_pool = grammar.decorate_pool()
         logger.info(decorated_pool)
-        assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 4
+        assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 5
         assert len(GrammarAlgorithms.collect_terminals(grammar)) == 3
         nullables = GrammarAlgorithms.build_nullability_set(grammar)
         assert len(nullables) == 4
@@ -361,13 +362,13 @@ class Test(unittest.TestCase):
                 ;
         """
         logger = Logger(path=r'd:\tmp\art', mode='w')
-        grammar = Grammar(logger=logger)
+        grammar = ArtGrammar(logger=logger)
         grammar.load(schema)
         decorated_grammar = grammar.decorate()
         logger.info(decorated_grammar)
         decorated_pool = grammar.decorate_pool()
         logger.info(decorated_pool)
-        assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 6
+        assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 7
         assert len(GrammarAlgorithms.collect_terminals(grammar)) == 5
         nullables = GrammarAlgorithms.build_nullability_set(grammar)
         assert len(nullables) == 2
@@ -394,13 +395,13 @@ class Test(unittest.TestCase):
                 ;
         """
         logger = Logger(path=r'd:\tmp\art', mode='w')
-        grammar = Grammar(logger=logger)
+        grammar = ArtGrammar(logger=logger)
         grammar.load(schema)
         decorated_grammar = grammar.decorate()
         logger.info(decorated_grammar)
         decorated_pool = grammar.decorate_pool()
         logger.info(decorated_pool)
-        assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 5
+        assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 6
         assert len(GrammarAlgorithms.collect_terminals(grammar)) == 5
         nullables = GrammarAlgorithms.build_nullability_set(grammar)
         assert len(nullables) == 2
@@ -426,13 +427,13 @@ class Test(unittest.TestCase):
                 ;
         """
         logger = Logger(path=r'd:\tmp\art', mode='w')
-        grammar = Grammar(logger=logger)
+        grammar = ArtGrammar(logger=logger)
         grammar.load(schema)
         decorated_grammar = grammar.decorate()
         logger.info(decorated_grammar)
         decorated_pool = grammar.decorate_pool()
         logger.info(decorated_pool)
-        assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 4
+        assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 5
         assert len(GrammarAlgorithms.collect_terminals(grammar)) == 7
         nullables = GrammarAlgorithms.build_nullability_set(grammar)
         assert len(nullables) == 2
@@ -461,13 +462,13 @@ class Test(unittest.TestCase):
                 ;
         """
         logger = Logger(path=r'd:\tmp\art', mode='w')
-        grammar = Grammar(logger=logger)
+        grammar = ArtGrammar(logger=logger)
         grammar.load(schema)
         decorated_grammar = grammar.decorate()
         logger.info(decorated_grammar)
         decorated_pool = grammar.decorate_pool()
         logger.info(decorated_pool)
-        assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 5
+        assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 6
         assert len(GrammarAlgorithms.collect_terminals(grammar)) == 7
         nullables = GrammarAlgorithms.build_nullability_set(grammar)
         assert len(nullables) == 2
@@ -488,13 +489,13 @@ class Test(unittest.TestCase):
                 ;
         """
         logger = Logger(path=r'd:\tmp\art', mode='w')
-        grammar = Grammar(logger=logger)
+        grammar = ArtGrammar(logger=logger)
         grammar.load(schema)
         decorated_grammar = grammar.decorate()
         logger.info(decorated_grammar)
         decorated_pool = grammar.decorate_pool()
         logger.info(decorated_pool)
-        assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 3
+        assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 4
         assert len(GrammarAlgorithms.collect_terminals(grammar)) == 3
         nullables = GrammarAlgorithms.build_nullability_set(grammar)
         assert len(nullables) == 2
@@ -518,13 +519,13 @@ class Test(unittest.TestCase):
                 ;
         """
         logger = Logger(path=r'd:\tmp\art', mode='w')
-        grammar = Grammar(logger=logger)
+        grammar = ArtGrammar(logger=logger)
         grammar.load(schema)
         decorated_grammar = grammar.decorate()
         logger.info(decorated_grammar)
         decorated_pool = grammar.decorate_pool()
         logger.info(decorated_pool)
-        assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 4
+        assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 5
         assert len(GrammarAlgorithms.collect_terminals(grammar)) == 4
         nullables = GrammarAlgorithms.build_nullability_set(grammar)
         assert len(nullables) == 3
@@ -551,13 +552,13 @@ class Test(unittest.TestCase):
                 ;
         """
         logger = Logger(path=r'd:\tmp\art', mode='w')
-        grammar = Grammar(logger=logger)
+        grammar = ArtGrammar(logger=logger)
         grammar.load(schema)
         decorated_grammar = grammar.decorate()
         logger.info(decorated_grammar)
         decorated_pool = grammar.decorate_pool()
         logger.info(decorated_pool)
-        assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 5
+        assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 6
         assert len(GrammarAlgorithms.collect_terminals(grammar)) == 5
         nullables = GrammarAlgorithms.build_nullability_set(grammar)
         assert len(nullables) == 2
@@ -581,13 +582,13 @@ class Test(unittest.TestCase):
                 ;
         """
         logger = Logger(path=r'd:\tmp\art', mode='w')
-        grammar = Grammar(logger=logger)
+        grammar = ArtGrammar(logger=logger)
         grammar.load(schema)
         decorated_grammar = grammar.decorate()
         logger.info(decorated_grammar)
         decorated_pool = grammar.decorate_pool()
         logger.info(decorated_pool)
-        assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 4
+        assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 5
         assert len(GrammarAlgorithms.collect_terminals(grammar)) == 5
         nullables = GrammarAlgorithms.build_nullability_set(grammar)
         assert len(nullables) == 1
@@ -617,13 +618,13 @@ class Test(unittest.TestCase):
               ;
         """
         logger = Logger(path=r'd:\tmp\art', mode='w')
-        grammar = Grammar(logger=logger)
+        grammar = ArtGrammar(logger=logger)
         grammar.load(schema)
         decorated_grammar = grammar.decorate()
         logger.info(decorated_grammar)
         decorated_pool = grammar.decorate_pool()
         logger.info(decorated_pool)
-        assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 6
+        assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 7
         assert len(GrammarAlgorithms.collect_terminals(grammar)) == 2
         nullables = GrammarAlgorithms.build_nullability_set(grammar)
         assert len(nullables) == 4
@@ -649,13 +650,13 @@ class Test(unittest.TestCase):
                 ;
         """
         logger = Logger(path=r'd:\tmp\art', mode='w')
-        grammar = Grammar(logger=logger)
+        grammar = ArtGrammar(logger=logger)
         grammar.load(schema)
         decorated_grammar = grammar.decorate()
         logger.info(decorated_grammar)
         decorated_pool = grammar.decorate_pool()
         logger.info(decorated_pool)
-        assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 4
+        assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 5
         assert len(GrammarAlgorithms.collect_terminals(grammar)) == 5
         nullables = GrammarAlgorithms.build_nullability_set(grammar)
         assert len(nullables) == 3
@@ -686,13 +687,13 @@ class Test(unittest.TestCase):
                 ;
         """
         logger = Logger(path=r'd:\tmp\art', mode='w')
-        grammar = Grammar(logger=logger)
+        grammar = ArtGrammar(logger=logger)
         grammar.load(schema)
         decorated_grammar = grammar.decorate()
         logger.info(decorated_grammar)
         decorated_pool = grammar.decorate_pool()
         logger.info(decorated_pool)
-        assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 6
+        assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 7
         assert len(GrammarAlgorithms.collect_terminals(grammar)) == 5
         nullables = GrammarAlgorithms.build_nullability_set(grammar)
         assert len(nullables) == 2
@@ -716,13 +717,13 @@ class Test(unittest.TestCase):
                 ;
         """
         logger = Logger(path=r'd:\tmp\art', mode='w')
-        grammar = Grammar(logger=logger)
+        grammar = ArtGrammar(logger=logger)
         grammar.load(schema)
         decorated_grammar = grammar.decorate()
         logger.info(decorated_grammar)
         decorated_pool = grammar.decorate_pool()
         logger.info(decorated_pool)
-        assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 4
+        assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 5
         assert len(GrammarAlgorithms.collect_terminals(grammar)) == 5
         nullables = GrammarAlgorithms.build_nullability_set(grammar)
         assert len(nullables) == 2
@@ -747,13 +748,13 @@ class Test(unittest.TestCase):
                 ;
         """
         logger = Logger(path=r'd:\tmp\art', mode='w')
-        grammar = Grammar(logger=logger)
+        grammar = ArtGrammar(logger=logger)
         grammar.load(schema)
         decorated_grammar = grammar.decorate()
         logger.info(decorated_grammar)
         decorated_pool = grammar.decorate_pool()
         logger.info(decorated_pool)
-        assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 4
+        assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 5
         assert len(GrammarAlgorithms.collect_terminals(grammar)) == 5
         nullables = GrammarAlgorithms.build_nullability_set(grammar)
         assert len(nullables) == 1
@@ -775,13 +776,13 @@ class Test(unittest.TestCase):
               ;
         """
         logger = Logger(path=r'd:\tmp\art', mode='w')
-        grammar = Grammar(logger=logger)
+        grammar = ArtGrammar(logger=logger)
         grammar.load(schema)
         decorated_grammar = grammar.decorate()
         logger.info(decorated_grammar)
         decorated_pool = grammar.decorate_pool()
         logger.info(decorated_pool)
-        assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 4
+        assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 5
         assert len(GrammarAlgorithms.collect_terminals(grammar)) == 1
         nullables = GrammarAlgorithms.build_nullability_set(grammar)
         assert len(nullables) == 4
@@ -796,13 +797,13 @@ class Test(unittest.TestCase):
               ;
         """
         logger = Logger(path=r'd:\tmp\art', mode='w')
-        grammar = Grammar(logger=logger)
+        grammar = ArtGrammar(logger=logger)
         grammar.load(schema)
         decorated_grammar = grammar.decorate()
         logger.info(decorated_grammar)
         decorated_pool = grammar.decorate_pool()
         logger.info(decorated_pool)
-        assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 2
+        assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 3
         assert len(GrammarAlgorithms.collect_terminals(grammar)) == 1
         nullables = GrammarAlgorithms.build_nullability_set(grammar)
         assert len(nullables) == 1
@@ -834,13 +835,13 @@ class Test(unittest.TestCase):
                ;
         """
         logger = Logger(path=r'd:\tmp\art', mode='w')
-        grammar = Grammar(logger=logger)
+        grammar = ArtGrammar(logger=logger)
         grammar.load(schema)
         decorated_grammar = grammar.decorate()
         logger.info(decorated_grammar)
         decorated_pool = grammar.decorate_pool()
         logger.info(decorated_pool)
-        assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 4
+        assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 5
         assert len(GrammarAlgorithms.collect_terminals(grammar)) == 3
         nullables = GrammarAlgorithms.build_nullability_set(grammar)
         assert len(nullables) == 1
@@ -855,13 +856,13 @@ class Test(unittest.TestCase):
                 ;
         """
         logger = Logger(path=r'd:\tmp\art', mode='w')
-        grammar = Grammar(logger=logger)
+        grammar = ArtGrammar(logger=logger)
         grammar.load(schema)
         decorated_grammar = grammar.decorate()
         logger.info(decorated_grammar)
         decorated_pool = grammar.decorate_pool()
         logger.info(decorated_pool)
-        assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 2
+        assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 3
         assert len(GrammarAlgorithms.collect_terminals(grammar)) == 1
         nullables = GrammarAlgorithms.build_nullability_set(grammar)
         assert len(nullables) == 1
@@ -886,13 +887,13 @@ class Test(unittest.TestCase):
                 ;
         """
         logger = Logger(path=r'd:\tmp\art', mode='w')
-        grammar = Grammar(logger=logger)
+        grammar = ArtGrammar(logger=logger)
         grammar.load(schema)
         decorated_grammar = grammar.decorate()
         logger.info(decorated_grammar)
         decorated_pool = grammar.decorate_pool()
         logger.info(decorated_pool)
-        assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 4
+        assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 5
         assert len(GrammarAlgorithms.collect_terminals(grammar)) == 2
         nullables = GrammarAlgorithms.build_nullability_set(grammar)
         assert len(nullables) == 4
@@ -915,13 +916,13 @@ class Test(unittest.TestCase):
                 ;
         """
         logger = Logger(path=r'd:\tmp\art', mode='w')
-        grammar = Grammar(logger=logger)
+        grammar = ArtGrammar(logger=logger)
         grammar.load(schema)
         decorated_grammar = grammar.decorate()
         logger.info(decorated_grammar)
         decorated_pool = grammar.decorate_pool()
         logger.info(decorated_pool)
-        assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 5
+        assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 6
         assert len(GrammarAlgorithms.collect_terminals(grammar)) == 6
         nullables = GrammarAlgorithms.build_nullability_set(grammar)
         assert len(nullables) == 3
@@ -940,13 +941,13 @@ class Test(unittest.TestCase):
                 ;
         """
         logger = Logger(path=r'd:\tmp\art', mode='w')
-        grammar = Grammar(logger=logger)
+        grammar = ArtGrammar(logger=logger)
         grammar.load(schema)
         decorated_grammar = grammar.decorate()
         logger.info(decorated_grammar)
         decorated_pool = grammar.decorate_pool()
         logger.info(decorated_pool)
-        assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 3
+        assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 4
         assert len(GrammarAlgorithms.collect_terminals(grammar)) == 3
         nullables = GrammarAlgorithms.build_nullability_set(grammar)
         assert len(nullables) == 2
@@ -971,13 +972,13 @@ class Test(unittest.TestCase):
                 ;
         """
         logger = Logger(mode='w')
-        grammar = Grammar(logger=logger)
+        grammar = ArtGrammar(logger=logger)
         grammar.load(schema)
         decorated_grammar = grammar.decorate()
         logger.info(decorated_grammar)
         decorated_pool = grammar.decorate_pool()
         logger.info(decorated_pool)
-        assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 5
+        assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 6
         assert len(GrammarAlgorithms.collect_terminals(grammar)) == 3
         nullables = GrammarAlgorithms.build_nullability_set(grammar)
         assert len(nullables) == 4
@@ -998,7 +999,7 @@ class Test(unittest.TestCase):
                 ;
         """
         logger = Logger(mode='w')
-        grammar = Grammar(logger=logger)
+        grammar = ArtGrammar(logger=logger)
         grammar.load(schema)
         s1 = [[grammar.pool['λ']], [grammar.pool['a'], grammar.pool['b'], grammar.pool['b']]]
         s2 = [[grammar.pool['b']], [grammar.pool['b'], grammar.pool['a'], grammar.pool['b']]]
@@ -1018,7 +1019,7 @@ class Test(unittest.TestCase):
                 ;
         """
         logger = Logger(mode='w')
-        grammar = Grammar(logger=logger)
+        grammar = ArtGrammar(logger=logger)
         grammar.load(schema)
         s1 = [[]]
         s2 = [[grammar.pool['b']], [grammar.pool['b'], grammar.pool['a'], grammar.pool['b']]]
@@ -1036,7 +1037,7 @@ class Test(unittest.TestCase):
                 ;
         """
         logger = Logger(mode='w')
-        grammar = Grammar(logger=logger)
+        grammar = ArtGrammar(logger=logger)
         grammar.load(schema)
         s1 = [[]]
         s2 = [[], [], []]
@@ -1054,7 +1055,7 @@ class Test(unittest.TestCase):
                 ;
         """
         logger = Logger(mode='w')
-        grammar = Grammar(logger=logger)
+        grammar = ArtGrammar(logger=logger)
         grammar.load(schema)
         s1 = [[grammar.pool['λ']]]
         s2 = [[grammar.pool['λ']], [grammar.pool['λ']]]
@@ -1071,7 +1072,7 @@ class Test(unittest.TestCase):
                 ;
         """
         logger = Logger(mode='w')
-        grammar = Grammar(logger=logger)
+        grammar = ArtGrammar(logger=logger)
         grammar.load(schema)
         s1 = [[grammar.pool['a']], [grammar.pool['b']], [grammar.pool['λ']]]
         s2 = [[grammar.pool['a']]]
@@ -1104,13 +1105,13 @@ class Test(unittest.TestCase):
                 ; 
         """
         logger = Logger(mode='w')
-        grammar = Grammar(logger=logger)
+        grammar = ArtGrammar(logger=logger)
         grammar.load(schema)
         decorated_grammar = grammar.decorate()
         logger.info(decorated_grammar)
         decorated_pool = grammar.decorate_pool()
         logger.info(decorated_pool)
-        assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 4
+        assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 5
         assert len(GrammarAlgorithms.collect_terminals(grammar)) == 5
         nullables = GrammarAlgorithms.build_nullability_set(grammar)
         assert len(nullables) == 1
@@ -1183,13 +1184,13 @@ class Test(unittest.TestCase):
                 ; 
         """
         logger = Logger(mode='w')
-        grammar = Grammar(logger=logger)
+        grammar = ArtGrammar(logger=logger)
         grammar.load(schema)
         decorated_grammar = grammar.decorate()
         logger.info(decorated_grammar)
         decorated_pool = grammar.decorate_pool()
         logger.info(decorated_pool)
-        assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 4
+        assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 5
         assert len(GrammarAlgorithms.collect_terminals(grammar)) == 5
         nullables = GrammarAlgorithms.build_nullability_set(grammar)
         assert len(nullables) == 1
@@ -1289,13 +1290,13 @@ class Test(unittest.TestCase):
                 ; 
         """
         logger = Logger(mode='w')
-        grammar = Grammar(logger=logger)
+        grammar = ArtGrammar(logger=logger)
         grammar.load(schema)
         decorated_grammar = grammar.decorate()
         logger.info(decorated_grammar)
         decorated_pool = grammar.decorate_pool()
         logger.info(decorated_pool)
-        assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 2
+        assert len(GrammarAlgorithms.collect_non_terminals(grammar)) == 3
         assert len(GrammarAlgorithms.collect_terminals(grammar)) == 4
         nullables = GrammarAlgorithms.build_nullability_set(grammar)
         assert len(nullables) == 1
@@ -1368,7 +1369,7 @@ class Test(unittest.TestCase):
         """
         k = 2
         logger = Logger(mode='w')
-        grammar = Grammar(logger=logger)
+        grammar = ArtGrammar(logger=logger)
         grammar.load(schema)
         decorated_grammar = grammar.decorate()
         logger.info(decorated_grammar)
@@ -1408,7 +1409,7 @@ class Test(unittest.TestCase):
         """
         k = 1
         logger = Logger(mode='w')
-        grammar = Grammar(logger=logger)
+        grammar = ArtGrammar(logger=logger)
         grammar.load(schema)
         decorated_grammar = grammar.decorate()
         logger.info(decorated_grammar)
@@ -1433,7 +1434,7 @@ class Test(unittest.TestCase):
                 ;
         """
         logger = Logger(mode='w')
-        grammar = Grammar(logger=logger)
+        grammar = ArtGrammar(logger=logger)
         grammar.load(schema)
         decorated_grammar = grammar.decorate()
         logger.info(decorated_grammar)
@@ -1459,7 +1460,7 @@ class Test(unittest.TestCase):
                 ;
         """
         logger = Logger(mode='w')
-        grammar = Grammar(logger=logger)
+        grammar = ArtGrammar(logger=logger)
         grammar.load(schema)
         decorated_grammar = grammar.decorate()
         logger.info(decorated_grammar)
@@ -1494,7 +1495,7 @@ class Test(unittest.TestCase):
                 ;
         """
         logger = Logger(mode='w')
-        grammar = Grammar(logger=logger)
+        grammar = ArtGrammar(logger=logger)
         grammar.load(schema)
         decorated_grammar = grammar.decorate()
         logger.info(decorated_grammar)
@@ -1520,7 +1521,7 @@ class Test(unittest.TestCase):
                 ;
         """
         logger = Logger(mode='w')
-        grammar = Grammar(logger=logger)
+        grammar = ArtGrammar(logger=logger)
         grammar.load(schema)
         decorated_grammar = grammar.decorate()
         logger.info(decorated_grammar)
@@ -1549,7 +1550,7 @@ class Test(unittest.TestCase):
                 ;
         """
         logger = Logger(mode='w')
-        grammar = Grammar(logger=logger)
+        grammar = ArtGrammar(logger=logger)
         grammar.load(schema)
         decorated_grammar = grammar.decorate()
         logger.info(decorated_grammar)
@@ -1578,7 +1579,7 @@ class Test(unittest.TestCase):
                 ;
         """
         logger = Logger(mode='w')
-        grammar = Grammar(logger=logger)
+        grammar = ArtGrammar(logger=logger)
         grammar.load(schema)
         decorated_grammar = grammar.decorate()
         logger.info(decorated_grammar)
@@ -1614,7 +1615,7 @@ class Test(unittest.TestCase):
                 ;
         """
         logger = Logger(mode='w')
-        grammar = Grammar(logger=logger)
+        grammar = ArtGrammar(logger=logger)
         grammar.load(schema)
         decorated_grammar = grammar.decorate()
         logger.info(decorated_grammar)
@@ -1651,7 +1652,7 @@ class Test(unittest.TestCase):
                 ;
         """
         logger = Logger(mode='w')
-        grammar = Grammar(logger=logger)
+        grammar = ArtGrammar(logger=logger)
         grammar.load(schema)
         decorated_grammar = grammar.decorate()
         logger.info(decorated_grammar)
@@ -1688,7 +1689,7 @@ class Test(unittest.TestCase):
                 ;
         """
         logger = Logger(mode='w')
-        grammar = Grammar(logger=logger)
+        grammar = ArtGrammar(logger=logger)
         grammar.load(schema)
         decorated_grammar = grammar.decorate()
         logger.info(decorated_grammar)
@@ -1720,7 +1721,7 @@ class Test(unittest.TestCase):
                 ;
         """
         logger = Logger(mode='w')
-        grammar = Grammar(logger=logger)
+        grammar = ArtGrammar(logger=logger)
         grammar.load(schema)
         decorated_grammar = grammar.decorate()
         logger.info(decorated_grammar)
@@ -1757,7 +1758,7 @@ class Test(unittest.TestCase):
                 ;
         """
         logger = Logger(mode='w')
-        grammar = Grammar(logger=logger)
+        grammar = ArtGrammar(logger=logger)
         grammar.load(schema)
         decorated_grammar = grammar.decorate()
         logger.info(decorated_grammar)
@@ -1787,7 +1788,7 @@ class Test(unittest.TestCase):
                 ;
         """
         logger = Logger(mode='w')
-        grammar = Grammar(logger=logger)
+        grammar = ArtGrammar(logger=logger)
         grammar.load(schema)
         decorated_grammar = grammar.decorate()
         logger.info(decorated_grammar)
@@ -1827,7 +1828,7 @@ class Test(unittest.TestCase):
                 ;
         """
         logger = Logger(mode='w')
-        grammar = Grammar(logger=logger)
+        grammar = ArtGrammar(logger=logger)
         grammar.load(schema)
         decorated_grammar = grammar.decorate()
         logger.info(decorated_grammar)
@@ -1882,7 +1883,7 @@ class Test(unittest.TestCase):
                 ;                
         """
         logger = Logger(mode='w')
-        grammar = Grammar(logger=logger)
+        grammar = ArtGrammar(logger=logger)
         grammar.load(schema)
         decorated_grammar = grammar.decorate()
         logger.info(decorated_grammar)
@@ -1908,7 +1909,7 @@ class Test(unittest.TestCase):
                 ;
         """
         logger = Logger(mode='w')
-        grammar = Grammar(logger=logger)
+        grammar = ArtGrammar(logger=logger)
         grammar.load(schema)
         decorated_grammar = grammar.decorate()
         logger.info(decorated_grammar)
@@ -1942,7 +1943,7 @@ class Test(unittest.TestCase):
                 ;
         """
         logger = Logger(mode='w')
-        grammar = Grammar(logger=logger)
+        grammar = ArtGrammar(logger=logger)
         grammar.load(schema)
         decorated_grammar = grammar.decorate()
         logger.info(decorated_grammar)
@@ -1981,7 +1982,7 @@ class Test(unittest.TestCase):
                 ;
         """
         logger = Logger(mode='w')
-        grammar = Grammar(logger=logger)
+        grammar = ArtGrammar(logger=logger)
         grammar.load(schema)
         decorated_grammar = grammar.decorate()
         logger.info(decorated_grammar)
@@ -2010,7 +2011,7 @@ class Test(unittest.TestCase):
               ;
         """
         logger = Logger(mode='w')
-        grammar = Grammar(logger=logger)
+        grammar = ArtGrammar(logger=logger)
         grammar.load(schema)
         decorated_grammar = grammar.decorate()
         logger.info(decorated_grammar)
@@ -2046,7 +2047,7 @@ class Test(unittest.TestCase):
                 ;
         """
         logger = Logger(mode='w')
-        grammar = Grammar(logger=logger)
+        grammar = ArtGrammar(logger=logger)
         grammar.load(schema)
         decorated_grammar = grammar.decorate()
         logger.info(decorated_grammar)
@@ -2080,7 +2081,7 @@ class Test(unittest.TestCase):
                 ;
         """
         logger = Logger(mode='w')
-        grammar = Grammar(logger=logger)
+        grammar = ArtGrammar(logger=logger)
         grammar.load(schema)
         decorated_grammar = grammar.decorate()
         logger.info(decorated_grammar)
@@ -2106,7 +2107,7 @@ class Test(unittest.TestCase):
                 ;
         """
         logger = Logger(mode='w')
-        grammar = Grammar(logger=logger)
+        grammar = ArtGrammar(logger=logger)
         grammar.load(schema)
         decorated_grammar = grammar.decorate()
         logger.info(decorated_grammar)

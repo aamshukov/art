@@ -21,13 +21,13 @@ class Test(unittest.TestCase):
         token1 = Token(TokenKind.BOOLEAN_KW)
         token2 = token1
         assert token1 == token2
-        token1 = Token(TokenKind.CASE)
-        assert token1.kind == TokenKind.CASE
-        assert Text.equal(token1.label, TokenKind.CASE.name)
+        token1 = Token(TokenKind.CASE_KW)
+        assert token1.kind == TokenKind.CASE_KW
+        assert Text.equal(token1.label, TokenKind.CASE_KW.name)
         assert token2.kind == TokenKind.BOOLEAN_KW
         assert Text.equal(token2.label, TokenKind.BOOLEAN_KW.name)
         st1 = str(token1)
-        assert st1 == "CASE            : '', '0', 0,0, '', Flags.CLEAR|GENUINE, 1.0"
+        assert st1 == "CASE_KW         : '', '0', 0,0, '', Flags.CLEAR|GENUINE, 1.0"
 
 
 if __name__ == '__main__':

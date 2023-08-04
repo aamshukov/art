@@ -12,11 +12,15 @@ from art.framework.frontend.data_provider.string_data_provider import StringData
 from art.framework.frontend.content.content import Content
 from art.framework.frontend.grammar.grammar import Grammar
 from art.framework.frontend.grammar.grammar_algorithms import GrammarAlgorithms
+from art.framework.frontend.grammar.grammar_symbol import GrammarSymbol
+from art.framework.frontend.lexical_analyzer.tokenizer.token_kind import TokenKind
 from art.framework.frontend.parser.parse_context import ParseContext
 from art.framework.frontend.parser.parse_domain_helper import ParseTreeDomainHelper
 from art.framework.frontend.statistics.statistics import Statistics
 from art.framework.frontend.lexical_analyzer.lexical_analyzer import LexicalAnalyzer
 from art.language.art.ast.art_ast import ArtAst
+from art.language.art.grammar.art_grammar import ArtGrammar
+from art.language.art.parser.art_parse_tree_kind import ArtParseTreeKind
 from art.language.art.parser.art_parser import ArtParser
 from art.language.art.parser.art_tokenizer import ArtTokenizer
 
@@ -118,12 +122,16 @@ class Test(unittest.TestCase):
                                         | ε
                                         ;
     
-    integral_type                       : 'integer'
-                                        | 'int'
+    integral_type                       : 'int'
+                                        | 'integer'
                                         | 'real'
-                                        | 'string'
-                                        | 'boolean'
+                                        | 'float'
+                                        | 'double'
+                                        | 'decimal'
+                                        | 'number'
                                         | 'bool'
+                                        | 'boolean'
+                                        | 'string'
                                         ;
     
     fully_qualified_identifier          : identifier
@@ -139,9 +147,10 @@ class Test(unittest.TestCase):
     
     literal                             : 'integer_number_literal'
                                         | 'real_number_literal'
-                                        | 'string_literal'
                                         | 'boolean_literal'                                                                 # true false
+                                        | 'string_literal'
                                         ;
+    
     
     
     # DECLARATIONS
@@ -258,6 +267,7 @@ class Test(unittest.TestCase):
                                         ;
     
     primary_expression                  : literal                                                                           # 5, 3.14, 'text', true
+                                        | identifier type_argument_seq_opt
                                         | member_access                                                                     # Foo.name, foo.name
                                         | array_element_access                                                              # array[0]
                                         | invocation_expression                                                             # foo(...)
@@ -272,7 +282,7 @@ class Test(unittest.TestCase):
                                         | conditional_or_expression '?' expression ':' expression
                                         ;
     
-    member_access                       : primary_expression '.' identifier type_arguments_opt                              # geo.point<T>, point<real>
+    member_access                       : primary_expression '.' identifier type_argument_seq_opt                           # geo.point<T>, point<real>
                                         ;
     
     invocation_expression               : primary_expression '(' arguments_opt ')'
@@ -297,6 +307,10 @@ class Test(unittest.TestCase):
                                         ;
     
     array_element_access                : primary_expression '[' arguments ']'                                              # except array creation
+                                        ;
+    
+    arguments_opt                       : arguments
+                                        | ε
                                         ;
     
     arguments                           : argument
@@ -336,13 +350,13 @@ class Test(unittest.TestCase):
     terminal                            : 'terminal'                                                                        # wrapper for terminals
                                         ;
     
-    
     INDENT                              : 'indent'
                                         ;
     
     DEDENT                              : 'dedent'
                                         ;
-
+    
+    
     """  # noqa
     grammar = None
 
@@ -351,13 +365,23 @@ class Test(unittest.TestCase):
         """
         super(Test, self).__init__(*args, **kwargs)
 
+    @staticmethod
+    def dump_rules_la(grammar, logger, k=1):
+        logger.info('Rules LA')
+        for rule in grammar.rules:
+            if 'PRIMARY_EXPRESSION' in rule.name:
+                pass
+            la = GrammarAlgorithms.build_la_set_rule(grammar, rule, k)
+            la_str = f'{rule.name}: {GrammarSymbol.sets_to_string(la)}'
+            logger.info(la_str)
+
     @classmethod
     def setUp(cls):
         DomainHelper.increase_recursion_limit()
         if not cls.grammar:
             k = 1
             logger = Logger(path=r'd:\tmp\art', mode='w')
-            grammar = Grammar(logger=logger)
+            grammar = ArtGrammar(logger=logger)
             grammar.load(Test.syntactic_grammar)
             GrammarAlgorithms.build_first_set(grammar, k)
             GrammarAlgorithms.build_follow_set(grammar, k)
@@ -366,6 +390,7 @@ class Test(unittest.TestCase):
             logger.info(decorated_grammar)
             decorated_pool = grammar.decorate_pool()
             logger.info(decorated_pool)
+            Test.dump_rules_la(grammar, logger, k)
             cls.grammar = grammar
 
     @staticmethod
@@ -401,8 +426,8 @@ class Test(unittest.TestCase):
         """
         parser = Test.get_parser(program)
         parser.lexical_analyzer.next_lexeme()
-        tree = parser.parse_type()
-        filename = Grammar.normalize_symbol_name(tree.symbol.grammar_symbol.name)
+        tree = parser.parse_type().tree
+        filename = ArtGrammar.normalize_symbol_name(tree.symbol.grammar_symbol.name)
         ParseTreeDomainHelper.generate_graphviz(tree,
                                                 Test.get_dot_filepath(
                                                     f'{inspect.currentframe().f_code.co_name}_{filename}'))
@@ -418,8 +443,8 @@ class Test(unittest.TestCase):
         """
         parser = Test.get_parser(program)
         parser.lexical_analyzer.next_lexeme()
-        tree = parser.parse_type()
-        filename = Grammar.normalize_symbol_name(tree.symbol.grammar_symbol.name)
+        tree = parser.parse_type().tree
+        filename = ArtGrammar.normalize_symbol_name(tree.symbol.grammar_symbol.name)
         ParseTreeDomainHelper.generate_graphviz(tree,
                                                 Test.get_dot_filepath(
                                                     f'{inspect.currentframe().f_code.co_name}_{filename}'))
@@ -435,8 +460,8 @@ class Test(unittest.TestCase):
         """
         parser = Test.get_parser(program)
         parser.lexical_analyzer.next_lexeme()
-        tree = parser.parse_type()
-        filename = Grammar.normalize_symbol_name(tree.symbol.grammar_symbol.name)
+        tree = parser.parse_type().tree
+        filename = ArtGrammar.normalize_symbol_name(tree.symbol.grammar_symbol.name)
         ParseTreeDomainHelper.generate_graphviz(tree,
                                                 Test.get_dot_filepath(
                                                     f'{inspect.currentframe().f_code.co_name}_{filename}'))
@@ -452,8 +477,8 @@ class Test(unittest.TestCase):
         """
         parser = Test.get_parser(program)
         parser.lexical_analyzer.next_lexeme()
-        tree = parser.parse_type()
-        filename = Grammar.normalize_symbol_name(tree.symbol.grammar_symbol.name)
+        tree = parser.parse_type().tree
+        filename = ArtGrammar.normalize_symbol_name(tree.symbol.grammar_symbol.name)
         ParseTreeDomainHelper.generate_graphviz(tree,
                                                 Test.get_dot_filepath(
                                                     f'{inspect.currentframe().f_code.co_name}_{filename}'))
@@ -469,8 +494,8 @@ class Test(unittest.TestCase):
         """
         parser = Test.get_parser(program)
         parser.lexical_analyzer.next_lexeme()
-        tree = parser.parse_type()
-        filename = Grammar.normalize_symbol_name(tree.symbol.grammar_symbol.name)
+        tree = parser.parse_type().tree
+        filename = ArtGrammar.normalize_symbol_name(tree.symbol.grammar_symbol.name)
         ParseTreeDomainHelper.generate_graphviz(tree,
                                                 Test.get_dot_filepath(
                                                     f'{inspect.currentframe().f_code.co_name}_{filename}'))
@@ -486,8 +511,8 @@ class Test(unittest.TestCase):
         """
         parser = Test.get_parser(program)
         parser.lexical_analyzer.next_lexeme()
-        tree = parser.parse_type()
-        filename = Grammar.normalize_symbol_name(tree.symbol.grammar_symbol.name)
+        tree = parser.parse_type().tree
+        filename = ArtGrammar.normalize_symbol_name(tree.symbol.grammar_symbol.name)
         ParseTreeDomainHelper.generate_graphviz(tree,
                                                 Test.get_dot_filepath(
                                                     f'{inspect.currentframe().f_code.co_name}_{filename}'))
@@ -503,8 +528,8 @@ class Test(unittest.TestCase):
         """
         parser = Test.get_parser(program)
         parser.lexical_analyzer.next_lexeme()
-        tree = parser.parse_type()
-        filename = Grammar.normalize_symbol_name(tree.symbol.grammar_symbol.name)
+        tree = parser.parse_type().tree
+        filename = ArtGrammar.normalize_symbol_name(tree.symbol.grammar_symbol.name)
         ParseTreeDomainHelper.generate_graphviz(tree,
                                                 Test.get_dot_filepath(
                                                     f'{inspect.currentframe().f_code.co_name}_{filename}'))
@@ -513,3 +538,17 @@ class Test(unittest.TestCase):
         ParseTreeDomainHelper.generate_graphviz(ast,
                                                 Test.get_dot_filepath(
                                                     f'{inspect.currentframe().f_code.co_name}_{filename}.ast'))
+
+    def test_build_recovery_synch_set_success(self):
+        parser = Test.get_parser("")
+        trailing = [',', ']', ')']
+        firsts = [parser.grammar.lookup_symbol(ArtParseTreeKind.EXPRESSION.name).first,
+                  parser.grammar.lookup_symbol(ArtParseTreeKind.ASSIGNMENT_EXPRESSION.name).first]
+        follows = [parser.grammar.lookup_symbol(ArtParseTreeKind.INVOCATION_EXPRESSION.name).follow,
+                   parser.grammar.lookup_symbol(ArtParseTreeKind.ARRAY_ELEMENT_ACCESS.name).follow,
+                   parser.grammar.lookup_symbol(ArtParseTreeKind.OBJECT_CREATION_EXPRESSION.name).follow]
+        recovery_tokens = ArtParser.build_recovery_synch_set(trailing, firsts, follows)
+        assert recovery_tokens == ['!', '(', ')', '+', '++', ',', '-', '--', ']', 'bool', 'boolean', 'boolean_literal',
+                                   'decimal', 'double', 'float', 'identifier', 'int', 'integer',
+                                   'integer_number_literal', 'number', 'real',
+                                   'real_number_literal', 'string', 'string_literal', '~']  # noqa

@@ -994,3 +994,72 @@ sys.setrecursionlimit(10**6)
 
 
 
+
+
+
+
+
+
+
+
+
+        if tree:
+            preorder, postorder = GraphAlgorithms.calculate_tree_traverses(tree)
+            cached_nodes = dict()
+            for node in preorder:
+                cached_nodes[node.id] = Node(f'{get_label(node.symbol)}:{node.id}:{Text.generate_random_string(6)}:'
+                                             f'attrs({DomainHelper.dict_to_string(node.attributes)})')
+            nodes = list()
+            for node in preorder:
+                papa = None
+                if node.papa:
+                    papa = cached_nodes[node.papa.id]
+                # new_node = Node(f'{get_label(node.symbol)}:'
+                #                 f'attrs({DomainHelper.dict_to_string(node.attributes)})', parent=papa)
+                new_node = cached_nodes[node.id]
+                new_node.parent = papa
+                kids = [cached_nodes[kid.id] for kid in node.kids]
+                try:
+                    new_node.children = kids
+                except Exception as ex:
+                    pass
+                nodes.append(new_node)
+            if nodes:
+                DotExporter(nodes[0]).to_picture(filepath)
+
+
+
+
+
+
+
+# from bigtree import Node, tree_to_dot
+        if tree:
+            preorder, postorder = GraphAlgorithms.calculate_tree_traverses(tree)
+            cached_nodes = dict()
+            for node in preorder:
+                cached_nodes[node.id] = Node(f'{get_label(node.symbol)}:{node.id}:'
+                                             f'attrs({DomainHelper.dict_to_string(node.attributes)})')
+            nodes = list()
+            for node in preorder:
+                papa = None
+                if node.papa:
+                    papa = cached_nodes[node.papa.id]
+                # new_node = Node(f'{get_label(node.symbol)}:'
+                #                 f'attrs({DomainHelper.dict_to_string(node.attributes)})', parent=papa)
+                new_node = cached_nodes[node.id]
+                new_node.parent = papa
+                kids = [cached_nodes[kid.id] for kid in node.kids]
+                try:
+                    new_node.children = kids
+                except Exception as ex:
+                    pass
+                nodes.append(new_node)
+            if nodes:
+                # graph = tree_to_dot(nodes[0])
+                # graph.write_png(filepath)
+                DotExporter(nodes[0]).to_picture(filepath)
+
+
+
+

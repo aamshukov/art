@@ -18,12 +18,10 @@ class ArtAst(Base):
         super().__init__()
 
     @staticmethod
-    def make_terminal_tree(kind, lexer, grammar, token=None):
+    def make_terminal_tree(kind, grammar, token):
         """
         """
-        return ParseTreeFactory.make_tree(kind,
-                                          grammar,
-                                          lexer.token if not token else token)
+        return ParseTreeFactory.make_tree(kind, grammar, token)
 
     @staticmethod
     def make_non_terminal_tree(kind, grammar):

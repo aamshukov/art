@@ -322,11 +322,15 @@ class GrammarAlgorithms(Base):
         LAk(A -> w) = TRUNCk(FIRSTk(w) ∪ FOLLOWk(A))
         """
         if rule.empty():  # A -> λ
-            result = rule.lhs.follow
+            result = GrammarAlgorithms.cleanup_lists(rule.lhs.follow)
         else:
             sets = list()
             for symbol in rule.rhs:  # FIRSTk(w) = FIRSTk(u1) (+)k FIRSTk(u2) (+)k ... (+)k FIRSTk(uN)
                 sets.append(symbol.first)
-            sets.append(rule.lhs.follow)
+            if GrammarAlgorithms.cleanup_lists(rule.lhs.follow):
+                sets.append(rule.lhs.follow)
+            sets = GrammarAlgorithms.cleanup_lists(sets)
             result = GrammarAlgorithms.truncate(grammar, sets, k)
+        if not result:
+            result = [[]]
         return result

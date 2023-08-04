@@ -29,6 +29,6 @@ class Statistics(Base):
         match token.kind:
             case TokenKind.IDENTIFIER:
                 self.quantities[NUMBER_OF_IDENTIFIERS] += 1
-            case TokenKind.CASE | TokenKind.BOOLEAN_KW:
+            case TokenKind.CASE_KW | TokenKind.BOOLEAN_KW:
                 self.quantities[NUMBER_OF_KEYWORDS] += 1
         # ?? print(tokenizer)

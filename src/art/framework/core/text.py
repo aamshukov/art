@@ -14,6 +14,7 @@ from art.framework.core.base import Base
 
 class Text(Base):
     """
+    α β ε λ ∅ ∈ Σ ∪
     """
     CATEGORY_UPPERCASE_LETTER = 1            # Lu
     CATEGORY_LOWERCASE_LETTER = 2            # Ll
@@ -813,6 +814,8 @@ class Text(Base):
                   0x0000000C |  # '\f'
                   0x000000A0 |  # NO-BREAK SPACE
                   0x0000FEFF |  # ZERO WIDTH NO-BREAK SPACE
+                  0x0000200E |  # LEFT-TO-RIGHT MARK
+                  0x0000200F |  # RIGHT-TO-LEFT MARK
                   0x0000001A):  # Substitute, SUB
                 return True
             case _:
@@ -825,7 +828,7 @@ class Text(Base):
         """
         return (codepoint == 0x0000000A or  # '\n' Line feed character
                 codepoint == 0x0000000D or  # '\r' Carriage return character
-                codepoint == 0x00000085 or  # Next line character
+                codepoint == 0x00000085 or  # Next line character, Latin1
                 codepoint == 0x00002028 or  # Line separator character
                 codepoint == 0x00002029)    # Paragraph separator character
 

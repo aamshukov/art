@@ -8,6 +8,7 @@ from art.framework.core.base import Base
 from art.framework.core.flags import Flags
 from art.framework.frontend.grammar.grammar_symbol import GrammarSymbol
 from art.framework.frontend.grammar.grammar_symbol_kind import GrammarSymbolKind
+from art.framework.frontend.lexical_analyzer.tokenizer.token_kind import TokenKind
 
 
 class GrammarSymbolFactory(Base):
@@ -17,10 +18,16 @@ class GrammarSymbolFactory(Base):
 
     UNKNOWN_SYMBOL = GrammarSymbol(id_generator,
                                    GrammarSymbolKind.UNKNOWN.name,
-                                   GrammarSymbolKind.UNKNOWN)
+                                   GrammarSymbolKind.UNKNOWN,
+                                   TokenKind.UNKNOWN)
     EPSILON_SYMBOL = GrammarSymbol(int(GrammarSymbolKind.EPSILON),
                                    'ε',
-                                   GrammarSymbolKind.EPSILON)
+                                   GrammarSymbolKind.EPSILON,
+                                   TokenKind.EPSILON)
+    ERRONEOUS_SYMBOL = GrammarSymbol(-1,
+                                     TokenKind.ERRONEOUS.name,
+                                     GrammarSymbolKind.NON_TERMINAL,
+                                     TokenKind.ERRONEOUS)
 
     def __init__(self):
         """
@@ -37,6 +44,7 @@ class GrammarSymbolFactory(Base):
     @staticmethod
     def create(name='',
                symbol_type=GrammarSymbolKind.TERMINAL,
+               token_kind=TokenKind.UNKNOWN,
                value=None,
                attributes=None,
                flags=Flags.CLEAR,
@@ -46,6 +54,7 @@ class GrammarSymbolFactory(Base):
         return GrammarSymbol(GrammarSymbolFactory.get_next_id(),
                              name,
                              symbol_type,
+                             token_kind,
                              value,
                              attributes,
                              flags,
@@ -62,3 +71,9 @@ class GrammarSymbolFactory(Base):
         """
         """
         return deepcopy(GrammarSymbolFactory.EPSILON_SYMBOL)
+
+    @staticmethod
+    def erroneous_symbol():
+        """
+        """
+        return deepcopy(GrammarSymbolFactory.ERRONEOUS_SYMBOL)

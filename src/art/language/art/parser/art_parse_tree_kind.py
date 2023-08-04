@@ -9,7 +9,8 @@ from enum import IntEnum, auto
 class ArtParseTreeKind(IntEnum):
     """
     """
-    UNKNOWN = auto()
+    UNKNOWN = 0
+    ERRONEOUS = auto()
     INDENT = auto()
     DEDENT = auto()
     CORRUPTED_DEDENT = auto()
@@ -42,3 +43,10 @@ class ArtParseTreeKind(IntEnum):
     INTEGRAL_TYPE = auto()
     ARRAY_TYPE_RANK_SPECIFIER = auto()
     ARRAY_TYPE_RANKS = auto()
+    ARGUMENT = auto()
+    ARGUMENTS = auto()
+    ARGUMENT_NAME = auto()
+    ARGUMENT_VALUE = auto()
+    INVOCATION_EXPRESSION = auto()
+    OBJECT_CREATION_EXPRESSION = auto()
+    ARRAY_ELEMENT_ACCESS =auto()

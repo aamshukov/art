@@ -119,7 +119,7 @@ class Test(unittest.TestCase):
     def test_lexical_analyzer_indentation_1_success(self):
         tokens = [TokenKind.EOL,
                   TokenKind.INDENT,
-                  TokenKind.DEF,
+                  TokenKind.DEF_KW,
                   TokenKind.WS,
                   TokenKind.IDENTIFIER,
                   TokenKind.LEFT_PARENTHESIS,
@@ -250,23 +250,23 @@ class Test(unittest.TestCase):
     def test_lexical_analyzer_indentation_2_success(self):
         tokens = [TokenKind.EOL,
                   TokenKind.INDENT,
-                  TokenKind.WHILE,
+                  TokenKind.WHILE_KW,
                   TokenKind.WS,
                   TokenKind.LEFT_PARENTHESIS,
-                  TokenKind.SELF,  # self
+                  TokenKind.SELF_KW,  # self
                   TokenKind.DOT,  # .
                   TokenKind.IDENTIFIER,  # _content_position
                   TokenKind.WS,
                   TokenKind.LESS_THAN_SIGN,
                   TokenKind.WS,
-                  TokenKind.SELF,  # self
+                  TokenKind.SELF_KW,  # self
                   TokenKind.DOT,  # .
                   TokenKind.IDENTIFIER,  # _end_content
                   TokenKind.WS,
-                  TokenKind.AND,
+                  TokenKind.AND_KW,
                   TokenKind.EOL,
                   TokenKind.WS,
-                  TokenKind.SELF,  # self
+                  TokenKind.SELF_KW,  # self
                   TokenKind.DOT,  # .
                   TokenKind.IDENTIFIER,  # _codepoint
                   TokenKind.WS,
@@ -279,7 +279,7 @@ class Test(unittest.TestCase):
                   TokenKind.SINGLE_LINE_COMMENT,
                   TokenKind.EOL,
                   TokenKind.INDENT,
-                  TokenKind.SELF,  # self
+                  TokenKind.SELF_KW,  # self
                   TokenKind.DOT,  # .
                   TokenKind.IDENTIFIER,  # advance
                   TokenKind.LEFT_PARENTHESIS,
@@ -517,16 +517,16 @@ class Test(unittest.TestCase):
         assert lexer.token.kind == TokenKind.LESS_THAN_OR_EQUAL
         lexer = Test.get_lexer('<<=')
         lexer.next_lexeme()
-        assert lexer.token.kind == TokenKind.SHIFT_LEFT_OR_EQUAL
+        assert lexer.token.kind == TokenKind.SHIFT_LEFT_ASSIGNMENT
         lexer = Test.get_lexer('<=>')
         lexer.next_lexeme()
         assert lexer.token.kind == TokenKind.SPACESHIP
         lexer = Test.get_lexer('lt')
         lexer.next_lexeme()
-        assert lexer.token.kind == TokenKind.COMP_LESS_THAN
+        assert lexer.token.kind == TokenKind.LESS_THAN_KW
         lexer = Test.get_lexer('le')
         lexer.next_lexeme()
-        assert lexer.token.kind == TokenKind.COMP_LESS_THAN_OR_EQUAL
+        assert lexer.token.kind == TokenKind.LESS_THAN_OR_EQUAL_KW
         lexer = Test.get_lexer('>')
         lexer.next_lexeme()
         assert lexer.token.kind == TokenKind.GREATER_THAN_SIGN
@@ -545,10 +545,10 @@ class Test(unittest.TestCase):
         assert lexer.token.kind == TokenKind.GREATER_THAN_OR_EQUAL
         lexer = Test.get_lexer('gt')
         lexer.next_lexeme()
-        assert lexer.token.kind == TokenKind.COMP_GREATER_THAN
+        assert lexer.token.kind == TokenKind.GREATER_THAN_KW
         lexer = Test.get_lexer('ge')
         lexer.next_lexeme()
-        assert lexer.token.kind == TokenKind.COMP_GREATER_THAN_OR_EQUAL
+        assert lexer.token.kind == TokenKind.GREATER_THAN_OR_EQUAL_KW
 
     def test_equality_operators_success(self):
         lexer = Test.get_lexer('==')
@@ -556,13 +556,13 @@ class Test(unittest.TestCase):
         assert lexer.token.kind == TokenKind.EQUAL
         lexer = Test.get_lexer('eq')
         lexer.next_lexeme()
-        assert lexer.token.kind == TokenKind.COMP_EQUAL
+        assert lexer.token.kind == TokenKind.EQUAL_KW
         lexer = Test.get_lexer('!=')
         lexer.next_lexeme()
         assert lexer.token.kind == TokenKind.NOT_EQUAL
         lexer = Test.get_lexer('ne')
         lexer.next_lexeme()
-        assert lexer.token.kind == TokenKind.COMP_NOT_EQUAL
+        assert lexer.token.kind == TokenKind.NOT_EQUAL_KW
 
     def test_assignment_operators_success(self):
         lexer = Test.get_lexer('=')
@@ -597,7 +597,7 @@ class Test(unittest.TestCase):
         assert lexer.token.kind == TokenKind.BITWISE_NOT_ASSIGNMENT
         lexer = Test.get_lexer('<<=')
         lexer.next_lexeme()
-        assert lexer.token.kind == TokenKind.SHIFT_LEFT_OR_EQUAL
+        assert lexer.token.kind == TokenKind.SHIFT_LEFT_ASSIGNMENT
         lexer = Test.get_lexer('>>=')
         lexer.next_lexeme()
         assert lexer.token.kind == TokenKind.GREATER_THAN_SIGN

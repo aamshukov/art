@@ -156,6 +156,8 @@ class Test(unittest.TestCase):
         assert Text.whitespace(0x00A0)
         assert Text.whitespace(0x205F)
         assert Text.whitespace(0x2009)
+        assert Text.whitespace(0x0000200F)
+        assert Text.whitespace(0x0000001A)
 
     def test_eol_success(self):
         assert Text.eol(ord('\n'))
