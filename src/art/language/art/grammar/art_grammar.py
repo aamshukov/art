@@ -66,7 +66,7 @@ class ArtGrammar(Grammar):
                 case TokenKind.SINGLE_LINE_COMMENT:
                     pass
                 case TokenKind.EOL:
-                    if lhs:
+                    if lhs and rhs:
                         self.assemble_rule(lhs, rhs)
                         rhs.clear()
                 case _:

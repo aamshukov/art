@@ -1063,3 +1063,50 @@ sys.setrecursionlimit(10**6)
 
 
 
+
+
+
+
+
+        # fq_identifier = tree = ArtAst.make_non_terminal_tree(ArtParseTreeKind.FULLY_QUALIFIED_IDENTIFIER,
+        #                                                      self.grammar)
+        # stack = deque()
+        # stack.append(self.lexer.token)  # push IDENTIFIER
+        # self.lexer.next_lexeme()
+        # while not self.lexer.eos():
+        #     if self.lexer.token.kind == TokenKind.DOT:
+        #         la_token = self.lexer.lookahead_lexeme()
+        #         if la_token.kind == TokenKind.IDENTIFIER:
+        #             stack.append(self.lexer.token)  # push DOT
+        #             stack.append(la_token)  # push IDENTIFIER
+        #             self.lexer.next_lexeme()  # skip DOT
+        #             self.lexer.next_lexeme()  # skip IDENTIFIER
+        #         else:
+        #             break
+        #     else:
+        #         break
+        # while stack:
+        #     token = stack.pop()
+        #     if token.kind == TokenKind.DOT:
+        #         self.consume_terminal(tree.papa, insert_index=1, token=token)
+        #         continue
+        #     if stack:
+        #         fq_kid = ArtAst.make_non_terminal_tree(ArtParseTreeKind.FULLY_QUALIFIED_IDENTIFIER,
+        #                                                self.grammar)
+        #         tree.add_kid(fq_kid)
+        #         self.consume_terminal(tree, ArtParseTreeKind.IDENTIFIER, token=token)
+        #         tree = fq_kid
+        #     else:
+        #         self.consume_terminal(tree, ArtParseTreeKind.IDENTIFIER, token=token)
+
+
+
+
+
+        la_token = self.lexer.lookahead_lexeme(skip=[TokenKind.WS,
+                                                         TokenKind.EOL,
+                                                         TokenKind.INDENT,
+                                                         TokenKind.DEDENT,
+                                                         TokenKind.CORRUPTED_DEDENT])
+
+
