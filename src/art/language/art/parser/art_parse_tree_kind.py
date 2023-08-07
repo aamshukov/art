@@ -49,6 +49,7 @@ class ArtParseTreeKind(IntEnum):
     ARRAY_TYPE_RANK_SPECIFIER = auto()
     ARRAY_TYPE_RANKS = auto()
     ARGUMENT = auto()
+    ARGUMENTS_OPT = auto()
     ARGUMENTS = auto()
     ARGUMENT_NAME_OPT = auto()
     ARGUMENT_NAME = auto()

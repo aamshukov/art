@@ -415,34 +415,41 @@ class Test(unittest.TestCase):
         assert parser.diagnostics.status
 
     def test_primary_expression_4_success(self):
-        program = """
-        foo ()  a.bar()
-        """
-        parser = Test.get_parser(program)
-        parser.lexical_analyzer.next_lexeme()
-        pm_expr = parser.parse_primary_expression()
-        ParseTreeDomainHelper.generate_graphviz(pm_expr.tree,
-                                                Test.get_dot_filepath(inspect.currentframe().f_code.co_name))
-        assert parser.diagnostics.status
+        programs = ['a.bar()', 'foo ( )', 'foo(1)']
+        for k, program in enumerate(programs):
+            parser = Test.get_parser(program)
+            parser.lexical_analyzer.next_lexeme()
+            pm_expr = parser.parse_primary_expression()
+            ParseTreeDomainHelper.\
+                generate_graphviz(pm_expr.tree, Test.get_dot_filepath(f'{inspect.currentframe().f_code.co_name}_{k}'))
+            assert parser.diagnostics.status
 
     def test_primary_expression_5_success(self):
-        program = """
-        Point{}  a.bar()
-        """
-        parser = Test.get_parser(program)
-        parser.lexical_analyzer.next_lexeme()
-        pm_expr = parser.parse_primary_expression()
-        ParseTreeDomainHelper.generate_graphviz(pm_expr.tree,
-                                                Test.get_dot_filepath(inspect.currentframe().f_code.co_name))
-        assert parser.diagnostics.status
+        programs = ['Point { }', 'Point{5,6,7}']
+        for k, program in enumerate(programs):
+            parser = Test.get_parser(program)
+            parser.lexical_analyzer.next_lexeme()
+            pm_expr = parser.parse_primary_expression()
+            ParseTreeDomainHelper.\
+                generate_graphviz(pm_expr.tree, Test.get_dot_filepath(f'{inspect.currentframe().f_code.co_name}_{k}'))
+            assert parser.diagnostics.status
 
     def test_primary_expression_6_success(self):
-        program = """
-        1 (2) ((3)) (((4)))
-        """
-        parser = Test.get_parser(program)
-        parser.lexical_analyzer.next_lexeme()
-        pm_expr = parser.parse_primary_expression()
-        ParseTreeDomainHelper.generate_graphviz(pm_expr.tree,
-                                                Test.get_dot_filepath(inspect.currentframe().f_code.co_name))
-        assert parser.diagnostics.status
+        programs = ['a [U -- ] ++ ', '1++', 'false--', 'true ++', 'a ++', 'e -- . f ++. g++', 'a [ d ++ ]']
+        for k, program in enumerate(programs):
+            parser = Test.get_parser(program)
+            parser.lexical_analyzer.next_lexeme()
+            pm_expr = parser.parse_primary_expression()
+            ParseTreeDomainHelper.\
+                generate_graphviz(pm_expr.tree, Test.get_dot_filepath(f'{inspect.currentframe().f_code.co_name}_{k}'))
+            assert parser.diagnostics.status
+
+    def test_primary_expression_7_success(self):
+        programs = ['()', '( 2 )', '( ( 3))', '(( ( 4 )))', '((foo( ) ) )']
+        for k, program in enumerate(programs):
+            parser = Test.get_parser(program)
+            parser.lexical_analyzer.next_lexeme()
+            pm_expr = parser.parse_primary_expression()
+            ParseTreeDomainHelper.\
+                generate_graphviz(pm_expr.tree, Test.get_dot_filepath(f'{inspect.currentframe().f_code.co_name}_{k}'))
+            assert parser.diagnostics.status

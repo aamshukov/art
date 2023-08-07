@@ -47,6 +47,7 @@ class ArtParser(RecursiveDescentParser):
         expression = ArtAst.make_non_terminal_tree(ArtParseTreeKind.EXPRESSION, self.grammar)
         self.consume_noise(expression)
         primary_expression = self.parse_primary_expression()
+        expression.add_kid(primary_expression.tree)
         # self.lexer.take_snapshot()
         # non_assignment_expression = self.parse_non_assignment_expression()
         # if non_assignment_expression.kind == ArtParseTreeKind.NON_ASSIGNMENT_EXPRESSION:
@@ -60,7 +61,7 @@ class ArtParser(RecursiveDescentParser):
         #         expression.add_kid(assignment_expression.tree)
         self.current_expression = ArtParseTreeKind.EXPRESSION
         self.dec_recursion_level()
-        return ParseResult(ParseResult.Status.OK, primary_expression)
+        return ParseResult(ParseResult.Status.OK, expression)
 
     def parse_non_assignment_expression(self):
         """
@@ -127,53 +128,57 @@ class ArtParser(RecursiveDescentParser):
         """
         self.inc_recursion_level()
         primary_expression = ArtAst.make_non_terminal_tree(ArtParseTreeKind.PRIMARY_EXPRESSION, self.grammar)
-        self.consume_noise(primary_expression)
-        if self.literal():
-            self.parse_literal(primary_expression)
-        elif self.lexer.token.kind == TokenKind.LEFT_PARENTHESIS:
-            self.accept(primary_expression, TokenKind.LEFT_PARENTHESIS)
-            expression = self.parse_expression()
-            primary_expression.add_kid(expression.tree)
+        punctuator = False  #??
+        invocation = False
+        while True:
             self.consume_noise(primary_expression)
-            self.accept(primary_expression, TokenKind.RIGHT_PARENTHESIS)
-        else:
             if self.lexer.token.kind == TokenKind.IDENTIFIER:
                 self.accept(primary_expression, TokenKind.IDENTIFIER)
                 type_argument_seq_opt = self.parse_type_argument_seq_opt()
                 if type_argument_seq_opt.status != ParseResult.Status.OPTIONAL:
                     primary_expression.add_kid(type_argument_seq_opt.tree)
+                invocation = True
+            elif self.literal():
+                self.parse_literal(primary_expression)
+                invocation = True
+            elif self.lexer.token.kind == TokenKind.DOT:
+                self.consume_terminal(primary_expression)
+                invocation = False
+            elif self.lexer.token.kind == TokenKind.LEFT_PARENTHESIS:
+                self.accept(primary_expression, TokenKind.LEFT_PARENTHESIS)
+                if invocation:
+                    arguments_opt = self.parse_arguments_opt()
+                    if arguments_opt.status != ParseResult.Status.OPTIONAL:
+                        primary_expression.add_kid(arguments_opt.tree)
+                else:
+                    expression = self.parse_expression()
+                    primary_expression.add_kid(expression.tree)
                 self.consume_noise(primary_expression)
-                while (self.lexer.token.kind == TokenKind.DOT or
-                       self.lexer.token.kind == TokenKind.LEFT_PARENTHESIS or
-                       self.lexer.token.kind == TokenKind.LEFT_SQUARE_BRACKET or
-                       self.lexer.token.kind == TokenKind.LEFT_CURLY_BRACKET):
-                    if self.lexer.token.kind == TokenKind.DOT:
-                        self.consume_terminal(primary_expression)
-                        self.consume_noise(primary_expression)
-                        self.accept(primary_expression, TokenKind.IDENTIFIER)
-                        type_argument_seq_opt = self.parse_type_argument_seq_opt()
-                        if type_argument_seq_opt.status != ParseResult.Status.OPTIONAL:
-                            primary_expression.add_kid(type_argument_seq_opt.tree)
-                    elif self.lexer.token.kind == TokenKind.LEFT_PARENTHESIS:
-                        self.accept(primary_expression, TokenKind.LEFT_PARENTHESIS)
-                        expression = self.parse_expression()
-                        primary_expression.add_kid(expression.tree)
-                        self.consume_noise(primary_expression)
-                        self.accept(primary_expression, TokenKind.RIGHT_PARENTHESIS)
-                    elif self.lexer.token.kind == TokenKind.LEFT_SQUARE_BRACKET:
-                        self.consume_terminal(primary_expression)
-                        arguments = self.parse_arguments()
-                        primary_expression.add_kid(arguments.tree)
-                        self.consume_noise(primary_expression)
-                        self.accept(primary_expression, TokenKind.RIGHT_SQUARE_BRACKET)
-                    elif self.lexer.token.kind == TokenKind.LEFT_CURLY_BRACKET:
-                        self.consume_terminal(primary_expression)
-                        arguments_opt = self.parse_arguments_opt()
-                        if arguments_opt.status != ParseResult.Status.OPTIONAL:
-                            primary_expression.add_kid(arguments_opt.tree)
-                        self.consume_noise(primary_expression)
-                        self.accept(primary_expression, TokenKind.RIGHT_CURLY_BRACKET)
-                    self.consume_noise(primary_expression)
+                self.accept(primary_expression, TokenKind.RIGHT_PARENTHESIS)
+                invocation = False
+            elif self.lexer.token.kind == TokenKind.LEFT_SQUARE_BRACKET:
+                self.consume_terminal(primary_expression)
+                arguments = self.parse_arguments()
+                primary_expression.add_kid(arguments.tree)
+                self.consume_noise(primary_expression)
+                self.accept(primary_expression, TokenKind.RIGHT_SQUARE_BRACKET)
+                invocation = True
+            elif self.lexer.token.kind == TokenKind.LEFT_CURLY_BRACKET:
+                self.consume_terminal(primary_expression)
+                arguments_opt = self.parse_arguments_opt()
+                if arguments_opt.status != ParseResult.Status.OPTIONAL:
+                    primary_expression.add_kid(arguments_opt.tree)
+                self.consume_noise(primary_expression)
+                self.accept(primary_expression, TokenKind.RIGHT_CURLY_BRACKET)
+                invocation = False
+            elif self.lexer.token.kind == TokenKind.INCREMENT:
+                self.consume_terminal(primary_expression)
+                invocation = False
+            elif self.lexer.token.kind == TokenKind.DECREMENT:
+                self.consume_terminal(primary_expression)
+                invocation = False
+            else:
+                break
         self.current_expression = ArtParseTreeKind.PRIMARY_EXPRESSION
         self.dec_recursion_level()
         return ParseResult(ParseResult.Status.OK, primary_expression)
@@ -629,6 +634,24 @@ class ArtParser(RecursiveDescentParser):
         """
         return [TokenKind.COLUMN_KW, TokenKind.ROW_KW, TokenKind.JAGGED_KW, TokenKind.UNCHECKED_KW]
 
+    def parse_arguments_opt(self):
+        """
+        arguments_opt : arguments
+                      | ε
+                      ;
+        """  # noqa
+        self.inc_recursion_level()
+        arguments_opt = ArtAst.make_non_terminal_tree(ArtParseTreeKind.ARGUMENTS_OPT, self.grammar)
+        self.consume_noise(arguments_opt)
+        result = ParseResult(ParseResult.Status.OPTIONAL)
+        if (self.lexer.token.kind != TokenKind.RIGHT_PARENTHESIS and
+                self.lexer.token.kind != TokenKind.RIGHT_CURLY_BRACKET):
+            arguments = self.parse_arguments()
+            arguments_opt.add_kid(arguments.tree)
+            result = ParseResult(ParseResult.Status.OK, arguments_opt)
+        self.dec_recursion_level()
+        return result
+
     def parse_arguments(self):
         """
         arguments : argument
@@ -713,7 +736,7 @@ class ArtParser(RecursiveDescentParser):
         expression = self.parse_expression()
         argument_value.add_kid(expression.tree)
         self.consume_noise(argument_value)
-        if self.lexer.token.kind == TokenKind.LAZY:
+        if self.lexer.token.kind == TokenKind.LAZY_KW:
             self.consume_terminal(argument_value)
         self.dec_recursion_level()
         return ParseResult(ParseResult.Status.OK, argument_value)
