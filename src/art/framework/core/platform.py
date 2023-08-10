@@ -34,3 +34,9 @@ class Platform(Base):
         """
         """
         return sys.float_info.epsilon
+
+    @staticmethod
+    def increase_recursion_limit():
+        """
+        """
+        sys.setrecursionlimit(8192)

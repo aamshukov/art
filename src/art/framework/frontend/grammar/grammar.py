@@ -42,15 +42,8 @@ class Grammar(Base):
         """
         return self.pool['ε']
 
-    def load_file(self, filepath):
-        """
-        """
-        with open(os.path.abspath(filepath), 'r') as stream:
-            content = stream.read()
-            return self.load(content)
-
     @abstractmethod
-    def load(self, content):
+    def load(self, data_provider):
         """
         """
         raise NotImplemented(self.load.__qualname__)

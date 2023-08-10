@@ -5,7 +5,6 @@
 from art.framework.core.diagnostics import Diagnostics
 from art.framework.core.text import Text
 from art.framework.frontend.content.content import Content
-from art.framework.frontend.data_provider.string_data_provider import StringDataProvider
 from art.framework.frontend.grammar.grammar import Grammar
 from art.framework.frontend.grammar.grammar_rule import GrammarRule
 from art.framework.frontend.grammar.grammar_symbol_factory import GrammarSymbolFactory
@@ -26,11 +25,10 @@ class ArtGrammar(Grammar):
         super().__init__(name, logger)
         self.keywords = TokenKind.get_keywords()
 
-    def load(self, content):
+    def load(self, data_provider):
         """
         """
-        dp = StringDataProvider(content)
-        data = dp.load()
+        data = data_provider.load()
         content = Content(data, 'grammar-lexer')
         content.build_line_map()
         diagnostics = Diagnostics()
@@ -74,7 +72,7 @@ class ArtGrammar(Grammar):
 
     def assemble_rule(self, lhs_name, rhs_names):
         """
-       """
+        """
         rule = GrammarRule(len(self.rules) + 1, '')
         rule.lhs = self.get_symbol(lhs_name)
         rule.lhs.rules.append(rule)

@@ -126,8 +126,9 @@ class TokenKind(IntEnum):
     COLUMN_KW = auto()                  # column, array memory layout
     ROW_KW = auto()                     # row, array memory layout
     JAGGED_KW = auto()                  # is jagged array
-
+    SPARSE_KW = auto()                  # sparse array with implicitly replicated value, see Chapel
     UNCHECKED_KW = auto()               # unchecked
+    DYNAMIC_KW = auto()                 # dynamic allocated array
 
     ADD_KW = auto()
     SUB_KW = auto()
@@ -303,7 +304,9 @@ class TokenKind(IntEnum):
         result['col'] = TokenKind.COLUMN_KW
         result['row'] = TokenKind.ROW_KW
         result['jagged'] = TokenKind.JAGGED_KW
+        result['sparse'] = TokenKind.SPARSE_KW
         result['unchecked'] = TokenKind.UNCHECKED_KW
+        result['dynamic'] = TokenKind.DYNAMIC_KW
         result['add'] = TokenKind.ADD_KW
         result['sub'] = TokenKind.SUB_KW
         result['mul'] = TokenKind.MUL_KW

@@ -8,6 +8,8 @@ import unittest
 from art.framework.core.domain_helper import DomainHelper
 from art.framework.core.logger import Logger
 from art.framework.core.diagnostics import Diagnostics
+from art.framework.core.platform import Platform
+from art.framework.frontend.data_provider.file_data_provider import FileDataProvider
 from art.framework.frontend.data_provider.string_data_provider import StringDataProvider
 from art.framework.frontend.content.content import Content
 from art.framework.frontend.grammar.grammar import Grammar
@@ -26,140 +28,6 @@ from art.language.art.parser.art_tokenizer import ArtTokenizer
 
 
 class Test(unittest.TestCase):
-    syntactic_grammar = """
-    # TYPE
-    TYPE                                : integral_type array_type_rank_specifier_opt
-                                        | type_name array_type_rank_specifier_opt
-                                        | type_parameter array_type_rank_specifier_opt
-                                        ;
-    
-    type_name                           : fully_qualified_identifier
-                                        ;
-    
-    type_parameter_seq_opt              : type_parameter_seq
-                                        | ε
-                                        ;
-    
-    type_parameter_seq                  : '<' type_parameters '>'
-                                        ;
-    
-    type_parameters                     : type_parameter                                                                    # type_parameter (',' type_parameter)*
-                                        | type_parameters ',' type_parameter
-                                        ;
-    
-    type_parameter                      : identifier
-                                        ;
-    
-    type_argument_seq_opt               : type_argument_seq
-                                        | ε
-                                        ;
-    
-    type_argument_seq                   : '<' type_arguments '>'
-                                        ;
-    
-    type_arguments                      : type_argument                                                                     # type_argument (',' type_argument)*
-                                        | type_arguments ',' type_argument
-                                        ;
-    
-    type_argument                       : TYPE
-                                        ;
-    
-    array_type_rank_specifier_opt       : array_type_rank_specifier
-                                        | ε
-                                        ;
-    
-    array_type_rank_specifier           : '[' array_type_ranks_opt ']'
-                                        ;
-    
-    array_type_ranks_opt                : array_type_ranks
-                                        | ε
-                                        ;
-    
-    array_type_ranks                    : ','
-                                        | array_type_ranks ','
-                                        ;
-    
-    array_type_specifier_opt            : array_type_specifier
-                                        | ε
-                                        ;
-    
-    array_type_specifier                : '[' array_dimensions ']' array_modifiers_opt                                      # zero based, checked array, row based, optionally column based and/or unchecked
-                                        ;
-    
-    array_dimensions                    : array_dimension                                                                   # array_dimension (',' array_dimension)*
-                                        | array_dimensions ',' array_dimension                                              # all ',' as a separator of a dimension
-                                        ;
-    
-    array_dimension                     : array_upper_bound                                                                 # array_lower_bound ('..' array_upper_bound)?  a[2]
-                                        | array_lower_bound '..' array_upper_bound                                          # array_lower_bound ('..' array_upper_bound)?  a[1..2]
-                                        ;
-    
-    array_lower_bound                   : array_bound_expression
-                                        ;
-    
-    array_upper_bound                   : array_bound_expression
-                                        ;
-    
-    array_bound_expression              : non_assignment_expression                                                         # must evaluate to compilation time constant integer
-                                        ;
-    
-    array_modifiers_opt                 : array_modifiers
-                                        | ε
-                                        ;
-    
-    array_modifiers                     : array_modifier
-                                        | array_modifiers ',' array_modifier
-                                        ;
-    
-    array_modifier                      : 'column'                                                                          # column based array specifier
-                                        | 'row'                                                                             # row based array specifier - default
-                                        | 'jagged'                                                                          # array of arrays, possibly of different sizes
-                                        | 'unchecked'                                                                       # unchecked array specifier
-                                        ;
-    
-    integral_type_opt                   : integral_type
-                                        | ε
-                                        ;
-    
-    integral_type                       : 'int'
-                                        | 'integer'
-                                        | 'real'
-                                        | 'float'
-                                        | 'double'
-                                        | 'decimal'
-                                        | 'number'
-                                        | 'bool'
-                                        | 'boolean'
-                                        | 'string'
-                                        ;
-    
-    fully_qualified_identifier          : identifier type_argument_seq_opt                                                  # A<T>
-                                        | fully_qualified_identifier '.' identifier type_argument_seq_opt                   # A<T>.B<U>.C<A<B<U>>>
-                                        ;
-    
-    identifiers                         : identifier
-                                        | identifiers ',' identifier
-                                        ;
-    
-    identifier                          : 'identifier'
-                                        ;
-    
-    literal                             : 'integer_number_literal'
-                                        | 'real_number_literal'
-                                        | 'boolean_literal'                                                                 # true false
-                                        | 'string_literal'
-                                        ;
-    
-    terminal                            : 'terminal'                                                                        # wrapper for terminals
-                                        ;
-    
-    INDENT                              : 'indent'
-                                        ;
-    
-    DEDENT                              : 'dedent'
-                                        ;
-
-    """  # noqa
     grammar = None
 
     def __init__(self, *args, **kwargs):
@@ -167,35 +35,34 @@ class Test(unittest.TestCase):
         """
         super(Test, self).__init__(*args, **kwargs)
 
+    @classmethod
+    def setUp(cls):
+        Platform.increase_recursion_limit()
+        if not cls.grammar:
+            k = 1
+            logger = Logger(path=r'd:\tmp\art', mode='w')
+            dp = FileDataProvider(r'../../docs/art-grammar.txt')
+            grammar = ArtGrammar(logger=logger)
+            grammar.load(dp)
+            # GrammarAlgorithms.build_first_set(grammar, k)
+            # GrammarAlgorithms.build_follow_set(grammar, k)
+            # GrammarAlgorithms.build_la_set(grammar, k)
+            # decorated_grammar = grammar.decorate()
+            # logger.info(decorated_grammar)
+            # decorated_pool = grammar.decorate_pool()
+            # logger.info(decorated_pool)
+            # Test.dump_rules_la(grammar, logger, k)
+            cls.grammar = grammar
+
     @staticmethod
     def dump_rules_la(grammar, logger, k=1):
         logger.info('Rules LA')
         for rule in grammar.rules:
+            if 'PRIMARY_EXPRESSION' in rule.name:
+                pass
             la = GrammarAlgorithms.build_la_set_rule(grammar, rule, k)
             la_str = f'{rule.name}: {GrammarSymbol.sets_to_string(la)}'
             logger.info(la_str)
-
-    @classmethod
-    def setUp(cls):
-        DomainHelper.increase_recursion_limit()
-        if not cls.grammar:
-            k = 1
-            logger = Logger(path=r'd:\tmp\art', mode='w')
-            grammar = ArtGrammar(logger=logger)
-            grammar.load(Test.syntactic_grammar)
-            GrammarAlgorithms.build_first_set(grammar, k)
-            GrammarAlgorithms.build_follow_set(grammar, k)
-            GrammarAlgorithms.build_la_set(grammar, k)
-            decorated_grammar = grammar.decorate()
-            logger.info(decorated_grammar)
-            decorated_pool = grammar.decorate_pool()
-            logger.info(decorated_pool)
-            Test.dump_rules_la(grammar, logger, k)
-            cls.grammar = grammar
-
-    @staticmethod
-    def get_dot_filepath(filename):
-        return rf'd:\tmp\art\{filename}.png'
 
     @staticmethod
     def get_parser(program):
@@ -210,6 +77,10 @@ class Test(unittest.TestCase):
         context = ParseContext()
         parser = ArtParser(context, lexer, Test.grammar, statistics, diagnostics)
         return parser
+
+    @staticmethod
+    def get_dot_filepath(filename):
+        return rf'd:\tmp\art\{filename}.png'
 
     def test_type_1_success(self):
         program = """
@@ -329,3 +200,21 @@ class Test(unittest.TestCase):
         ParseTreeDomainHelper.generate_graphviz(ast,
                                                 Test.get_dot_filepath(
                                                     f'{inspect.currentframe().f_code.co_name}_{filename}.ast'))
+
+    # def test_type_8_success(self):
+    #     program = """
+    #     T[]  [,,][,]
+    #     """
+    #     parser = Test.get_parser(program)
+    #     parser.lexical_analyzer.next_lexeme()
+    #     tree = parser.parse_type().tree
+    #     filename = ArtGrammar.normalize_symbol_name(tree.symbol.grammar_symbol.name)
+    #     ParseTreeDomainHelper.generate_graphviz(tree,
+    #                                             Test.get_dot_filepath(
+    #                                                 f'{inspect.currentframe().f_code.co_name}_{filename}'))
+    #     assert parser.diagnostics.status
+    #     ast = ArtAst.type_cst_to_ast(tree, parser.grammar)
+    #     ParseTreeDomainHelper.generate_graphviz(ast,
+    #                                             Test.get_dot_filepath(
+    #                                                 f'{inspect.currentframe().f_code.co_name}_{filename}.ast'))
+    #     assert parser.diagnostics.status

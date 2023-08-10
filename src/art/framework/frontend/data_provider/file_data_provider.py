@@ -15,7 +15,7 @@ class FileDataProvider(DataProvider):
         """
         """
         super().__init__()
-        self.source = source
+        self.source = os.path.abspath(source)
 
     def load(self, to_codepoints=True):
         """

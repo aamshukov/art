@@ -1110,3 +1110,205 @@ sys.setrecursionlimit(10**6)
                                                          TokenKind.CORRUPTED_DEDENT])
 
 
+
+
+
+
+
+
+    def parse_type(self):
+        """
+        TYPE : integral_type array_type_rank_specifier_opt
+             | type_name array_type_rank_specifier_opt
+            #| type_parameter array_type_rank_specifier_opt
+             ;
+        """  # noqa
+        self.inc_recursion_level()
+        type_tree = ArtAst.make_non_terminal_tree(ArtParseTreeKind.TYPE, self.grammar)
+        self.consume_noise(type_tree)
+        if self.integral_type():
+            self.consume_terminal(type_tree, ArtParseTreeKind.INTEGRAL_TYPE)
+        else:
+            if self.lexer.token.kind == TokenKind.IDENTIFIER:
+                la_token = self.lexer.lookahead_lexeme(skip=[TokenKind.WS,
+                                                             TokenKind.EOL,
+                                                             TokenKind.INDENT,
+                                                             TokenKind.DEDENT,
+                                                             TokenKind.CORRUPTED_DEDENT])
+                if la_token.kind == TokenKind.LESS_THAN_SIGN or la_token.kind == TokenKind.DOT:
+                    type_name = self.parse_type_name()
+                    type_tree.add_kid(type_name.tree)
+                else:
+                    type_parameter = self.parse_type_parameter()
+                    type_tree.add_kid(type_parameter.tree)
+            else:
+                erroneous = self.syntax_error(type_tree,
+                                              Status.INVALID_TOKEN,
+                                              f'Expected IDENTIFIER and . or <, found '
+                                              f'{self.lexer.token.kind.name}')
+        array_type_rank_specifier_opt = self.parse_array_type_rank_specifier_opt()
+        if array_type_rank_specifier_opt.status != ParseResult.Status.OPTIONAL:
+            type_tree.add_kid(array_type_rank_specifier_opt.tree)
+        self.dec_recursion_level()
+        return ParseResult(ParseResult.Status.OK, type_tree)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    def parse_primary_expression(self):
+        """
+        primary_expression : literal
+                           | identifier type_argument_seq_opt
+                           | member_access
+                           | array_element_access
+                           | invocation_expression
+                           | post_increment_expression
+                           | post_decrement_expression
+                           | object_creation_expression
+                           | parenthesized_expression
+                           ;
+        """
+        self.inc_recursion_level()
+        primary_expression = ArtAst.make_non_terminal_tree(ArtParseTreeKind.PRIMARY_EXPRESSION, self.grammar)
+        punctuator = False  #??
+        invocation = False
+        array_access = False
+        state = ArtParseTreeKind.PRIMARY_EXPRESSION
+        while True:
+            self.consume_noise(primary_expression)
+            if self.lexer.token.kind == TokenKind.IDENTIFIER:
+                self.accept(primary_expression, TokenKind.IDENTIFIER, ArtParseTreeKind.IDENTIFIER)
+                type_argument_seq_opt = self.parse_type_argument_seq_opt()
+                if type_argument_seq_opt.status != ParseResult.Status.OPTIONAL:
+                    primary_expression.add_kid(type_argument_seq_opt.tree)
+                invocation = True
+                array_access = True
+                state = ArtParseTreeKind.MEMBER_ACCESS
+            elif self.integral_type():
+                self.consume_terminal(primary_expression, ArtParseTreeKind.INTEGRAL_TYPE)
+                invocation = True
+                array_access = True
+                state = ArtParseTreeKind.MEMBER_ACCESS
+            elif self.literal():
+                self.parse_literal(primary_expression)
+                invocation = True
+                array_access = False
+                state = ArtParseTreeKind.LITERAL
+            elif self.lexer.token.kind == TokenKind.DOT:
+                self.consume_terminal(primary_expression)
+                invocation = False
+                array_access = False
+                state = ArtParseTreeKind.MEMBER_ACCESS
+            elif self.lexer.token.kind == TokenKind.LEFT_PARENTHESIS:
+                self.accept(primary_expression, TokenKind.LEFT_PARENTHESIS)
+                if invocation:  # invocation_expression
+                    arguments_opt = self.parse_arguments_opt()
+                    if arguments_opt.status != ParseResult.Status.OPTIONAL:
+                        primary_expression.add_kid(arguments_opt.tree)
+                    state = ArtParseTreeKind.INVOCATION_EXPRESSION
+                else:  # parenthesized_expression
+                    expression = self.parse_expression()
+                    primary_expression.add_kid(expression.tree)
+                    state = ArtParseTreeKind.PARENTHESIZED_EXPRESSION
+                self.consume_noise(primary_expression)
+                self.accept(primary_expression, TokenKind.RIGHT_PARENTHESIS)
+                invocation = False
+                array_access = True
+            elif self.lexer.token.kind == TokenKind.LEFT_SQUARE_BRACKET:
+                self.consume_terminal(primary_expression)
+                if array_access:  # array_element_access
+                    arguments = self.parse_arguments()
+                    primary_expression.add_kid(arguments.tree)
+                    state = ArtParseTreeKind.ARRAY_ELEMENT_ACCESS
+                else:  # array_creation_expression
+                    array_type_specifier_opt = self.parse_array_type_specifier_opt()
+                    if array_type_specifier_opt.status != ParseResult.Status.OPTIONAL:
+                        primary_expression.add_kid(array_type_specifier_opt.tree)
+                    # array_initializer
+                    state = ArtParseTreeKind.ARRAY_CREATION_EXPRESSION
+                self.consume_noise(primary_expression)
+                self.accept(primary_expression, TokenKind.RIGHT_SQUARE_BRACKET)
+                invocation = True
+                array_access = True
+            elif self.lexer.token.kind == TokenKind.LEFT_CURLY_BRACKET:
+                self.consume_terminal(primary_expression)
+                if saw_array_type_specifier:
+                    array_initializer_opt = self.parse_array_initializer_opt()
+                    if array_initializer_opt.status != ParseResult.Status.OPTIONAL:
+                        primary_expression.add_kid(array_initializer_opt.tree)
+                else:
+                    arguments_opt = self.parse_arguments_opt()
+                    if arguments_opt.status != ParseResult.Status.OPTIONAL:
+                        primary_expression.add_kid(arguments_opt.tree)
+                self.consume_noise(primary_expression)
+                self.accept(primary_expression, TokenKind.RIGHT_CURLY_BRACKET)
+                invocation = True
+                array_access = False
+                state = ArtParseTreeKind.OBJECT_CREATION_EXPRESSION
+            elif self.lexer.token.kind == TokenKind.INCREMENT:
+                self.consume_terminal(primary_expression)
+                invocation = False
+                array_access = False
+                state = ArtParseTreeKind.POST_INCREMENT_EXPRESSION
+            elif self.lexer.token.kind == TokenKind.DECREMENT:
+                self.consume_terminal(primary_expression)
+                invocation = False
+                array_access = False
+                state = ArtParseTreeKind.POST_DECREMENT_EXPRESSION
+            else:
+                break
+        self.current_expression = ArtParseTreeKind.PRIMARY_EXPRESSION
+        self.dec_recursion_level()
+        return ParseResult(ParseResult.Status.OK, primary_expression)
+
+
+
+
+    def parse_member_access(self):
+        """
+        member_access : integral_type '.' identifier type_argument_seq_opt
+                      | primary_expression '.' identifier type_argument_seq_opt
+                      ;
+        """
+        self.inc_recursion_level()
+        member_access = ArtAst.make_non_terminal_tree(ArtParseTreeKind.MEMBER_ACCESS, self.grammar)
+        self.consume_noise(member_access)
+        if self.integral_type():
+            self.consume_terminal(member_access, ArtParseTreeKind.INTEGRAL_TYPE)
+        else:
+            primary_expression = self.parse_primary_expression()
+            member_access.add_kid(primary_expression)
+        self.consume_noise(member_access)
+        if self.lexer.token.kind == TokenKind.DOT:
+            self.consume_terminal(member_access)
+            self.consume_noise(member_access)
+            self.accept(primary_expression, TokenKind.IDENTIFIER, ArtParseTreeKind.IDENTIFIER)
+            type_argument_seq_opt = self.parse_type_argument_seq_opt()
+            if type_argument_seq_opt.status != ParseResult.Status.OPTIONAL:
+                primary_expression.add_kid(type_argument_seq_opt.tree)
+        self.dec_recursion_level()
+        return ParseResult(ParseResult.Status.OK, member_access)
+
+
+
+
+
+    def load_file(self, filepath):
+        """
+        """
+        with open(os.path.abspath(filepath), 'r') as stream:
+            content = stream.read()
+            return self.load(content)
+
+

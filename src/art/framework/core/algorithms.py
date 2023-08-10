@@ -42,7 +42,7 @@ class Algorithms(Base):
             """
             # populate the first row of luts
             p = math.floor(math.log2(n))  # P, row decimal_digit_number, the largest 2^P which fits in N
-            sparse_table = [[float('-inf')] * n for _ in range(p + 1)]  # sparce table, P+1 rows and N columns
+            sparse_table = [[float('-inf')] * n for _ in range(p + 1)]  # sparse table, P+1 rows and N columns
             indices_table = [[0] * n for _ in range(p + 1)]  # indices table, P+1 rows and N columns
             for k in range(0, n):
                 sparse_table[0][k] = array[k]

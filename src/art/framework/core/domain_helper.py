@@ -82,12 +82,6 @@ class DomainHelper(Base):
         return abs(real1 - real2) <= Platform.epsilon()
 
     @staticmethod
-    def increase_recursion_limit():
-        """
-        """
-        sys.setrecursionlimit(8192)
-
-    @staticmethod
     def dict_to_string(dictionary, flatten=True):
         """
         """

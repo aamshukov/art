@@ -66,7 +66,8 @@ class ArtCstToAstVisitor(ParseTreeVisitor):
                 papa = self.make_tree(pair.tree, pair.papa)
                 assert papa, 'Unable to build TYPE Ast from Cst.'
                 for kid in reversed(pair.tree.kids):
-                    if self.accepted_non_terminal(kid.kind) or self.accepted_terminal(kid.kind):
+                    if (self.accepted_non_terminal(kid.kind) or
+                            (kid.symbol.grammar_symbol.terminal and self.accepted_terminal(kid.symbol.token.kind))):
                         stack.append(ArtCstToAstVisitor.TvpPair(kid, 1, papa))
             elif pair.value == 2:
                 pair.value += 1
