@@ -2119,3 +2119,41 @@ argument_value                      : non_assignment_expression lazy_opt        
 
 array_slicing                       : primary_expression '[' array_slicing_argument_opt array_slicing_separator array_slicing_argument_opt array_slicing_step_opt ']'
                                     ;
+
+
+
+
+
+
+
+
+
+
+ FIRST: [{boolean}, {real}, {double}, {number}, {decimal}, {string_literal}, {+}, {~}, {real_number_literal}, {bool}, {--}, {++}, {(}, {integer_number_literal}, {-}, {boolean_literal}, {integer}, {float}, {!}, {string}, {identifier}, {int}]
+ LA:    [{boolean}, {real}, {double}, {number}, {decimal}, {string_literal}, {+}, {~}, {real_number_literal}, 
+        {bool}, {--}, {++}, {(}, {integer_number_literal}, {-}, {boolean_literal}, {integer}, {float}, {!}, {string}, {identifier}, {int}]
+
+
+
+
+
+    TokenKind.INTEGER_KW,
+    TokenKind.REAL_KW,
+    TokenKind.BOOLEAN_KW,
+    TokenKind.TRUE_KW,
+    TokenKind.FALSE_KW,
+    TokenKind.STRING_KW,
+    TokenKind.IDENTIFIER,
+    TokenKind.INTEGER,
+    TokenKind.REAL,
+    TokenKind.BOOLEAN,
+    TokenKind.STRING,
+    TokenKind.PLUS_SIGN,
+    TokenKind.HYPHEN_MINUS,
+    TokenKind.BITWISE_NOT,
+    TokenKind.NEG_KW,
+    TokenKind.LEFT_PARENTHESIS,
+    TokenKind.EXCLAMATION_MARK,
+    TokenKind.NOT_KW,
+    TokenKind.INCREMENT,
+    TokenKind.DECREMENT

@@ -119,7 +119,7 @@ array_slicing_step_opt              : array_slicing_step
                                     | ε
                                     ;
 
-array_slicing_step                  : ':' array_slice_specifier
+array_slicing_step                  : ':' array_slice_specifier_opt
                                     ;
 #-
 
@@ -206,6 +206,7 @@ unary_expression                    : primary_expression
                                     | '+' unary_expression
                                     | '-' unary_expression
                                     | '!' unary_expression
+                                    | 'not' unary_expression
                                     | '~' unary_expression
                                     | pre_increment_expression                                                          # ++i
                                     | pre_decrement_expression                                                          # --i
@@ -213,18 +214,25 @@ unary_expression                    : primary_expression
 
 multiplicative_expression           : unary_expression
                                     | multiplicative_expression '*' unary_expression
+                                    | multiplicative_expression 'mul' unary_expression
                                     | multiplicative_expression '/' unary_expression
+                                    | multiplicative_expression 'div' unary_expression
                                     | multiplicative_expression '%' unary_expression
+                                    | multiplicative_expression 'mod' unary_expression
                                     ;
 
 additive_expression                 : multiplicative_expression
                                     | additive_expression '+' multiplicative_expression
+                                    | additive_expression 'add' multiplicative_expression
                                     | additive_expression '-' multiplicative_expression
+                                    | additive_expression 'sub' multiplicative_expression
                                     ;
 
 shift_expression                    : additive_expression
                                     | shift_expression '<<' additive_expression
+                                    | shift_expression 'shl' additive_expression
                                     | shift_expression '>>' additive_expression                                         # > >
+                                    | shift_expression 'shr' additive_expression
                                     ;
 
 relational_expression               : shift_expression
@@ -288,7 +296,7 @@ member_access                       : integral_type '.' identifier type_argument
 invocation_expression               : primary_expression '(' arguments_opt ')'
                                     ;
 
-array_element_access                : primary_expression '[' arguments ']'                                              # except array creation
+array_element_access                : primary_expression '[' argument_values ']'                                        # except array creation
                                     ;
 
 array_slicing_expression            : primary_expression array_slicing_specifier
@@ -346,6 +354,14 @@ argument_name_opt                   : argument_name
 argument_name                       : identifier ':'
                                     ;
 
+argument_values                     : argument_value
+                                    | argument_values ',' argument_value
+                                    ;
+
+argument_value_opt                  : argument_value
+                                    | ε
+                                    ;
+
 argument_value                      : non_assignment_expression
                                     ;
 
@@ -377,9 +393,11 @@ literal                             : 'integer_number_literal'
 terminal                            : 'terminal'                                                                        # wrapper for terminals
                                     ;
 
+array_elements                      : ε
+                                    ;
+
 INDENT                              : 'indent'
                                     ;
 
 DEDENT                              : 'dedent'
                                     ;
-

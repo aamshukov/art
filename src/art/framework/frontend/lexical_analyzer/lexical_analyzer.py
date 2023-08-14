@@ -33,6 +33,7 @@ class LexicalAnalyzer(Entity):
         self.token = TokenFactory.unknown_token()  # current lexeme
         self.tokens = deque()  # queue of lookahead (cached) lexemes
         self.prev_token = deepcopy(self.token)  # previous lexeme
+        self.snapshots = deque()  # stack of backtracking snapshots
         self.statistics = statistics
         self.diagnostics = diagnostics
 
@@ -98,25 +99,21 @@ class LexicalAnalyzer(Entity):
             if i < len(self.tokens):
                 token = self.tokens[i]
             else:
-                saved_token = deepcopy(self.token)
-                saved_prev_token = deepcopy(self.prev_token)
+                self.snapshot()
                 token = self.tokenizer.next_lexeme()
                 self.tokens.append(token)
                 while token.kind in skip:
                     token = self.tokenizer.next_lexeme()
                     self.tokens.append(token)
-                self.token = saved_token
-                self.prev_token = saved_prev_token
+                self.rewind()
         else:
             if self.tokens:
                 token = self.tokens[0]
             else:
-                saved_token = deepcopy(self.token)
-                saved_prev_token = deepcopy(self.prev_token)
+                self.snapshot()
                 token = self.tokenizer.next_lexeme()
                 self.tokens.append(token)
-                self.token = saved_token
-                self.prev_token = saved_prev_token
+                self.rewind()
         return token
 
     def lookahead_lexemes(self, k=1):
@@ -129,37 +126,43 @@ class LexicalAnalyzer(Entity):
         while i < n:
             tokens.append(self.tokens[i])
             i += 1
-        saved_token = deepcopy(self.token)
-        saved_prev_token = deepcopy(self.prev_token)
+        self.snapshot()
         while i < k:
             token = self.tokenizer.next_lexeme()
             tokens.append(token)
             self.tokens.append(token)
             i += 1
-        self.token = saved_token
-        self.prev_token = saved_prev_token
+        self.rewind()
         return tokens
 
-    def take_snapshot(self):
+    def snapshot(self, offset=0):
         """
-        Snapshot the current content position for backtracking.
+        Snapshot the current state for backtracking.
         Usually called by parsers.
         """
-        self.tokenizer.take_snapshot()
+        state = (deepcopy(self.token),
+                 deepcopy(self.tokens),
+                 deepcopy(self.prev_token))
+        self.snapshots.append(state)
+        self.tokenizer.snapshot(offset)
 
-    def rewind_to_snapshot(self):
+    def rewind(self):
         """
-        Restore the last saved content position for backtracking.
+        Restore the last saved state for backtracking.
         Usually called by parsers.
         """
-        self.token.reset()
-        self.tokens.clear()
-        self.prev_token.reset()
-        self.tokenizer.rewind_to_snapshot()
+        if self.snapshots:
+            state = self.snapshots.pop()
+            self.token = deepcopy(state[0])
+            self.tokens = deepcopy(state[1])
+            self.prev_token = deepcopy(state[2])
+        self.tokenizer.rewind()
 
-    def discard_snapshot(self):
+    def discard(self):
         """
-        Discard the last saved content position for backtracking.
-        Usually called by lexical analyzers.
+        Discard the last saved state for backtracking.
+        Usually called by parsers.
         """
-        self.tokenizer.discard_snapshot()
+        if self.snapshots:
+            self.snapshots.pop()
+        self.tokenizer.discard()

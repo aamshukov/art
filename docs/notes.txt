@@ -1312,3 +1312,34 @@ sys.setrecursionlimit(10**6)
             return self.load(content)
 
 
+
+
+
+
+
+
+
+            la = self.grammar.lookup_symbol(grammar_symbol_name).la
+            # s = ','.join([f'[TokenKind.{la_set[0].token.name}]' for la_set in la if la_set])
+            return ArtParser.MatchLaResult(la_token.kind in [la_set[0].token for la_set in la if la_set],
+                                           la_token,
+                                           la_token.kind == TokenKind.EOS)
+
+
+
+
+
+
+
+    def rewind(self):
+        """
+        Restore the last saved state for backtracking.
+        Usually called by lexical analyzers.
+        """
+        if self.snapshots:
+            self.token.reset()
+            self.content_position = self.snapshots.pop()
+            self.lexeme_position = self.content_position
+            self.codepoint = Text.eos_codepoint()
+            self.advance()
+

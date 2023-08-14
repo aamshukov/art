@@ -480,7 +480,10 @@ class Test(unittest.TestCase):
     def test_reals_success(self):
         tokens = [TokenKind.REAL,
                   TokenKind.EOS]
-        numbers = ['0.', '0.0', '0.1', '00.1', '1.00',
+        numbers = [
+                   '0.',
+                   '0.0',
+                   '0.1', '00.1', '1.00',
                    '0.e+2', '3234E-3', '6e+5', '43.', '3.14159359', '3.1415E2', '3.1415e2',
                    '3_5.1__41_5E2', '03.1_41_5e2',
                    '3.141__26_3_9', '3.1415E+2', '3.1415e+2', '3_6.1__41_5E+2', '0.31_41_5e+2',
@@ -504,6 +507,19 @@ class Test(unittest.TestCase):
         for number in numbers:
             literals, _, _ = Test.evaluate(number, tokens, validate=False)
             pass
+
+    def test_invalid_real_range_success(self):
+        tokens = [TokenKind.INTEGER, TokenKind.RANGE, TokenKind.INTEGER, TokenKind.EOS]
+        literals, _, _ = Test.evaluate('3..2', tokens, validate=True)
+        tokens = [TokenKind.INTEGER, TokenKind.ELLIPSES, TokenKind.INTEGER, TokenKind.EOS]
+        literals, _, _ = Test.evaluate('3...2', tokens, validate=True)
+        tokens = [TokenKind.INTEGER, TokenKind.ELLIPSES, TokenKind.DOT, TokenKind.INTEGER, TokenKind.EOS]
+        literals, _, _ = Test.evaluate('3....2', tokens, validate=True)
+        tokens = [TokenKind.INTEGER, TokenKind.ELLIPSES, TokenKind.RANGE, TokenKind.INTEGER, TokenKind.EOS]
+        literals, _, _ = Test.evaluate('3.....2', tokens, validate=True)
+        tokens = [TokenKind.INTEGER, TokenKind.WS, TokenKind.RANGE, TokenKind.WS, TokenKind.INTEGER, TokenKind.EOS]
+        literals, _, _ = Test.evaluate('3 .. 2', tokens, validate=True)
+        pass
 
     def test_operators_success(self):
         lexer = Test.get_lexer('<')

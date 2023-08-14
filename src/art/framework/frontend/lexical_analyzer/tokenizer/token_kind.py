@@ -30,9 +30,9 @@ class TokenKind(IntEnum):
     CORRUPTED_DEDENT = auto()           # corrupted sequence of indents/dedents
 
     # literals
-    INTEGER = auto()                    # integer number 123
-    REAL = auto()                       # real number 3.14159
-    BOOLEAN = auto()                    # true false
+    INTEGER = auto()                    # integer literal number 123
+    REAL = auto()                       # real literal number 3.14159
+    BOOLEAN = auto()                    # true false, boolean literal
     STRING = auto()                     # string literal "str" 'str'
 
     # keywords

@@ -34,11 +34,11 @@ class Test(unittest.TestCase):
     def setUp(cls):
         Platform.increase_recursion_limit()
         if not cls.grammar:
-            k = 1
             logger = Logger(path=r'd:\tmp\art', mode='w')
             dp = FileDataProvider(r'../../docs/art-grammar.txt')
             grammar = ArtGrammar(logger=logger)
             grammar.load(dp)
+            k = 1
             GrammarAlgorithms.build_first_set(grammar, k)
             GrammarAlgorithms.build_follow_set(grammar, k)
             GrammarAlgorithms.build_la_set(grammar, k)
@@ -53,8 +53,6 @@ class Test(unittest.TestCase):
     def dump_rules_la(grammar, logger, k=1):
         logger.info('Rules LA')
         for rule in grammar.rules:
-            if 'PRIMARY_EXPRESSION' in rule.name:
-                pass
             la = GrammarAlgorithms.build_la_set_rule(grammar, rule, k)
             la_str = f'{rule.name}: {GrammarSymbol.sets_to_string(la)}'
             logger.info(la_str)

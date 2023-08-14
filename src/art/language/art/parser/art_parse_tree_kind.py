@@ -51,8 +51,8 @@ class ArtParseTreeKind(IntEnum):
     ARRAY_MODIFIERS_OPT = auto()
     ARRAY_MODIFIERS = auto()
     ARRAY_SLICING_SPECIFIER = auto()
-    ARRAY_SLICING_ARGUMENT_OPT = auto()
-    ARRAY_SLICING_ARGUMENT = auto()
+    ARRAY_SLICE_SPECIFIER_OPT = auto()
+    ARRAY_SLICE_SPECIFIER = auto()
     ARRAY_SLICING_STEP_OPT = auto()
     ARRAY_SLICING_STEP = auto()
     INTEGRAL_TYPE = auto()
@@ -92,6 +92,7 @@ class ArtParseTreeKind(IntEnum):
     ARGUMENT = auto()
     ARGUMENT_NAME_OPT = auto()
     ARGUMENT_NAME = auto()
+    ARGUMENT_VALUE_OPT = auto()
     ARGUMENT_VALUE = auto()
 
     # infrastructure

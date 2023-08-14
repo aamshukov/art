@@ -154,7 +154,33 @@ class Test(unittest.TestCase):
             assert parser.diagnostics.status
 
     def test_pm_expression_array_slicing_success(self):
-        programs = ['a[ : ]', 'a[ 1:]', 'a[: 5]', 'a[::1]', 'a[1::3]', 'a[:10:1]', 'a[1::3]']
+        # programs = ['a[ : ]', 'a[ 1:]', 'a[: 5]', 'a[::1]', 'a[1::3]', 'a[:10:1]', 'a[1::3]']
+        programs = [
+                    'a[:]',
+                    'a[: ]',
+                    'a[ :]',
+                    'a[ : ]',
+                    'a[1:]',
+                    'a[ 1 : ]',
+                    'a[:1]',
+                    'a[ : 1 ]',
+                    'a[1:1]',
+                    'a[ 1 : 1 ]'
+                    'a[1::]',
+                    'a[ 1 : : ]',
+                    'a[:1:]',
+                    'a[ : 1 : ]',
+                    'a[::1]',
+                    'a[ : : 1 ]',
+                    'a[1:1:]',
+                    'a[ 1 : 1 : ]',
+                    'a[1::1]',
+                    'a[ 1 : : 1 ]',
+                    'a[:1:1]',
+                    'a[ : 1 : 1 ]',
+                    'a[1:1:1]',
+                    'a[ 1 : 1 : 1 ]'
+                ]
         for k, program in enumerate(programs):
             parser = Test.get_parser(program)
             parser.lexical_analyzer.next_lexeme()
@@ -164,8 +190,11 @@ class Test(unittest.TestCase):
             assert parser.diagnostics.status
 
     def test_pm_expression_object_creation_array_success(self):
-        programs = ['int [ 1..5, -1..8,0..4 ] { {3, 4 }, {}, { 1}  }',
-                    'real [column jagged sparse unchecked dynamic: 1..5, -1..8,0..4 ] { {3.14, 4.01 }, {0.0}, { }  }']
+        programs =\
+            [
+                'int.len [ 1..5, -1..8,0..4 ] { {3, 4 }, {}, { 1}  }',
+                'real.len [column jagged sparse unchecked dynamic: 1..5, -1..8,0..4 ] { {3.14, 4.01 }, {0.0} }'
+            ]
         for k, program in enumerate(programs):
             parser = Test.get_parser(program)
             parser.lexical_analyzer.next_lexeme()

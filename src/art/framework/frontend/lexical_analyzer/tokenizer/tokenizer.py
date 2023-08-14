@@ -35,10 +35,10 @@ class Tokenizer(Entity):
         self.start_content = 0  # beginning of content
         self.end_content = self.start_content + self.content.count  # end of content, sentinel
         self.content_position = self.start_content - 1  # current position in content
-        self.lexeme_position = self.start_content  # beginning position of lexeme in content
+        self.codepoint = Text.eos_codepoint()
+        self.lexeme_position = self.content_position  # beginning position of lexeme in content
         self.token = TokenFactory.unknown_token()  # current lexeme
         self.snapshots = deque()  # stack of backtracking snapshots - positions
-        self.codepoint = Text.eos_codepoint()
         self.escaped = False  # True if codepoint has been derived from escape sequence
         self.statistics = statistics
         self.diagnostics = diagnostics
@@ -82,8 +82,8 @@ class Tokenizer(Entity):
                 result = 0
                 valid = False
                 self.diagnostics.add(Status(f'Invalid unicode escape sequence length at '
-                                             f'{self.content.get_location(content_position)}',
-                                             'tokenizer',
+                                            f'{self.content.get_location(content_position)}',
+                                            'tokenizer',
                                             Status.INVALID_UNICODE_ESCAPE))
                 break
             codepoint = self.content.data[content_position]
@@ -92,8 +92,8 @@ class Tokenizer(Entity):
                 content_position += 1
             else:
                 self.diagnostics.add(Status(f'Invalid unicode escape sequence (digits) at '
-                                             f'{self.content.get_location(content_position)}',
-                                             'tokenizer',
+                                            f'{self.content.get_location(content_position)}',
+                                            'tokenizer',
                                             Status.INVALID_UNICODE_ESCAPE))
                 result = 0
                 valid = False
@@ -139,21 +139,21 @@ class Tokenizer(Entity):
                             result = Text.make_codepoint(high_surrogate, low_surrogate)
                         else:
                             self.diagnostics.add(Status(f'Invalid unicode escape sequence, invalid low surrogate '
-                                                         f'at {self.content.get_location(content_position)}',
-                                                         'tokenizer',
+                                                        f'at {self.content.get_location(content_position)}',
+                                                        'tokenizer',
                                                         Status.INVALID_UNICODE_ESCAPE))
                     else:
                         self.diagnostics.add(Status(f'Invalid unicode escape sequence, missing low surrogate '
-                                                     f'at {self.content.get_location(content_position)}',
-                                                     'tokenizer',
+                                                    f'at {self.content.get_location(content_position)}',
+                                                    'tokenizer',
                                                     Status.INVALID_UNICODE_ESCAPE))
                 else:
                     if Text.ascii(codepoint) or not Text.low_surrogate(codepoint):
                         result = codepoint
                     else:
                         self.diagnostics.add(Status(f'Invalid unicode escape sequence, invalid high surrogate '
-                                                     f'at {self.content.get_location(content_position)}',
-                                                     'tokenizer',
+                                                    f'at {self.content.get_location(content_position)}',
+                                                    'tokenizer',
                                                     Status.INVALID_UNICODE_ESCAPE))
             else:  # mode == U
                 result = codepoint
@@ -191,8 +191,8 @@ class Tokenizer(Entity):
                 # NOT IMPLEMENTED
                 codepoint = Text.ERRONEOUS_CODEPOINT
                 self.diagnostics.add(Status(f'Escape \\N(name) is not implemented, at '
-                                             f'{self.content.get_location(self.content_position)}',
-                                             'tokenizer',
+                                            f'{self.content.get_location(self.content_position)}',
+                                            'tokenizer',
                                             Status.INVALID_LITERAL))
             case 'x':
                 # \xh
@@ -200,8 +200,8 @@ class Tokenizer(Entity):
                 # NOT IMPLEMENTED
                 codepoint = Text.ERRONEOUS_CODEPOINT
                 self.diagnostics.add(Status(f'Escape \\xhh is not implemented, at '
-                                             f'{self.content.get_location(self.content_position)}',
-                                             'tokenizer',
+                                            f'{self.content.get_location(self.content_position)}',
+                                            'tokenizer',
                                             Status.INVALID_LITERAL))
             case (0x00000030 |  # 0
                   0x00000031 |  # 1
@@ -305,27 +305,25 @@ class Tokenizer(Entity):
         """
         raise NotImplemented(self.next_lexeme_impl.__qualname__)
 
-    def take_snapshot(self):
+    @abstractmethod
+    def snapshot(self, offset=0):
         """
-        Snapshot the current content position for backtracking.
+        Snapshot the current state for backtracking.
         Usually called by lexical analyzers.
         """
-        self.snapshots.append(self.content_position)
+        raise NotImplemented(self.snapshot.__qualname__)
 
-    def rewind_to_snapshot(self):
+    @abstractmethod
+    def rewind(self):
         """
-        Restore the last saved content position for backtracking.
+        Restore the last saved state for backtracking.
         Usually called by lexical analyzers.
         """
-        if self.snapshots:
-            self.token.reset()
-            self.content_position = self.snapshots.pop()
-            self.lexeme_position = self.content_position
-            self.advance()
+        raise NotImplemented(self.rewind.__qualname__)
 
-    def discard_snapshot(self):
+    def discard(self):
         """
-        Discard the last saved content position for backtracking.
+        Discard the last saved state for backtracking.
         Usually called by lexical analyzers.
         """
         if self.snapshots:

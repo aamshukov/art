@@ -29,10 +29,11 @@ class Status(Base):
     INVALID_REAL_LITERAL    = 130 | ERROR_MASK      # noqa
     STATUS_DEPRECATED       = 131 | WARNING_MASK    # noqa
     INVALID_UNICODE_ESCAPE  = 132 | ERROR_MASK      # noqa
-    INVALID_CHARACTER       = 133 | ERROR_MASK      # noqa
-    INVALID_STRING_LITERAL  = 134 | ERROR_MASK      # noqa
-    INVALID_TOKEN           = 135 | ERROR_MASK      # noqa
-    INVALID_CLOSING_PAREN   = 136 | ERROR_MASK      # noqa
+    INVALID_ESCAPE          = 133 | ERROR_MASK      # noqa
+    INVALID_CHARACTER       = 134 | ERROR_MASK      # noqa
+    INVALID_STRING_LITERAL  = 135 | ERROR_MASK      # noqa
+    INVALID_TOKEN           = 136 | ERROR_MASK      # noqa
+    INVALID_CLOSING_PAREN   = 137 | ERROR_MASK      # noqa
 
     def __init__(self,
                  text,  # description

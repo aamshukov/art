@@ -3,6 +3,8 @@
 #
 """ Art tokenizer """
 from collections import deque
+from copy import deepcopy
+
 from art.framework.core.flags import Flags
 from art.framework.core.status import Status
 from art.framework.core.text import Text
@@ -265,6 +267,11 @@ class ArtTokenizer(Tokenizer):
                 continue
             elif ArtTokenizer.exponent_start(self.codepoint):
                 parse_exponent_result = self.parse_exponent(value)
+            elif Text.dot(self.codepoint):  # collect all dots, that might be range(s)
+                while Text.dot(self.codepoint):
+                    value.append(self.codepoint)
+                    self.advance()
+                break
             break
         return not separators and parse_exponent_result
 
@@ -331,8 +338,18 @@ class ArtTokenizer(Tokenizer):
             valid = False  # separator(s) and others cannot end number also should not be empty
         if valid:
             try:
+                trailing_dots = 0
+                for codepoint in reversed(value):
+                    if Text.dot(codepoint):
+                        trailing_dots += 1
+                    else:
+                        break
+                if trailing_dots > 1:  # only irregular reals, 0. is ok
+                    value = value[:-trailing_dots]
+                    self.content_position -= trailing_dots
+                    self.codepoint = self.content.data[self.content_position]
                 value = ''.join(map(str, map(chr, value)))
-                if real:
+                if real and trailing_dots < 2:  # 0.0 or 0.
                     self.token.value = float(value)   # first to parse
                     self.token.kind = TokenKind.REAL  # then tag
                 else:
@@ -606,11 +623,11 @@ class ArtTokenizer(Tokenizer):
                 self.token.kind = TokenKind.BITWISE_NOT
         elif Text.colon(codepoint):  # ':' '::'
             codepoint = self.advance()
-            if Text.colon(codepoint):
-                self.token.kind = TokenKind.COLONS
-                self.advance()
-            else:
-                self.token.kind = TokenKind.COLON
+            # if Text.colon(codepoint):
+            #     self.token.kind = TokenKind.COLONS
+            #     self.advance()
+            # else:
+            self.token.kind = TokenKind.COLON
         elif Text.semicolon(codepoint):  # ';'
             self.token.kind = TokenKind.SEMICOLON
             self.advance()
@@ -630,7 +647,7 @@ class ArtTokenizer(Tokenizer):
             self.diagnostics.add(Status(f'Loose "\\" character at '
                                         f'{self.content.get_location(self.content_position)}',
                                         f'tokenizer:{self.id}',
-                                        Status.INVALID_CHARACTER))
+                                        Status.INVALID_ESCAPE))
             self.advance()
         elif Text.apostrophe(codepoint):  # '''
             self.scan_string(codepoint)
@@ -642,7 +659,7 @@ class ArtTokenizer(Tokenizer):
             self.diagnostics.add(Status(f'Invalid character at '
                                         f'{self.content.get_location(self.content_position)}',
                                         f'tokenizer:{self.id}',
-                                        Status.INVALID_UNICODE_ESCAPE))
+                                        Status.INVALID_CHARACTER))
             self.advance()
 
     def epilog(self):
@@ -651,6 +668,42 @@ class ArtTokenizer(Tokenizer):
         super().epilog()
         if self.token.kind == TokenKind.IDENTIFIER:  # check if it is keyword
             self.token.kind = self.lookup_keyword(self.token.literal)
+
+    def snapshot(self, offset=0):
+        """
+        Snapshot the current state for backtracking.
+        Usually called by lexical analyzers.
+        """
+        state = (self.content_position + offset - 1,
+                 self.codepoint,
+                 self.lexeme_position,
+                 deepcopy(self.token),
+                 self.escaped,
+                 self.nesting_level,
+                 deepcopy(self.parens),
+                 self.beginning_of_line,
+                 self.pending_indents,
+                 deepcopy(self.indents))
+        self.snapshots.append(state)
+
+    def rewind(self):
+        """
+        Restore the last saved state for backtracking.
+        Usually called by lexical analyzers.
+        """
+        if self.snapshots:
+            state = self.snapshots.pop()
+            self.content_position = state[0]
+            self.codepoint = state[1]
+            self.lexeme_position = state[2]
+            self.token = deepcopy(state[3])
+            self.escaped = state[4]
+            self.nesting_level = state[5]
+            self.parens = deepcopy(state[6])
+            self.beginning_of_line = state[7]
+            self.pending_indents = state[8]
+            self.indents = deepcopy(state[9])
+            self.advance()
 
     def validate(self):
         """

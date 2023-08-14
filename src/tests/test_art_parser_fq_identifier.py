@@ -38,18 +38,18 @@ class Test(unittest.TestCase):
     def setUp(cls):
         Platform.increase_recursion_limit()
         if not cls.grammar:
-            k = 1
             logger = Logger(path=r'd:\tmp\art', mode='w')
             dp = FileDataProvider(r'../../docs/art-grammar.txt')
             grammar = ArtGrammar(logger=logger)
             grammar.load(dp)
-            GrammarAlgorithms.build_first_set(grammar, k)
-            GrammarAlgorithms.build_follow_set(grammar, k)
-            GrammarAlgorithms.build_la_set(grammar, k)
-            decorated_grammar = grammar.decorate()
-            logger.info(decorated_grammar)
-            decorated_pool = grammar.decorate_pool()
-            logger.info(decorated_pool)
+            # k = 1
+            # GrammarAlgorithms.build_first_set(grammar, k)
+            # GrammarAlgorithms.build_follow_set(grammar, k)
+            # GrammarAlgorithms.build_la_set(grammar, k)
+            # decorated_grammar = grammar.decorate()
+            # logger.info(decorated_grammar)
+            # decorated_pool = grammar.decorate_pool()
+            # logger.info(decorated_pool)
             cls.grammar = grammar
 
     @staticmethod

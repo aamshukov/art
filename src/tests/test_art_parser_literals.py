@@ -49,8 +49,9 @@ class Test(unittest.TestCase):
     @staticmethod
     def get_parser(schema, program):
         logger = Logger()
+        dp = StringDataProvider(schema)
         grammar = ArtGrammar(logger=logger)
-        grammar.load(schema)
+        grammar.load(dp)
         GrammarAlgorithms.build_first_set(grammar, 1)
         GrammarAlgorithms.build_follow_set(grammar, 1)
         GrammarAlgorithms.build_la_set(grammar, 1)

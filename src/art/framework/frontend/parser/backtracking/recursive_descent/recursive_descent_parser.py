@@ -43,3 +43,24 @@ class RecursiveDescentParser(Parser):
         """
         """
         raise NotImplemented(self.parse.__qualname__)
+
+    @staticmethod
+    def build_recovery_synch_set(recovery_tokens,
+                                 firsts,
+                                 follows):
+        """
+        A -> α β
+        SYNCH(A):
+            1. a ∈ FOLLOW(A) => a ∈ SYNCH(A)
+            2. place keywords that start statements in SYNCH(A)
+            3. add symbols in FIRST(A) to SYNCH(A)
+            https://matklad.github.io/2023/05/21/resilient-ll-parsing-tutorial.html
+            ... also recursively include ancestor's FOLLOW sets into the recovery set
+        """
+        result = recovery_tokens
+        for first in firsts:
+            result += [item.name for sublist in first for item in sublist]
+        for follow in follows:
+            result += [item.name for sublist in follow for item in sublist]
+        result = list(set(result))
+        return sorted(result)

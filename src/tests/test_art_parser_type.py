@@ -39,11 +39,11 @@ class Test(unittest.TestCase):
     def setUp(cls):
         Platform.increase_recursion_limit()
         if not cls.grammar:
-            k = 1
             logger = Logger(path=r'd:\tmp\art', mode='w')
             dp = FileDataProvider(r'../../docs/art-grammar.txt')
             grammar = ArtGrammar(logger=logger)
             grammar.load(dp)
+            # k = 1
             # GrammarAlgorithms.build_first_set(grammar, k)
             # GrammarAlgorithms.build_follow_set(grammar, k)
             # GrammarAlgorithms.build_la_set(grammar, k)
