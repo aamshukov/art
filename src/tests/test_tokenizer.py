@@ -24,10 +24,10 @@ class Test(unittest.TestCase):
             self.token = Token(TokenKind.IDENTIFIER)
 
         def snapshot(self, offset=0):
-            pass
+            return super().snapshot(offset)
 
-        def rewind(self):
-            pass
+        def rewind(self, state=None):
+            super().rewind(state)
 
         def validate(self):
             raise NotImplemented(self.validate.__qualname__)

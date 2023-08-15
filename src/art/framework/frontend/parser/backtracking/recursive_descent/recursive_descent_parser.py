@@ -24,11 +24,14 @@ class RecursiveDescentParser(Parser):
                          statistics,
                          diagnostics)
         self.recursion_level = 0
+        self.max_recursion_level = 0
 
     def inc_recursion_level(self):
         """
         """
         self.recursion_level += 1
+        if self.recursion_level > self.max_recursion_level:
+            self.max_recursion_level = self.recursion_level
         return self.recursion_level
 
     def dec_recursion_level(self):

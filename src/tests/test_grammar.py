@@ -7,7 +7,6 @@ import unittest
 from art.framework.core.domain_helper import profile
 from art.framework.core.logger import Logger
 from art.framework.frontend.data_provider.string_data_provider import StringDataProvider
-from art.framework.frontend.grammar.grammar import Grammar
 from art.framework.frontend.grammar.grammar_algorithms import GrammarAlgorithms
 from art.language.art.grammar.art_grammar import ArtGrammar
 

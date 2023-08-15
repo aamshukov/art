@@ -12,6 +12,7 @@ from art.framework.frontend.lexical_analyzer.tokenizer.token_kind import TokenKi
 from art.framework.frontend.parser.parse_result import ParseResult
 from art.language.art.ast.art_ast import ArtAst
 from art.language.art.parser.art_parse_tree_kind import ArtParseTreeKind
+from art.framework.core.domain_helper import profile
 
 
 class ArtParser(RecursiveDescentParser):
@@ -91,11 +92,13 @@ class ArtParser(RecursiveDescentParser):
                                | ε
                                ;
         """  # noqa
+
         self.inc_recursion_level()
-        type_parameter_seq_opt = ArtAst.make_non_terminal_tree(ArtParseTreeKind.TYPE_PARAMETER_SEQ_OPT, self.grammar)
-        self.consume_noise(type_parameter_seq_opt)
         result = ParseResult(ParseResult.Status.OPTIONAL)
-        if self.lexer.token.kind == TokenKind.LESS_THAN_SIGN:
+        match_result = self.match(TokenKind.LESS_THAN_SIGN)
+        if match_result.matched and not match_result.eos:
+            type_parameter_seq_opt = ArtAst.make_non_terminal_tree(ArtParseTreeKind.TYPE_PARAMETER_SEQ_OPT,
+                                                                   self.grammar)
             type_parameter_seq = self.type_parameter_seq()
             type_parameter_seq_opt.add_kid(type_parameter_seq.tree)
             result = ParseResult(ParseResult.Status.OK, type_parameter_seq_opt)
@@ -157,10 +160,10 @@ class ArtParser(RecursiveDescentParser):
                               ;
         """  # noqa
         self.inc_recursion_level()
-        type_argument_seq_opt = ArtAst.make_non_terminal_tree(ArtParseTreeKind.TYPE_ARGUMENT_SEQ_OPT, self.grammar)
-        self.consume_noise(type_argument_seq_opt)
         result = ParseResult(ParseResult.Status.OPTIONAL)
-        if self.lexer.token.kind == TokenKind.LESS_THAN_SIGN:
+        match_result = self.match(TokenKind.LESS_THAN_SIGN)
+        if match_result.matched and not match_result.eos:
+            type_argument_seq_opt = ArtAst.make_non_terminal_tree(ArtParseTreeKind.TYPE_ARGUMENT_SEQ_OPT, self.grammar)
             type_argument_seq = self.parse_type_argument_seq()
             type_argument_seq_opt.add_kid(type_argument_seq.tree)
             result = ParseResult(ParseResult.Status.OK, type_argument_seq_opt)
@@ -295,11 +298,11 @@ class ArtParser(RecursiveDescentParser):
                                  ;
         """  # noqa
         self.inc_recursion_level()
-        array_type_specifier_opt = ArtAst.make_non_terminal_tree(ArtParseTreeKind.ARRAY_TYPE_SPECIFIER_OPT,
-                                                                 self.grammar)
-        self.consume_noise(array_type_specifier_opt)
         result = ParseResult(ParseResult.Status.OPTIONAL)
-        if self.lexer.token.kind == TokenKind.LEFT_SQUARE_BRACKET:
+        match_result = self.match(TokenKind.LEFT_SQUARE_BRACKET)
+        if match_result.matched and not match_result.eos:
+            array_type_specifier_opt = ArtAst.make_non_terminal_tree(ArtParseTreeKind.ARRAY_TYPE_SPECIFIER_OPT,
+                                                                     self.grammar)
             array_type_specifier = self.parse_array_type_specifier()
             array_type_specifier_opt.add_kid(array_type_specifier.tree)
             result = ParseResult(ParseResult.Status.OK, array_type_specifier_opt)
@@ -313,15 +316,12 @@ class ArtParser(RecursiveDescentParser):
         """  # noqa
         self.inc_recursion_level()
         array_type_specifier = ArtAst.make_non_terminal_tree(ArtParseTreeKind.ARRAY_TYPE_SPECIFIER, self.grammar)
-        self.consume_noise(array_type_specifier)
-        self.accept(array_type_specifier, TokenKind.LEFT_SQUARE_BRACKET)
         array_modifiers_opt = self.parse_array_modifiers_opt()
         if array_modifiers_opt.status != ParseResult.Status.OPTIONAL:
             array_type_specifier.add_kid(array_modifiers_opt.tree)
         array_dimensions = self.parse_array_dimensions()
         array_type_specifier.add_kid(array_dimensions.tree)
         self.consume_noise(array_type_specifier)
-        self.accept(array_type_specifier, TokenKind.RIGHT_SQUARE_BRACKET)
         self.dec_recursion_level()
         return ParseResult(ParseResult.Status.OK, array_type_specifier)
 
@@ -359,7 +359,6 @@ class ArtParser(RecursiveDescentParser):
         self.consume_noise(array_dimension)
         if self.lexer.token.kind == TokenKind.RANGE:
             self.consume_terminal(array_dimension)
-            self.consume_noise(array_dimension)
             array_bound = self.parse_array_upper_bound()
             array_dimension.add_kid(array_bound.tree)
         self.dec_recursion_level()
@@ -412,10 +411,10 @@ class ArtParser(RecursiveDescentParser):
                             ;
         """
         self.inc_recursion_level()
-        array_modifiers_opt = ArtAst.make_non_terminal_tree(ArtParseTreeKind.ARRAY_MODIFIERS_OPT, self.grammar)
-        self.consume_noise(array_modifiers_opt)
         result = ParseResult(ParseResult.Status.OPTIONAL)
-        if self.array_modifier():
+        match_result = self.match(*ArtParser.array_modifiers())
+        if match_result.matched and not match_result.eos:
+            array_modifiers_opt = ArtAst.make_non_terminal_tree(ArtParseTreeKind.ARRAY_MODIFIERS_OPT, self.grammar)
             array_modifiers = self.parse_array_modifiers()
             array_modifiers_opt.add_kid(array_modifiers.tree)
             self.consume_noise(array_modifiers_opt)
@@ -433,8 +432,8 @@ class ArtParser(RecursiveDescentParser):
         self.inc_recursion_level()
         array_modifiers = ArtAst.make_non_terminal_tree(ArtParseTreeKind.ARRAY_MODIFIERS, self.grammar)
         self.consume_noise(array_modifiers)
-        while ArtParser.array_modifiers():
-            self.accept_multiple(array_modifiers, ArtParser.array_modifiers())
+        while self.array_modifier():
+            self.consume_terminal(array_modifiers)
             self.consume_noise(array_modifiers)
         self.dec_recursion_level()
         return ParseResult(ParseResult.Status.OK, array_modifiers)
@@ -461,8 +460,15 @@ class ArtParser(RecursiveDescentParser):
                 return False
 
     @staticmethod
-    def array_modifiers(self):
+    def array_modifiers():
         """
+        array_modifier : 'column'
+                       | 'row'
+                       | 'jagged'
+                       | 'sparse'
+                       | 'unchecked'
+                       | 'dynamic'
+                       ;
         """
         return [TokenKind.COLUMN_KW,
                 TokenKind.ROW_KW,
@@ -728,19 +734,9 @@ class ArtParser(RecursiveDescentParser):
                 # primary_expression '(' arguments_opt ')'
                 # '(' expression ')'
                 self.accept(primary_expression, TokenKind.LEFT_PARENTHESIS)
-                if (primary_expression.kids and
-                        primary_expression.kids[-1].symbol and
-                        primary_expression.kids[-1].symbol.token.kind != TokenKind.DOT and
-                        primary_expression.kids[-1].symbol.token.kind != TokenKind.INCREMENT and
-                        primary_expression.kids[-1].symbol.token.kind != TokenKind.DECREMENT and
-                        primary_expression.kids[-1].symbol.token.kind != TokenKind.RIGHT_CURLY_BRACKET and
-                        primary_expression.kids[-1].kind != ArtParseTreeKind.LITERAL):
-                    arguments_opt = self.parse_arguments_opt()
-                    if arguments_opt.status != ParseResult.Status.OPTIONAL:
-                        primary_expression.add_kid(arguments_opt.tree)
-                else:
-                    expression = self.parse_expression()
-                    primary_expression.add_kid(expression.tree)
+                arguments_opt = self.parse_arguments_opt()
+                if arguments_opt.status != ParseResult.Status.OPTIONAL:
+                    primary_expression.add_kid(arguments_opt.tree)
                 self.consume_noise(primary_expression)
                 self.accept(primary_expression, TokenKind.RIGHT_PARENTHESIS)
             elif self.lexer.token.kind == TokenKind.LEFT_SQUARE_BRACKET:
@@ -776,6 +772,7 @@ class ArtParser(RecursiveDescentParser):
         self.dec_recursion_level()
         return ParseResult(ParseResult.Status.OK, primary_expression)
 
+    # @profile('Parson build first set...')
     def parse_array_elements(self):
         """
         '[' argument_values ']'
@@ -787,36 +784,42 @@ class ArtParser(RecursiveDescentParser):
         self.lexer.snapshot()
         self.consume_noise(array_elements)
         self.accept(array_elements, TokenKind.LEFT_SQUARE_BRACKET)
-        argument_values = list()
-        argument_value_opt = self.parse_argument_value_opt()
-        if argument_value_opt.status != ParseResult.Status.OPTIONAL:
-            argument_values.append(argument_value_opt)
-        while True:
-            self.consume_noise(array_elements)
-            if self.lexer.token.kind == TokenKind.COMMA:
-                comma = self.consume_terminal(array_elements, link=False)
-                argument_values.append(comma)
-                argument_value = self.parse_argument_value()
-                argument_values.append(argument_value)
-            elif self.lexer.token.kind == TokenKind.RANGE:
-                self.lexer.rewind()
-                self.lexer.next_lexeme()
-                array_type_specifier = self.parse_array_type_specifier()
-                array_elements.add_kid(array_type_specifier.tree)
-                break
-            elif self.lexer.token.kind == TokenKind.COLON:
-                self.lexer.rewind()
-                self.lexer.next_lexeme()
-                array_slicing_specifier = self.parse_array_slicing_specifier()
-                array_elements.add_kid(array_slicing_specifier.tree)
-                break
-            else:
-                self.lexer.discard()
-                arguments_tree = ArtAst.make_non_terminal_tree(ArtParseTreeKind.ARGUMENTS, self.grammar)
-                for argument_value in argument_values:
-                    arguments_tree.add_kid(argument_value.tree)
-                array_elements.add_kid(arguments_tree)
-                break
+        match_result = self.match(*ArtParser.array_modifiers())
+        if match_result.matched and not match_result.eos:
+            array_type_specifier = self.parse_array_type_specifier()
+            array_elements.add_kid(array_type_specifier.tree)
+            self.lexer.discard()
+        else:
+            argument_values = list()
+            argument_value_opt = self.parse_argument_value_opt()
+            if argument_value_opt.status != ParseResult.Status.OPTIONAL:
+                argument_values.append(argument_value_opt)
+            while True:
+                self.consume_noise(array_elements)
+                if self.lexer.token.kind == TokenKind.COMMA:
+                    comma = self.consume_terminal(array_elements, link=False)
+                    argument_values.append(comma)
+                    argument_value = self.parse_argument_value()
+                    argument_values.append(argument_value)
+                elif self.lexer.token.kind == TokenKind.RANGE:
+                    self.lexer.rewind()
+                    self.lexer.next_lexeme()
+                    array_type_specifier = self.parse_array_type_specifier()
+                    array_elements.add_kid(array_type_specifier.tree)
+                    break
+                elif self.lexer.token.kind == TokenKind.COLON:
+                    self.lexer.rewind()
+                    self.lexer.next_lexeme()
+                    array_slicing_specifier = self.parse_array_slicing_specifier()
+                    array_elements.add_kid(array_slicing_specifier.tree)
+                    break
+                else:
+                    self.lexer.discard()
+                    arguments_tree = ArtAst.make_non_terminal_tree(ArtParseTreeKind.ARGUMENTS, self.grammar)
+                    for argument_value in argument_values:
+                        arguments_tree.add_kid(argument_value.tree)
+                    array_elements.add_kid(arguments_tree)
+                    break
         self.consume_noise(array_elements)
         self.accept(array_elements, TokenKind.RIGHT_SQUARE_BRACKET)
         self.dec_recursion_level()
@@ -927,11 +930,10 @@ class ArtParser(RecursiveDescentParser):
                       ;
         """  # noqa
         self.inc_recursion_level()
-        arguments_opt = ArtAst.make_non_terminal_tree(ArtParseTreeKind.ARGUMENTS_OPT, self.grammar)
-        self.consume_noise(arguments_opt)
         result = ParseResult(ParseResult.Status.OPTIONAL)
-        if (self.lexer.token.kind != TokenKind.RIGHT_PARENTHESIS and
-                self.lexer.token.kind != TokenKind.RIGHT_CURLY_BRACKET):
+        match_result = self.match(TokenKind.RIGHT_PARENTHESIS, TokenKind.RIGHT_CURLY_BRACKET)
+        if not match_result.matched and not match_result.eos:
+            arguments_opt = ArtAst.make_non_terminal_tree(ArtParseTreeKind.ARGUMENTS_OPT, self.grammar)
             arguments = self.parse_arguments()
             arguments_opt.add_kid(arguments.tree)
             result = ParseResult(ParseResult.Status.OK, arguments_opt)
@@ -983,10 +985,10 @@ class ArtParser(RecursiveDescentParser):
                           ;
         """
         self.inc_recursion_level()
-        argument_name_opt = ArtAst.make_non_terminal_tree(ArtParseTreeKind.ARGUMENT_NAME_OPT, self.grammar)
-        self.consume_noise(argument_name_opt)
         result = ParseResult(ParseResult.Status.OPTIONAL)
-        if self.lexer.token.kind == TokenKind.IDENTIFIER:
+        match_result = self.match(TokenKind.IDENTIFIER)
+        if match_result.matched and not match_result.eos:
+            argument_name_opt = ArtAst.make_non_terminal_tree(ArtParseTreeKind.ARGUMENT_NAME_OPT, self.grammar)
             la_token = self.lookahead_lexeme()
             if la_token.kind == TokenKind.COLON:
                 argument_name = self.parse_argument_name()

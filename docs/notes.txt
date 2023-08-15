@@ -1343,3 +1343,48 @@ sys.setrecursionlimit(10**6)
             self.codepoint = Text.eos_codepoint()
             self.advance()
 
+
+
+
+
+
+
+
+
+
+
+    def snapshot(self, offset=0, persist=True):
+        """
+        Snapshot the current state for backtracking.
+        Usually called by parsers.
+        """
+        state = self.tokenizer.snapshot(offset, persist=persist)
+        state = (state,
+                 deepcopy(self.token),
+                 deepcopy(self.prev_token))
+        if persist:
+            self.snapshots.append(state)
+        return state
+
+    def rewind(self):
+        """
+        Restore the last saved state for backtracking.
+        Usually called by parsers.
+        """
+        if self.snapshots:
+            state = self.snapshots.pop()
+            self.tokenizer.rewind()
+            self.token = deepcopy(state[1])
+            self.prev_token = deepcopy(state[2])
+
+    def discard(self):
+        """
+        Discard the last saved state for backtracking.
+        Usually called by parsers.
+        """
+        if self.snapshots:
+            self.tokenizer.discard()
+            self.snapshots.pop()
+
+
+

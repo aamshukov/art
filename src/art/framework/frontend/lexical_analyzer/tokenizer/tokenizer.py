@@ -38,6 +38,7 @@ class Tokenizer(Entity):
         self.codepoint = Text.eos_codepoint()
         self.lexeme_position = self.content_position  # beginning position of lexeme in content
         self.token = TokenFactory.unknown_token()  # current lexeme
+        self.prev_token = self.token
         self.snapshots = deque()  # stack of backtracking snapshots - positions
         self.escaped = False  # True if codepoint has been derived from escape sequence
         self.statistics = statistics
@@ -284,6 +285,7 @@ class Tokenizer(Entity):
     def prolog(self):
         """
         """
+        self.prev_token = deepcopy(self.token)
         self.token.reset()
         self.lexeme_position = self.content_position
 
@@ -306,7 +308,7 @@ class Tokenizer(Entity):
         raise NotImplemented(self.next_lexeme_impl.__qualname__)
 
     @abstractmethod
-    def snapshot(self, offset=0):
+    def snapshot(self, offset=0, persist=False):
         """
         Snapshot the current state for backtracking.
         Usually called by lexical analyzers.
@@ -314,7 +316,7 @@ class Tokenizer(Entity):
         raise NotImplemented(self.snapshot.__qualname__)
 
     @abstractmethod
-    def rewind(self):
+    def rewind(self, state=None):
         """
         Restore the last saved state for backtracking.
         Usually called by lexical analyzers.

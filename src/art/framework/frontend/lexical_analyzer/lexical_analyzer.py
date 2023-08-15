@@ -2,8 +2,8 @@
 # UI Lab Inc. Arthur Amshukov
 #
 """ Lexical Analyzer """
-from copy import deepcopy
 from collections import deque
+from copy import deepcopy
 from art.framework.core.entity import Entity
 from art.framework.core.flags import Flags
 from art.framework.frontend.lexical_analyzer.tokenizer.token_factory import TokenFactory
@@ -31,9 +31,9 @@ class LexicalAnalyzer(Entity):
                          version)
         self.tokenizer = tokenizer
         self.token = TokenFactory.unknown_token()  # current lexeme
-        self.tokens = deque()  # queue of lookahead (cached) lexemes
         self.prev_token = deepcopy(self.token)  # previous lexeme
-        self.snapshots = deque()  # stack of backtracking snapshots
+        self.tokens = deque()  # queue of lookahead (cached) lexemes
+        self.snapshots = deque()  # stack of backtracking snapshots - positions
         self.statistics = statistics
         self.diagnostics = diagnostics
 
@@ -80,10 +80,13 @@ class LexicalAnalyzer(Entity):
     def next_lexeme(self):
         """
         """
-        self.prev_token = deepcopy(self.token)
         if self.tokens:
-            self.token = self.tokens.popleft()
+            state = self.tokens.popleft()
+            self.tokenizer.rewind(state)
+            self.token = deepcopy(self.tokenizer.token)
+            self.prev_token = deepcopy(self.tokenizer.prev_token)
         else:
+            self.prev_token = deepcopy(self.token)
             self.token = self.tokenizer.next_lexeme()
         self.statistics.update_stats(self.token)
         return self.token
@@ -94,57 +97,59 @@ class LexicalAnalyzer(Entity):
         if skip:
             i = 0
             n = len(self.tokens)
-            while i < n and self.tokens[i].kind in skip:
+            while i < n and self.tokens[i][3].kind in skip:  # [3] - token
                 i += 1
             if i < len(self.tokens):
-                token = self.tokens[i]
+                token = self.tokens[i][3]
             else:
-                self.snapshot()
+                state = self.tokenizer.snapshot(persist=False)
                 token = self.tokenizer.next_lexeme()
-                self.tokens.append(token)
+                self.tokens.append(self.tokenizer.snapshot(persist=False))
                 while token.kind in skip:
                     token = self.tokenizer.next_lexeme()
-                    self.tokens.append(token)
-                self.rewind()
+                    self.tokens.append(self.tokenizer.snapshot(persist=False))
+                self.tokenizer.rewind(state)
         else:
             if self.tokens:
-                token = self.tokens[0]
+                token = self.tokens[0][3]
             else:
-                self.snapshot()
+                state = self.tokenizer.snapshot(persist=False)
                 token = self.tokenizer.next_lexeme()
-                self.tokens.append(token)
-                self.rewind()
+                self.tokens.append(self.tokenizer.snapshot(persist=False))
+                self.tokenizer.rewind(state)
         return token
 
-    def lookahead_lexemes(self, k=1):
+    def lookahead_lexemes(self, n=1, skip=None):
         """
         """
-        assert k > 0, f"Number of look ahead tokens must be greater than zero, {k} specified."
+        assert n > 0, f"Number of look ahead tokens must be greater than zero, {n} specified."
         tokens = list()
-        i = 0
-        n = len(self.tokens)
-        while i < n:
-            tokens.append(self.tokens[i])
-            i += 1
-        self.snapshot()
-        while i < k:
-            token = self.tokenizer.next_lexeme()
-            tokens.append(token)
-            self.tokens.append(token)
-            i += 1
-        self.rewind()
+        # i = 0
+        # m = len(self.tokens)
+        # while i < m:
+        #     tokens.append(self.tokens[i][3])
+        #     i += 1
+        # self.tokenizer.snapshot()
+        # while i < n:
+        #     token = self.tokenizer.next_lexeme()
+        #     tokens.append(token)
+        #     self.tokens.append(self.tokenizer.snapshot(persist=False))
+        #     i += 1
+        # self.tokenizer.rewind()
         return tokens
 
-    def snapshot(self, offset=0):
+    def snapshot(self, offset=0, persist=True):
         """
         Snapshot the current state for backtracking.
         Usually called by parsers.
         """
-        state = (deepcopy(self.token),
-                 deepcopy(self.tokens),
+        state = self.tokenizer.snapshot(offset, persist=persist)
+        state = (state,
+                 deepcopy(self.token),
                  deepcopy(self.prev_token))
-        self.snapshots.append(state)
-        self.tokenizer.snapshot(offset)
+        if persist:
+            self.snapshots.append(state)
+        return state
 
     def rewind(self):
         """
@@ -153,10 +158,9 @@ class LexicalAnalyzer(Entity):
         """
         if self.snapshots:
             state = self.snapshots.pop()
-            self.token = deepcopy(state[0])
-            self.tokens = deepcopy(state[1])
+            self.tokenizer.rewind(state[0])
+            self.token = deepcopy(state[1])
             self.prev_token = deepcopy(state[2])
-        self.tokenizer.rewind()
 
     def discard(self):
         """
@@ -164,5 +168,5 @@ class LexicalAnalyzer(Entity):
         Usually called by parsers.
         """
         if self.snapshots:
+            self.tokenizer.discard()
             self.snapshots.pop()
-        self.tokenizer.discard()

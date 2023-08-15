@@ -3,12 +3,13 @@
 # UI Lab Inc. Arthur Amshukov
 #
 """ Domain helper """
+import cProfile
 import functools
-import os
-import sys
-import struct
+import io
 import json
-import cProfile, pstats, io
+import os
+import pstats
+import struct
 from pstats import SortKey
 from art.framework.core.base import Base
 from art.framework.core.platform import Platform

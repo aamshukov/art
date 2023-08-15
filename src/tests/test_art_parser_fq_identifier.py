@@ -99,7 +99,7 @@ class Test(unittest.TestCase):
                                                 Test.get_dot_filepath(inspect.currentframe().f_code.co_name))
         tree_str = ArtDomainHelper.to_string(fq_identifier.tree)
         print(tree_str)
-        assert tree_str == program.strip(' \n')
+        assert tree_str.strip(' \n') == program.strip(' \n')
         assert parser.diagnostics.status
 
     def test_fully_qualified_identifier_2_success(self):
@@ -115,7 +115,7 @@ class Test(unittest.TestCase):
                                                 Test.get_dot_filepath(inspect.currentframe().f_code.co_name))
         tree_str = ArtDomainHelper.to_string(fq_identifier.tree)
         print(tree_str)
-        assert tree_str == program.strip(' \n')
+        assert tree_str.strip(' \n') == program.strip(' \n')
         assert not parser.diagnostics.status
 
     def test_fully_qualified_identifier_3_success(self):
@@ -131,7 +131,7 @@ class Test(unittest.TestCase):
                                                 Test.get_dot_filepath(inspect.currentframe().f_code.co_name))
         tree_str = ArtDomainHelper.to_string(fq_identifier.tree)
         print(tree_str)
-        assert tree_str == program.strip(' \n')
+        assert tree_str.strip(' \n') == program.strip(' \n')
         assert parser.diagnostics.status
 
     def test_fully_qualified_identifier_4_success(self):
@@ -147,7 +147,7 @@ class Test(unittest.TestCase):
                                                 Test.get_dot_filepath(inspect.currentframe().f_code.co_name))
         tree_str = ArtDomainHelper.to_string(fq_identifier.tree)
         print(tree_str)
-        assert tree_str == program.strip(' \n')
+        assert tree_str.strip(' \n') == program.strip(' \n')
         assert parser.diagnostics.status
 
     def test_fully_qualified_identifier_5_success(self):
@@ -163,10 +163,10 @@ class Test(unittest.TestCase):
                                                 Test.get_dot_filepath(inspect.currentframe().f_code.co_name))
         tree_str = ArtDomainHelper.to_string(fq_identifier.tree)
         print(tree_str)
-        assert tree_str == program.strip(' \n')
+        assert tree_str.strip(' \n') == program.strip(' \n')
         assert parser.diagnostics.status
 
-    def test_fully_qualified_identifier_6_success(self):
+    def test_fully_qualified_identifier_kw_success(self):
         program = """
         parser.lexical_analyzer.while.kind.TokenKind.IDENTIFIER
         """
@@ -195,12 +195,12 @@ class Test(unittest.TestCase):
                                                 Test.get_dot_filepath(inspect.currentframe().f_code.co_name))
         tree_str = ArtDomainHelper.to_string(fq_identifier.tree)
         print(tree_str)
-        assert tree_str == program.strip(' \n')
+        assert tree_str.strip(' \n') == program.strip(' \n')
         assert parser.diagnostics.status
 
     def test_fully_qualified_identifier_8_success(self):
         program = """
-        A<T>.B<U>.C<A<B<X>>>
+        A<T>.B<U, X, Y>.C< A <B<X> >, Z>
         """
         parser = Test.get_parser(program)
         while (not parser.lexical_analyzer.eos() and
@@ -211,5 +211,5 @@ class Test(unittest.TestCase):
                                                 Test.get_dot_filepath(inspect.currentframe().f_code.co_name))
         tree_str = ArtDomainHelper.to_string(fq_identifier.tree)
         print(tree_str)
-        assert tree_str == program.strip(' \n')
+        assert tree_str.strip(' \n') == program.strip(' \n')
         assert parser.diagnostics.status

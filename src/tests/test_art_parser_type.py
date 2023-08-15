@@ -218,3 +218,48 @@ class Test(unittest.TestCase):
     #                                             Test.get_dot_filepath(
     #                                                 f'{inspect.currentframe().f_code.co_name}_{filename}.ast'))
     #     assert parser.diagnostics.status
+
+    def test_type_array_elements_success(self):
+        programs =\
+            [
+                # '[0]',
+                # '[0, 1 ]',
+                '[ 0,1,  2]',
+                # '[ 0,1,  2, 3 ]',
+                # '[:]',
+                # '[: ]',
+                # '[ :]',
+                # '[ : ]',
+                # '[1:]',
+                # '[ 1 : ]',
+                # '[:1]',
+                # '[ : 1 ]',
+                # '[1:1]',
+                # '[ 1 : 1 ]'
+                # '[1::]',
+                # '[ 1 : : ]',
+                # '[:1:]',
+                # '[ : 1 : ]',
+                # '[::1]',
+                # '[ : : 1 ]',
+                # '[1:1:]',
+                # '[ 1 : 1 : ]',
+                # '[1::1]',
+                # '[ 1 : : 1 ]',
+                # '[:1:1]',
+                # '[ : 1 : 1 ]',
+                # '[1:1:1]',
+                # '[ 1 : 1 : 1 ]',
+                # '[column jagged sparse unchecked dynamic: 1..5,1..8,0..4]',
+                # '[ column unchecked dynamic :1,1..8,0..4]',
+                # '[ 1 .. 5,1..8, 0..4 ]',
+                # '[1..5 , 1 .. 8, 0 .. 4  ]',
+                # '[jagged:1, 8,  0..4]'
+            ]
+        for k, program in enumerate(programs):
+            parser = Test.get_parser(program)
+            parser.lexical_analyzer.next_lexeme()
+            pm_expr = parser.parse_array_elements()
+            ParseTreeDomainHelper.\
+                generate_graphviz(pm_expr.tree, Test.get_dot_filepath(f'{inspect.currentframe().f_code.co_name}_{k}'))
+            assert parser.diagnostics.status

@@ -4,7 +4,6 @@
 """ Art tokenizer """
 from collections import deque
 from copy import deepcopy
-
 from art.framework.core.flags import Flags
 from art.framework.core.status import Status
 from art.framework.core.text import Text
@@ -669,7 +668,7 @@ class ArtTokenizer(Tokenizer):
         if self.token.kind == TokenKind.IDENTIFIER:  # check if it is keyword
             self.token.kind = self.lookup_keyword(self.token.literal)
 
-    def snapshot(self, offset=0):
+    def snapshot(self, offset=0, persist=True):
         """
         Snapshot the current state for backtracking.
         Usually called by lexical analyzers.
@@ -678,32 +677,48 @@ class ArtTokenizer(Tokenizer):
                  self.codepoint,
                  self.lexeme_position,
                  deepcopy(self.token),
+                 deepcopy(self.prev_token),
                  self.escaped,
                  self.nesting_level,
                  deepcopy(self.parens),
                  self.beginning_of_line,
                  self.pending_indents,
                  deepcopy(self.indents))
-        self.snapshots.append(state)
+        if persist:
+            self.snapshots.append(state)
+        return state
 
-    def rewind(self):
+    def rewind(self, state=None):
         """
         Restore the last saved state for backtracking.
         Usually called by lexical analyzers.
         """
-        if self.snapshots:
+        if not state and self.snapshots:
             state = self.snapshots.pop()
-            self.content_position = state[0]
-            self.codepoint = state[1]
-            self.lexeme_position = state[2]
-            self.token = deepcopy(state[3])
-            self.escaped = state[4]
-            self.nesting_level = state[5]
-            self.parens = deepcopy(state[6])
-            self.beginning_of_line = state[7]
-            self.pending_indents = state[8]
-            self.indents = deepcopy(state[9])
-            self.advance()
+        assert state, "Invalid internal state, snapshot/rewind mismatch."
+        k = 0
+        self.content_position = state[k]
+        k += 1
+        self.codepoint = state[k]
+        k += 1
+        self.lexeme_position = state[k]
+        k += 1
+        self.token = deepcopy(state[k])
+        k += 1
+        self.prev_token = deepcopy(state[k])
+        k += 1
+        self.escaped = state[k]
+        k += 1
+        self.nesting_level = state[k]
+        k += 1
+        self.parens = deepcopy(state[k])
+        k += 1
+        self.beginning_of_line = state[k]
+        k += 1
+        self.pending_indents = state[k]
+        k += 1
+        self.indents = deepcopy(state[k])
+        self.advance()
 
     def validate(self):
         """

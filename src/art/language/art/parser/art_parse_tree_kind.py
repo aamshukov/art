@@ -48,6 +48,7 @@ class ArtParseTreeKind(IntEnum):
     ARRAY_DIMENSION = auto()
     ARRAY_LOWER_BOUND = auto()
     ARRAY_UPPER_BOUND = auto()
+    ARRAY_BOUND_EXPRESSION = auto()
     ARRAY_MODIFIERS_OPT = auto()
     ARRAY_MODIFIERS = auto()
     ARRAY_SLICING_SPECIFIER = auto()

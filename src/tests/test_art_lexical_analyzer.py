@@ -4,6 +4,7 @@
 #
 import unittest
 from art.framework.core.diagnostics import Diagnostics
+from art.framework.core.text import Text
 from art.framework.frontend.data_provider.string_data_provider import StringDataProvider
 from art.framework.frontend.content.content import Content
 from art.framework.frontend.statistics.statistics import Statistics
@@ -17,6 +18,14 @@ class Test(unittest.TestCase):
         """
         """
         super(Test, self).__init__(*args, **kwargs)
+
+    @staticmethod
+    def assert_token(lx, tk, kind, prev_kind, offset, length, literal, tokens_count):
+        assert tk.kind == kind
+        assert tk.offset == offset
+        assert tk.length == length
+        assert Text.equal(tk.literal, literal)
+        assert lx.prev_token.kind == prev_kind
 
     @staticmethod
     def get_lexer(program):
@@ -725,6 +734,98 @@ class Test(unittest.TestCase):
         for paren in parens:
             literals, _, lexer = Test.evaluate(paren, tokens, validate=True)
             assert len(lexer.diagnostics.errors) == 3
+
+    def test_lexical_analyzer_tokens_success(self):
+        program = 'p = (abc + boofoo)>='
+        lexer = Test.get_lexer(program)
+        token = lexer.next_lexeme()
+        Test.assert_token(lexer, token, TokenKind.IDENTIFIER, TokenKind.UNKNOWN, 0, 1, 'p', 0)
+        token = lexer.next_lexeme()
+        Test.assert_token(lexer, token, TokenKind.WS, TokenKind.IDENTIFIER, 1, 1, ' ', 0)
+        la_token = lexer.lookahead_lexeme()
+        Test.assert_token(lexer, la_token, TokenKind.EQUALS_SIGN, TokenKind.IDENTIFIER, 2, 1, '=', 1)
+        Test.assert_token(lexer, token, TokenKind.WS, TokenKind.IDENTIFIER, 1, 1, ' ', 1)
+        la_token = lexer.lookahead_lexeme()
+        Test.assert_token(lexer, la_token, TokenKind.EQUALS_SIGN, TokenKind.IDENTIFIER, 2, 1, '=', 1)
+        la_token = lexer.lookahead_lexeme()
+        Test.assert_token(lexer, la_token, TokenKind.EQUALS_SIGN, TokenKind.IDENTIFIER, 2, 1, '=', 1)
+        la_tokens = lexer.lookahead_lexemes(2)
+        # Test.assert_token(lexer, la_tokens[0], TokenKind.EQUALS_SIGN, TokenKind.IDENTIFIER, 2, 1, '=', 1)
+        # Test.assert_token(lexer, la_tokens[1], TokenKind.WS, TokenKind.IDENTIFIER, 3, 1, ' ', 2)
+        la_tokens = lexer.lookahead_lexemes(2)
+        # Test.assert_token(lexer, la_tokens[0], TokenKind.EQUALS_SIGN, TokenKind.IDENTIFIER, 2, 1, '=', 1)
+        # Test.assert_token(lexer, la_tokens[1], TokenKind.WS, TokenKind.IDENTIFIER, 3, 1, ' ', 2)
+        token = lexer.next_lexeme()
+        Test.assert_token(lexer, token, TokenKind.EQUALS_SIGN, TokenKind.WS, 2, 1, '=', 1)
+        token = lexer.next_lexeme()
+        Test.assert_token(lexer, token, TokenKind.WS, TokenKind.EQUALS_SIGN, 3, 1, ' ', 2)
+        la_token = lexer.lookahead_lexeme()
+        Test.assert_token(lexer, la_token, TokenKind.LEFT_PARENTHESIS, TokenKind.EQUALS_SIGN, 4, 1, '(', 3)
+        Test.assert_token(lexer, token, TokenKind.WS, TokenKind.EQUALS_SIGN, 3, 1, ' ', 2)
+        token = lexer.next_lexeme()
+        Test.assert_token(lexer, token, TokenKind.LEFT_PARENTHESIS, TokenKind.WS, 4, 1, '(', 3)
+        token = lexer.next_lexeme()
+        Test.assert_token(lexer, token, TokenKind.IDENTIFIER, TokenKind.LEFT_PARENTHESIS, 5, 3, 'abc', 1)
+        token = lexer.next_lexeme()
+        Test.assert_token(lexer, token, TokenKind.WS, TokenKind.IDENTIFIER, 8, 1, ' ', 1)
+        la_tokens = lexer.lookahead_lexemes(1)
+        la_tokens = lexer.lookahead_lexemes(2)
+        la_tokens = lexer.lookahead_lexemes(3)
+        la_tokens = lexer.lookahead_lexemes(4)
+        la_tokens = lexer.lookahead_lexemes(10)
+        # assert len(la_tokens) == 10
+        token = lexer.next_lexeme()
+        Test.assert_token(lexer, token, TokenKind.PLUS_SIGN, TokenKind.WS, 9, 1, '+', 1)
+        la_token = lexer.lookahead_lexeme()
+        la_token = lexer.lookahead_lexeme()
+        token = lexer.next_lexeme()
+        la_token = lexer.lookahead_lexeme()
+        token = lexer.next_lexeme()
+        la_token = lexer.lookahead_lexeme()
+        token = lexer.next_lexeme()
+        token = lexer.next_lexeme()
+        token = lexer.next_lexeme()
+        token = lexer.next_lexeme()
+        la_token = lexer.lookahead_lexeme()
+        token = lexer.next_lexeme()
+        token = lexer.next_lexeme()
+        # after this EOS
+        la_token = lexer.lookahead_lexeme()
+        assert token.kind == TokenKind.EOS
+        la_token = lexer.lookahead_lexeme()
+        assert token.kind == TokenKind.EOS
+        token = lexer.next_lexeme()
+        assert token.kind == TokenKind.EOS
+        token = lexer.next_lexeme()
+        assert token.kind == TokenKind.EOS
+
+    def test_lexical_analyzer_tokens_skip_success(self):
+        program = 'p = (abc + boofoo)>='
+        lexer = Test.get_lexer(program)
+        token = lexer.next_lexeme()
+        Test.assert_token(lexer, token, TokenKind.IDENTIFIER, TokenKind.UNKNOWN, 0, 1, 'p', 0)
+        la_token = lexer.lookahead_lexeme(skip=[TokenKind.WS])
+        Test.assert_token(lexer, la_token, TokenKind.EQUALS_SIGN, TokenKind.UNKNOWN, 2, 1, '=', 0)
+        la_token = lexer.lookahead_lexeme(skip=[TokenKind.WS])
+        token = lexer.next_lexeme()
+        Test.assert_token(lexer, token, TokenKind.WS, TokenKind.IDENTIFIER, 1, 1, ' ', 0)
+        token = lexer.next_lexeme()
+        Test.assert_token(lexer, token, TokenKind.EQUALS_SIGN, TokenKind.WS, 2, 1, '=', 1)
+        la_tokens = lexer.lookahead_lexemes(1)
+        la_tokens = lexer.lookahead_lexemes(2)
+        la_tokens = lexer.lookahead_lexemes(3)
+        la_token = lexer.lookahead_lexeme(skip=[TokenKind.WS])
+        Test.assert_token(lexer, la_token, TokenKind.LEFT_PARENTHESIS, TokenKind.WS, 4, 1, '(', 0)
+        token = lexer.next_lexeme()
+        Test.assert_token(lexer, token, TokenKind.WS, TokenKind.EQUALS_SIGN, 3, 1, ' ', 1)
+        la_token = lexer.lookahead_lexeme()
+        Test.assert_token(lexer, token, TokenKind.WS, TokenKind.EQUALS_SIGN, 3, 1, ' ', 1)
+        token = lexer.next_lexeme()
+        Test.assert_token(lexer, token, TokenKind.LEFT_PARENTHESIS, TokenKind.WS, 4, 1, '(', 1)
+        token = lexer.next_lexeme()
+        Test.assert_token(lexer, token, TokenKind.IDENTIFIER, TokenKind.LEFT_PARENTHESIS, 5, 3, 'abc', 1)
+        token = lexer.next_lexeme()
+        Test.assert_token(lexer, token, TokenKind.WS, TokenKind.IDENTIFIER, 8, 1, ' ', 1)
 
 
 if __name__ == '__main__':

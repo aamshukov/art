@@ -74,6 +74,8 @@ class ArtDomainHelper(Base):
                 elif (tree.kind == ArtParseTreeKind.TERMINAL and
                       (tree.symbol.token.kind == TokenKind.IDENTIFIER or
                        tree.symbol.token.kind == TokenKind.DOT or
+                       tree.symbol.token.kind == TokenKind.COMMA or
+                       tree.symbol.token.kind == TokenKind.WS or
                        tree.symbol.token.kind == TokenKind.LESS_THAN_SIGN or
                        tree.symbol.token.kind == TokenKind.GREATER_THAN_SIGN)):
                     self.data_sink = f'{self.data_sink}{tree.symbol.token.literal}'
