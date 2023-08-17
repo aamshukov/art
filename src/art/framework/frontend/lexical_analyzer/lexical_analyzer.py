@@ -33,7 +33,6 @@ class LexicalAnalyzer(Entity):
         self.token = TokenFactory.unknown_token()  # current lexeme
         self.prev_token = deepcopy(self.token)  # previous lexeme
         self.tokens = deque()  # queue of lookahead (cached) lexemes
-        self.snapshots = deque()  # stack of backtracking snapshots - positions
         self.statistics = statistics
         self.diagnostics = diagnostics
 
@@ -119,54 +118,23 @@ class LexicalAnalyzer(Entity):
                 self.tokenizer.rewind(state)
         return token
 
-    def lookahead_lexemes(self, n=1, skip=None):
+    def lookahead_lexemes(self, k=1):
         """
         """
-        assert n > 0, f"Number of look ahead tokens must be greater than zero, {n} specified."
+        assert k > 0, f"Number of look ahead tokens must be greater than zero, {k} specified."
+        i = 0
         tokens = list()
-        # i = 0
-        # m = len(self.tokens)
-        # while i < m:
-        #     tokens.append(self.tokens[i][3])
-        #     i += 1
-        # self.tokenizer.snapshot()
-        # while i < n:
-        #     token = self.tokenizer.next_lexeme()
-        #     tokens.append(token)
-        #     self.tokens.append(self.tokenizer.snapshot(persist=False))
-        #     i += 1
-        # self.tokenizer.rewind()
+        state = self.tokenizer.snapshot(persist=False)
+        while i < k:
+            token = self.tokenizer.next_lexeme()
+            tokens.append(token)
+            i += 1
+        self.tokenizer.rewind(state)
         return tokens
 
-    def snapshot(self, offset=0, persist=True):
+    def reset(self):
         """
-        Snapshot the current state for backtracking.
-        Usually called by parsers.
         """
-        state = self.tokenizer.snapshot(offset, persist=persist)
-        state = (state,
-                 deepcopy(self.token),
-                 deepcopy(self.prev_token))
-        if persist:
-            self.snapshots.append(state)
-        return state
-
-    def rewind(self):
-        """
-        Restore the last saved state for backtracking.
-        Usually called by parsers.
-        """
-        if self.snapshots:
-            state = self.snapshots.pop()
-            self.tokenizer.rewind(state[0])
-            self.token = deepcopy(state[1])
-            self.prev_token = deepcopy(state[2])
-
-    def discard(self):
-        """
-        Discard the last saved state for backtracking.
-        Usually called by parsers.
-        """
-        if self.snapshots:
-            self.tokenizer.discard()
-            self.snapshots.pop()
+        self.token = TokenFactory.unknown_token()
+        self.prev_token = deepcopy(self.token)
+        self.tokens.clear()

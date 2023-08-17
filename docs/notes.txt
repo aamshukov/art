@@ -1352,6 +1352,7 @@ sys.setrecursionlimit(10**6)
 
 
 
+        self.snapshots = deque()  # stack of backtracking snapshots - positions
 
     def snapshot(self, offset=0, persist=True):
         """

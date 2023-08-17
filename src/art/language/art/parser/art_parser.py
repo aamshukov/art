@@ -781,14 +781,14 @@ class ArtParser(RecursiveDescentParser):
         """
         self.inc_recursion_level()
         array_elements = ArtAst.make_non_terminal_tree(ArtParseTreeKind.ARRAY_ELEMENTS, self.grammar)
-        self.lexer.snapshot()
+        self.lexer.tokenizer.snapshot()
         self.consume_noise(array_elements)
         self.accept(array_elements, TokenKind.LEFT_SQUARE_BRACKET)
         match_result = self.match(*ArtParser.array_modifiers())
         if match_result.matched and not match_result.eos:
             array_type_specifier = self.parse_array_type_specifier()
             array_elements.add_kid(array_type_specifier.tree)
-            self.lexer.discard()
+            self.lexer.tokenizer.discard()
         else:
             argument_values = list()
             argument_value_opt = self.parse_argument_value_opt()
@@ -802,19 +802,19 @@ class ArtParser(RecursiveDescentParser):
                     argument_value = self.parse_argument_value()
                     argument_values.append(argument_value)
                 elif self.lexer.token.kind == TokenKind.RANGE:
-                    self.lexer.rewind()
+                    self.lexer.tokenizer.rewind()
                     self.lexer.next_lexeme()
                     array_type_specifier = self.parse_array_type_specifier()
                     array_elements.add_kid(array_type_specifier.tree)
                     break
                 elif self.lexer.token.kind == TokenKind.COLON:
-                    self.lexer.rewind()
+                    self.lexer.tokenizer.rewind()
                     self.lexer.next_lexeme()
                     array_slicing_specifier = self.parse_array_slicing_specifier()
                     array_elements.add_kid(array_slicing_specifier.tree)
                     break
                 else:
-                    self.lexer.discard()
+                    self.lexer.tokenizer.discard()
                     arguments_tree = ArtAst.make_non_terminal_tree(ArtParseTreeKind.ARGUMENTS, self.grammar)
                     for argument_value in argument_values:
                         arguments_tree.add_kid(argument_value.tree)

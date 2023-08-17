@@ -35,13 +35,14 @@ class ArtGrammar(Grammar):
         statistics = Statistics()
         tokenizer = GrammarTokenizer(0, content, statistics, diagnostics)
         lexer = LexicalAnalyzer(0, tokenizer, statistics, diagnostics)
-        lexer.snapshot()
+        lexer.tokenizer.snapshot()
         while not lexer.eos():  # populate pool
             token = lexer.next_lexeme()
             match token.kind:
                 case TokenKind.IDENTIFIER:
                     self.get_symbol(token.literal)
-        lexer.rewind()
+        lexer.tokenizer.rewind()
+        lexer.reset()
         lhs = None
         rhs = list()
         while not lexer.eos():  # build grammar
