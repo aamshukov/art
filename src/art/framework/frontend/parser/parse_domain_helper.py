@@ -50,6 +50,8 @@ class ParseTreeDomainHelper(Base):
                     return f'{symbol.label}:semicolon'
                 elif symbol.token.kind == TokenKind.GRAVE_ACCENT:
                     return f'{symbol.label}:grave_accent'
+                elif symbol.token.kind == TokenKind.IDENTIFIER:
+                    return f'{symbol.token.literal}'
                 else:
                     return f'{symbol.label}:{symbol.token.literal}'
             else:

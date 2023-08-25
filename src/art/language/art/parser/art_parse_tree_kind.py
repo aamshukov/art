@@ -38,6 +38,9 @@ class ArtParseTreeKind(IntEnum):
     TYPE_ARGUMENT_SEQ = auto()
     TYPE_ARGUMENTS = auto()
     TYPE_ARGUMENT = auto()
+    TYPE_ARGUMENT_UNION = auto()
+    TYPE_ALIAS = auto()
+    TYPE_PREDICATE = auto()
     ARRAY_TYPE_RANK_SPECIFIER_OPT = auto()
     ARRAY_TYPE_RANK_SPECIFIER = auto()
     ARRAY_TYPE_RANKS_OPT = auto()
@@ -93,8 +96,12 @@ class ArtParseTreeKind(IntEnum):
     ARGUMENT = auto()
     ARGUMENT_NAME_OPT = auto()
     ARGUMENT_NAME = auto()
+    ARGUMENT_VALUES = auto()
     ARGUMENT_VALUE_OPT = auto()
     ARGUMENT_VALUE = auto()
+    ARGUMENT_VALUE_UNION = auto()
+    ARGUMENT_MODIFIERS_OPT = auto()
+    ARGUMENT_MODIFIERS = auto()
 
     # infrastructure
     FULLY_QUALIFIED_IDENTIFIER = auto()

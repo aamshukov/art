@@ -106,6 +106,7 @@ class TokenKind(IntEnum):
     PROCEDURE_KW = auto()               # proc
     LAMBDA_KW = auto()                  # lm
     LAZY_KW = auto()
+    OPTIONAL_KW = auto()                # opt optional
     RECURSIVE_KW = auto()
 
     IS_KW = auto()
@@ -212,7 +213,7 @@ class TokenKind(IntEnum):
     BITWISE_OR_ASSIGNMENT = auto()      # |=
     BITWISE_XOR = auto()                # ^
     BITWISE_XOR_ASSIGNMENT = auto()     # ^=
-    BITWISE_NOT = auto()                # ~
+    BITWISE_NOT = auto()                # ~  tilde
     BITWISE_NOT_ASSIGNMENT = auto()     # ~=
 
     # comments
@@ -288,7 +289,12 @@ class TokenKind(IntEnum):
         result['fn'] = TokenKind.FUNCTION_KW
         result['proc'] = TokenKind.PROCEDURE_KW
         result['lm'] = TokenKind.LAMBDA_KW
+        result['lambda'] = TokenKind.LAMBDA_KW
+        result['closure'] = TokenKind.LAMBDA_KW
+        result['lz'] = TokenKind.LAZY_KW
         result['lazy'] = TokenKind.LAZY_KW
+        result['opt'] = TokenKind.OPTIONAL_KW
+        result['optional'] = TokenKind.OPTIONAL_KW
         result['recursive'] = TokenKind.RECURSIVE_KW
         result['is'] = TokenKind.IS_KW
         result['as'] = TokenKind.AS_KW

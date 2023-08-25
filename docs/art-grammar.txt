@@ -7,7 +7,6 @@ TYPE                                : integral_type array_type_rank_specifier_op
 type_name                           : fully_qualified_identifier
                                     ;
 
-
 #+
 type_parameter_seq_opt              : type_parameter_seq                                                                # struct A, record B<T, U, R>, foo: fn<U,R, T>
                                     | ε
@@ -37,7 +36,20 @@ type_arguments                      : type_argument                             
                                     | type_arguments ',' type_argument
                                     ;
 
-type_argument                       : TYPE
+type_argument                       : type_argument_union
+                                    ;
+
+type_argument_union                 : TYPE
+                                    | type_argument_union '|' TYPE
+                                    ;
+#-
+
+
+#+
+type_alias                          : 'type' identifier ':' type_argument_union                                         # type id: integer | string
+                                    ;                                                                                   # type dimension: integer | int
+
+type_predicate                      : type_name 'is' TYPE
                                     ;
 #-
 
@@ -188,18 +200,11 @@ expressions                         : expression
                                     | expressions ',' expression
                                     ;
 
-expression                          : non_assignment_expression
-                                    | assignment_expression
+expression                          : conditional_expression
                                     ;
 
-non_assignment_expression           : conditional_expression
-                                    ;
-
-conditional_expression              : conditional_or_expression
-                                    | conditional_or_expression '?' expression ':' expression
-                                    ;
-
-assignment_expression               : unary_expression assignment_operator expression
+conditional_expression              : logical_or_expression
+                                    | logical_or_expression '?' expression ':' expression
                                     ;
 
 unary_expression                    : primary_expression
@@ -254,37 +259,38 @@ equality_expression                 : relational_expression
                                     | equality_expression 'ne' relational_expression
                                     ;
 
-and_expression                      : equality_expression
-                                    | and_expression '&' equality_expression
+bitwise_and_expression              : equality_expression
+                                    | bitwise_and_expression '&' equality_expression
                                     ;
 
-exclusive_or_expression             : and_expression
-                                    | exclusive_or_expression '^' and_expression
+bitwise_exclusive_or_expression     : bitwise_and_expression                                                            # xor expression
+                                    | bitwise_exclusive_or_expression '^' bitwise_and_expression
                                     ;
 
-inclusive_or_expression             : exclusive_or_expression
-                                    | inclusive_or_expression '|' exclusive_or_expression
+bitwise_inclusive_or_expression     : bitwise_exclusive_or_expression
+                                    | bitwise_inclusive_or_expression '|' bitwise_exclusive_or_expression
                                     ;
 
-conditional_and_expression          : inclusive_or_expression
-                                    | conditional_and_expression '&&' inclusive_or_expression
-                                    | conditional_and_expression 'and' inclusive_or_expression
+logical_and_expression              : bitwise_inclusive_or_expression
+                                    | logical_and_expression '&&' bitwise_inclusive_or_expression
+                                    | logical_and_expression 'and' bitwise_inclusive_or_expression
                                     ;
 
-conditional_or_expression           : conditional_and_expression
-                                    | conditional_or_expression '||' conditional_and_expression
-                                    | conditional_or_expression 'or' conditional_and_expression
+logical_or_expression               : logical_and_expression
+                                    | logical_or_expression '||' logical_and_expression
+                                    | logical_or_expression 'or' logical_and_expression
                                     ;
 
 primary_expression                  : literal                                                                           # 5, 3.14, 'text', true
-                                    | identifier type_argument_seq_opt
+                                    | identifier                                                                        # A<T>
                                     | member_access                                                                     # Foo.name, foo.name
                                     | invocation_expression                                                             # foo(...)
                                     | post_increment_expression                                                         # i++
                                     | post_decrement_expression                                                         # i--
-                                    | array_literal                                                                     # [ [1,5], [2,3], [5,-1] ]
+                                   #| array_literal                                                                     # [ [1,5], [2,3], [5,-1] ]
                                     | array_element_access                                                              # array[0,2]
                                     | array_slicing_expression                                                          # a[start:stop:step]
+                                   #| object_literal                                                                    # { x: 2, y: 3 }
                                     | object_creation_expression
                                     | parenthesized_expression                                                          # '(' expression ')'
                                     ;
@@ -344,7 +350,7 @@ arguments                           : argument
                                     | arguments ',' argument
                                     ;
 
-argument                            : argument_name_opt argument_value lazy_opt                                         # lazy parameters evaluation only in invocation_expression
+argument                            : argument_name_opt argument_value argument_modifiers_opt                           # lazy or optional parameters evaluation only in invocation_expression
                                     ;
 
 argument_name_opt                   : argument_name
@@ -362,27 +368,42 @@ argument_value_opt                  : argument_value
                                     | ε
                                     ;
 
-argument_value                      : non_assignment_expression
+argument_value                      : argument_value_union
                                     ;
 
-lazy_opt                            : 'lazy'                                                                            # lazy parameters evaluation
+argument_value_union                : non_assignment_expression
+                                    | argument_value_union '|' non_assignment_expression
+                                    ;
+
+argument_modifiers_opt              : argument_modifiers
                                     | ε
+                                    ;
+
+argument_modifiers                  : argument_modifier
+                                    | argument_modifiers argument_modifier
+                                    ;
+
+argument_modifier                   : 'lazy'                                                                            # lazy parameters evaluation
+                                    | 'lz'
+                                    | 'opt'                                                                             # optional parameters
+                                    | 'optional'
                                     ;
 #-
 
 
-
-
-fully_qualified_identifier          : identifier type_argument_seq_opt                                                  # A<T>
-                                    | fully_qualified_identifier '.' identifier type_argument_seq_opt                   # A<T>.B<U>.C<A<B<U>>>
+#+
+fully_qualified_identifier          : identifier                                                                        # A<T>
+                                    | fully_qualified_identifier '.' identifier                                         # A<T>.B<U>.C<A<B<U>>>
                                     ;
 
 identifiers                         : identifier
                                     | identifiers ',' identifier
                                     ;
 
-identifier                          : 'identifier'
+identifier                          : 'identifier' type_argument_seq_opt
                                     ;
+#-
+
 
 literal                             : 'integer_number_literal'
                                     | 'real_number_literal'

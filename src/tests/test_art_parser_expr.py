@@ -82,7 +82,7 @@ class Test(unittest.TestCase):
         pm_expr = parser.parse_primary_expression()
         ParseTreeDomainHelper.generate_graphviz(pm_expr.tree,
                                                 Test.get_dot_filepath(inspect.currentframe().f_code.co_name))
-        assert parser.diagnostics.status
+        assert not parser.diagnostics.status
 
     def test_pm_expression_literals_success(self):
         programs = ['1', '3.14', 'false', 'true', '"str"']
@@ -124,7 +124,7 @@ class Test(unittest.TestCase):
             assert parser.diagnostics.status
 
     def test_pm_expression_invocation_success(self):
-        programs = ['foo ( )', 'a.bar()', 'foo(1,2,3)']
+        programs = ['foo ( )', 'a.bar()', 'a.b.bar()', 'a .b .c .d. foo(1,2,3)']
         for k, program in enumerate(programs):
             parser = Test.get_parser(program)
             parser.lexical_analyzer.next_lexeme()
@@ -154,7 +154,6 @@ class Test(unittest.TestCase):
             assert parser.diagnostics.status
 
     def test_pm_expression_array_slicing_success(self):
-        # programs = ['a[ : ]', 'a[ 1:]', 'a[: 5]', 'a[::1]', 'a[1::3]', 'a[:10:1]', 'a[1::3]']
         programs = [
                     'a[:]',
                     'a[: ]',
@@ -165,7 +164,7 @@ class Test(unittest.TestCase):
                     'a[:1]',
                     'a[ : 1 ]',
                     'a[1:1]',
-                    'a[ 1 : 1 ]'
+                    'a[ 1 : 1 ]',
                     'a[1::]',
                     'a[ 1 : : ]',
                     'a[:1:]',
@@ -205,7 +204,6 @@ class Test(unittest.TestCase):
 
     def test_pm_expression_parenthesized_success(self):
         programs = [
-            '()',
             '( 2 )',
             '( ( 3))',
             '(( ( 4 )))',

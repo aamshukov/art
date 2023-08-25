@@ -5,7 +5,7 @@
 """ Parse tree """
 from enum import IntEnum, auto
 from art.framework.core.base import Base
-from art.language.art.parser.art_parse_tree_kind import ArtParseTreeKind
+from art.framework.frontend.lexical_analyzer.tokenizer.token_kind import TokenKind
 
 
 class ParseResult(Base):
@@ -20,10 +20,10 @@ class ParseResult(Base):
         BACKTRACK = auto()  # non-terminal cannot be parsed - backtrack to the next alternative
         OPTIONAL = auto()   # optional non-terminal has been skipped
 
-    def __init__(self, status, tree=None):
+    def __init__(self, status, tree=None, hint=TokenKind.UNKNOWN):
         """
         """
         super().__init__()
         self.tree = tree
         self.status = status
-        self.hint = ArtParseTreeKind.UNKNOWN  # in case of backtracking - suggested alternative, see array related calls
+        self.hint = hint  # in case of backtracking - suggested alternative, see array related calls

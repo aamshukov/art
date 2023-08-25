@@ -138,3 +138,16 @@ class LexicalAnalyzer(Entity):
         self.token = TokenFactory.unknown_token()
         self.prev_token = deepcopy(self.token)
         self.tokens.clear()
+
+    def snapshot(self):
+        """
+        """
+        self.tokenizer.snapshot()
+        self.tokens.clear()
+
+    def rewind(self):
+        """
+        """
+        self.tokenizer.rewind()
+        self.token = deepcopy(self.tokenizer.token)
+        self.prev_token = deepcopy(self.tokenizer.prev_token)

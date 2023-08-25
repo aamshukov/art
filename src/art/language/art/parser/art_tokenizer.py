@@ -673,7 +673,7 @@ class ArtTokenizer(Tokenizer):
         Snapshot the current state for backtracking.
         Usually called by lexical analyzers.
         """
-        state = (self.content_position + offset - 1,
+        state = (self.content_position + offset,
                  self.codepoint,
                  self.lexeme_position,
                  deepcopy(self.token),
@@ -718,7 +718,7 @@ class ArtTokenizer(Tokenizer):
         self.pending_indents = state[k]
         k += 1
         self.indents = deepcopy(state[k])
-        self.advance()
+        # self.advance()
 
     def validate(self):
         """

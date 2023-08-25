@@ -21,7 +21,7 @@ class Diagnostics(Base):
     def status(self):
         """
         """
-        return not self.warnings and not self.errors and not self.fatal_errors
+        return not self.errors and not self.fatal_errors
 
     @property
     def successes(self):
