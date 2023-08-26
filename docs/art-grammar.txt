@@ -95,7 +95,7 @@ array_lower_bound                   : array_bound_expression
 array_upper_bound                   : array_bound_expression
                                     ;
 
-array_bound_expression              : non_assignment_expression                                                         # must evaluate to compilation time constant integer
+array_bound_expression              : expression                                                                        # must evaluate to compilation time constant integer
                                     ;
 
 array_modifiers_opt                 : array_modifiers ':'
@@ -124,7 +124,7 @@ array_slice_specifier_opt           : array_slice_specifier
                                     | ε
                                     ;
 
-array_slice_specifier               : non_assignment_expression                                                         # must evaluate to compilation time constant integer
+array_slice_specifier               : expression                                                                        # must evaluate to compilation time constant integer
                                     ;
 
 array_slicing_step_opt              : array_slicing_step
@@ -371,8 +371,8 @@ argument_value_opt                  : argument_value
 argument_value                      : argument_value_union
                                     ;
 
-argument_value_union                : non_assignment_expression
-                                    | argument_value_union '|' non_assignment_expression
+argument_value_union                : expression
+                                    | argument_value_union '|' expression
                                     ;
 
 argument_modifiers_opt              : argument_modifiers

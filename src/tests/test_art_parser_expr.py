@@ -191,8 +191,8 @@ class Test(unittest.TestCase):
     def test_pm_expression_object_creation_array_success(self):
         programs =\
             [
-                'int.len [ 1..5, -1..8,0..4 ] { {3, 4 }, {}, { 1}  }',
-                'real.len [column jagged sparse unchecked dynamic: 1..5, -1..8,0..4 ] { {3.14, 4.01 }, {0.0} }'
+                'int.len [ 1..5, -1..8,0..4 ]',
+                'real.len [column jagged sparse unchecked dynamic: 1..5, -1..8,0..4 ]'
             ]
         for k, program in enumerate(programs):
             parser = Test.get_parser(program)

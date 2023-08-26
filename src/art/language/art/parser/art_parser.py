@@ -447,14 +447,14 @@ class ArtParser(RecursiveDescentParser):
 
     def parse_array_bound_expression(self):
         """
-        array_bound_expression : non_assignment_expression
+        array_bound_expression : expression
                                ;
         """  # noqa
         self.inc_recursion_level()
         array_bound_expression = ArtAst.make_non_terminal_tree(ArtParseTreeKind.ARRAY_BOUND_EXPRESSION, self.grammar)
         self.consume_noise(array_bound_expression)
-        non_assignment_expression = self.parse_non_assignment_expression()
-        array_bound_expression.add_kid(non_assignment_expression.tree)
+        expression = self.parse_expression()
+        array_bound_expression.add_kid(expression.tree)
         #self.kind = ArtSyntaxKind.ARRAY_BOUND_EXPRESSION
         self.dec_recursion_level()
         return ParseResult(ParseResult.Status.OK, array_bound_expression)
@@ -593,14 +593,14 @@ class ArtParser(RecursiveDescentParser):
 
     def parse_array_slice_specifier(self):
         """
-        array_slice_specifier : non_assignment_expression
+        array_slice_specifier : expression
                               ;
         """  # noqa
         self.inc_recursion_level()
         array_slice_specifier = ArtAst.make_non_terminal_tree(ArtParseTreeKind.ARRAY_SLICE_SPECIFIER, self.grammar)
         self.consume_noise(array_slice_specifier)
-        non_assignment_expression = self.parse_non_assignment_expression()
-        array_slice_specifier.add_kid(non_assignment_expression.tree)
+        expression = self.parse_expression()
+        array_slice_specifier.add_kid(expression.tree)
         self.dec_recursion_level()
         return ParseResult(ParseResult.Status.OK, array_slice_specifier)
 
@@ -677,14 +677,14 @@ class ArtParser(RecursiveDescentParser):
 
     def parse_conditional_expression(self):
         """
-        conditional_expression : conditional_or_expression
-                               | conditional_or_expression '?' expression ':' expression
+        conditional_expression : logical_or_expression
+                               | logical_or_expression '?' expression ':' expression
                                ;
         """  # noqa
         conditional_expression = ArtAst.make_non_terminal_tree(ArtParseTreeKind.CONDITIONAL_EXPRESSION, self.grammar)
         self.consume_noise(conditional_expression)
-        conditional_or_expression = self.parse_conditional_or_expression()
-        conditional_expression.add_kid(conditional_or_expression.tree)
+        logical_or_expression = self.parse_logical_or_expression()
+        conditional_expression.add_kid(logical_or_expression.tree)
         self.consume_noise(conditional_expression)
         while self.lexer.token.kind == TokenKind.QUESTION_MARK:
             self.consume_terminal(conditional_expression)
@@ -712,25 +712,317 @@ class ArtParser(RecursiveDescentParser):
                          ;
         """  # noqa
         unary_expression = ArtAst.make_non_terminal_tree(ArtParseTreeKind.UNARY_EXPRESSION, self.grammar)
-        while True:
-            self.consume_noise(unary_expression)
-            match self.lexer.token.kind:
-                case (TokenKind.PLUS_SIGN |
-                      TokenKind.HYPHEN_MINUS |
-                      TokenKind.EXCLAMATION_MARK |
-                      TokenKind.NOT_KW |
-                      TokenKind.BITWISE_NOT |
-                      TokenKind.INCREMENT |
-                      TokenKind.DECREMENT):
-                    self.consume_terminal(unary_expression)
-                    unary_expression_postfix = self.parse_unary_expression()
-                    unary_expression.add_kid(unary_expression_postfix.tree)
-                case _:
-                    primary_expression = self.parse_primary_expression()
-                    unary_expression.add_kid(primary_expression.tree)
-                    break
+        self.consume_noise(unary_expression)
+        match self.lexer.token.kind:
+            case (TokenKind.PLUS_SIGN |
+                  TokenKind.HYPHEN_MINUS |
+                  TokenKind.EXCLAMATION_MARK |
+                  TokenKind.NOT_KW |
+                  TokenKind.BITWISE_NOT):
+                self.consume_terminal(unary_expression)
+                unary_expression_postfix = self.parse_unary_expression()
+                unary_expression.add_kid(unary_expression_postfix.tree)
+            case TokenKind.INCREMENT:
+                pre_increment_expression = ArtAst.make_non_terminal_tree(ArtParseTreeKind.PRE_INCREMENT_EXPRESSION,
+                                                                         self.grammar)
+                self.consume_terminal(pre_increment_expression)
+                unary_expression_postfix = self.parse_unary_expression()
+                pre_increment_expression.add_kid(unary_expression_postfix.tree)
+                self.consume_terminal(pre_increment_expression)
+                unary_expression.add_kid(pre_increment_expression)
+            case TokenKind.DECREMENT:
+                pre_decrement_expression = ArtAst.make_non_terminal_tree(ArtParseTreeKind.PRE_DECREMENT_EXPRESSION,
+                                                                         self.grammar)
+                self.consume_terminal(pre_decrement_expression)
+                unary_expression_postfix = self.parse_unary_expression()
+                pre_decrement_expression.add_kid(unary_expression_postfix.tree)
+                self.consume_terminal(pre_decrement_expression)
+                unary_expression.add_kid(pre_decrement_expression)
+            case _:
+                primary_expression = self.parse_primary_expression()
+                unary_expression.add_kid(primary_expression.tree)
         self.kind = ArtSyntaxKind.UNARY_EXPRESSION
         return ParseResult(ParseResult.Status.OK, unary_expression)
+
+    def parse_multiplicative_expression(self):
+        """
+        multiplicative_expression : unary_expression
+                                  | multiplicative_expression '*' unary_expression
+                                  | multiplicative_expression 'mul' unary_expression
+                                  | multiplicative_expression '/' unary_expression
+                                  | multiplicative_expression 'div' unary_expression
+                                  | multiplicative_expression '%' unary_expression
+                                  | multiplicative_expression 'mod' unary_expression
+                                  ;
+        """  # noqa
+        multiplicative_expression = ArtAst.make_non_terminal_tree(ArtParseTreeKind.MULTIPLICATIVE_EXPRESSION,
+                                                                  self.grammar)
+        self.consume_noise(multiplicative_expression)
+        unary_expression = self.parse_unary_expression()
+        multiplicative_expression.add_kid(unary_expression.tree)
+        while True:
+            self.consume_noise(multiplicative_expression)
+            match self.lexer.token.kind:
+                case (TokenKind.ASTERISK |
+                      TokenKind.MUL_KW |
+                      TokenKind.FORWARD_SLASH |
+                      TokenKind.DIV_KW |
+                      TokenKind.PERCENT_SIGN |
+                      TokenKind.MOD_KW):
+                    self.consume_terminal(multiplicative_expression)
+                    unary_expression = self.parse_unary_expression()
+                    multiplicative_expression.add_kid(unary_expression.tree)
+                case _:
+                    break
+        self.kind = ArtSyntaxKind.MULTIPLICATIVE_EXPRESSION
+        return ParseResult(ParseResult.Status.OK, multiplicative_expression)
+
+    def parse_additive_expression(self):
+        """
+        additive_expression : multiplicative_expression
+                            | additive_expression '+' multiplicative_expression
+                            | additive_expression 'add' multiplicative_expression
+                            | additive_expression '-' multiplicative_expression
+                            | additive_expression 'sub' multiplicative_expression
+                            ;
+        """  # noqa
+        additive_expression = ArtAst.make_non_terminal_tree(ArtParseTreeKind.ADDITIVE_EXPRESSION, self.grammar)
+        self.consume_noise(additive_expression)
+        multiplicative_expression = self.parse_multiplicative_expression()
+        additive_expression.add_kid(multiplicative_expression.tree)
+        while True:
+            self.consume_noise(additive_expression)
+            match self.lexer.token.kind:
+                case (TokenKind.PLUS_SIGN |
+                      TokenKind.ADD_KW |
+                      TokenKind.HYPHEN_MINUS |
+                      TokenKind.SUB_KW):
+                    self.consume_terminal(additive_expression)
+                    multiplicative_expression = self.parse_multiplicative_expression()
+                    additive_expression.add_kid(multiplicative_expression.tree)
+                case _:
+                    break
+        self.kind = ArtSyntaxKind.ADDITIVE_EXPRESSION
+        return ParseResult(ParseResult.Status.OK, additive_expression)
+
+    def parse_shift_expression(self):
+        """
+        shift_expression : additive_expression
+                         | shift_expression '<<' additive_expression
+                         | shift_expression 'shl' additive_expression
+                         | shift_expression '>>' additive_expression
+                         | shift_expression 'shr' additive_expression
+                         ;
+        """  # noqa
+        shift_expression = ArtAst.make_non_terminal_tree(ArtParseTreeKind.SHIFT_EXPRESSION, self.grammar)
+        self.consume_noise(shift_expression)
+        additive_expression = self.parse_additive_expression()
+        shift_expression.add_kid(additive_expression.tree)
+        while True:
+            self.consume_noise(shift_expression)
+            match self.lexer.token.kind:
+                case (TokenKind.SHIFT_LEFT |
+                      TokenKind.SHL_KW |
+                      TokenKind.HYPHEN_MINUS |
+                      TokenKind.SHR_KW):
+                    self.consume_terminal(shift_expression)
+                    additive_expression = self.parse_additive_expression()
+                    shift_expression.add_kid(additive_expression.tree)
+                case TokenKind.GREATER_THAN_SIGN:  # >>
+                    self.consume_terminal(shift_expression)
+                    if self.lexer.token.kind == TokenKind.GREATER_THAN_SIGN:
+                        self.consume_terminal(shift_expression)
+                        additive_expression = self.parse_additive_expression()
+                        shift_expression.add_kid(additive_expression.tree)
+                case _:
+                    break
+        self.kind = ArtSyntaxKind.SHIFT_EXPRESSION
+        return ParseResult(ParseResult.Status.OK, shift_expression)
+
+    def parse_relational_expression(self):
+        """
+        relational_expression : shift_expression
+                              | relational_expression '<' shift_expression
+                              | relational_expression 'lt' shift_expression
+                              | relational_expression '>' shift_expression
+                              | relational_expression 'gt' shift_expression
+                              | relational_expression '<=' shift_expression
+                              | relational_expression 'le' shift_expression
+                              | relational_expression '>=' shift_expression
+                              | relational_expression 'ge' shift_expression
+                              | relational_expression 'is' TYPE
+                              ;
+        """  # noqa
+        relational_expression = ArtAst.make_non_terminal_tree(ArtParseTreeKind.RELATIONAL_EXPRESSION, self.grammar)
+        self.consume_noise(relational_expression)
+        shift_expression = self.parse_shift_expression()
+        relational_expression.add_kid(shift_expression.tree)
+        while True:
+            self.consume_noise(relational_expression)
+            match self.lexer.token.kind:
+                case (TokenKind.LESS_THAN_SIGN |
+                      TokenKind.LESS_THAN_KW |
+                      TokenKind.GREATER_THAN_SIGN |
+                      TokenKind.GREATER_THAN_KW |
+                      TokenKind.LESS_THAN_OR_EQUAL |
+                      TokenKind.LESS_THAN_OR_EQUAL_KW |
+                      TokenKind.GREATER_THAN_OR_EQUAL |
+                      TokenKind.GREATER_THAN_OR_EQUAL_KW):
+                    self.consume_terminal(relational_expression)
+                    shift_expression = self.parse_shift_expression()
+                    relational_expression.add_kid(shift_expression.tree)
+                case TokenKind.IS_KW:
+                    self.consume_terminal(relational_expression)
+                    type = self.parse_type()
+                    relational_expression.add_kid(type.tree)
+                case _:
+                    break
+        self.kind = ArtSyntaxKind.RELATIONAL_EXPRESSION
+        return ParseResult(ParseResult.Status.OK, relational_expression)
+
+    def parse_equality_expression(self):
+        """
+        equality_expression : relational_expression
+                            | equality_expression '==' relational_expression
+                            | equality_expression 'eq' relational_expression
+                            | equality_expression '!=' relational_expression
+                            | equality_expression 'ne' relational_expression
+                            ;
+        """  # noqa
+        equality_expression = ArtAst.make_non_terminal_tree(ArtParseTreeKind.EQUALITY_EXPRESSION, self.grammar)
+        self.consume_noise(equality_expression)
+        relational_expression = self.parse_relational_expression()
+        equality_expression.add_kid(relational_expression.tree)
+        while True:
+            self.consume_noise(equality_expression)
+            match self.lexer.token.kind:
+                case (TokenKind.EQUAL |
+                      TokenKind.EQUAL_KW |
+                      TokenKind.NOT_EQUAL |
+                      TokenKind.NOT_EQUAL_KW):
+                    self.consume_terminal(equality_expression)
+                    relational_expression = self.parse_relational_expression()
+                    equality_expression.add_kid(relational_expression.tree)
+                case _:
+                    break
+        self.kind = ArtSyntaxKind.EQUALITY_EXPRESSION
+        return ParseResult(ParseResult.Status.OK, equality_expression)
+
+    def parse_bitwise_and_expression(self):
+        """
+        bitwise_and_expression : equality_expression
+                               | bitwise_and_expression '&' equality_expression
+                               ;
+        """  # noqa
+        bitwise_and_expression = ArtAst.make_non_terminal_tree(ArtParseTreeKind.BITWISE_AND_EXPRESSION, self.grammar)
+        self.consume_noise(bitwise_and_expression)
+        equality_expression = self.parse_equality_expression()
+        bitwise_and_expression.add_kid(equality_expression.tree)
+        while True:
+            self.consume_noise(bitwise_and_expression)
+            match self.lexer.token.kind:
+                case TokenKind.BITWISE_AND:
+                    self.consume_terminal(bitwise_and_expression)
+                    equality_expression = self.parse_equality_expression()
+                    bitwise_and_expression.add_kid(equality_expression.tree)
+                case _:
+                    break
+        self.kind = ArtSyntaxKind.BITWISE_AND_EXPRESSION
+        return ParseResult(ParseResult.Status.OK, bitwise_and_expression)
+
+    def parse_bitwise_exclusive_or_expression(self):
+        """
+        bitwise_exclusive_or_expression : bitwise_and_expression
+                                        | bitwise_exclusive_or_expression '^' bitwise_and_expression
+                                        ;
+        """  # noqa
+        bitwise_exclusive_or_expression = ArtAst.make_non_terminal_tree(ArtParseTreeKind.
+                                                                        BITWISE_EXCLUSIVE_OR_EXPRESSION,
+                                                                        self.grammar)
+        self.consume_noise(bitwise_exclusive_or_expression)
+        bitwise_and_expression = self.parse_bitwise_and_expression()
+        bitwise_exclusive_or_expression.add_kid(bitwise_and_expression.tree)
+        while True:
+            self.consume_noise(bitwise_exclusive_or_expression)
+            match self.lexer.token.kind:
+                case TokenKind.BITWISE_XOR:
+                    self.consume_terminal(bitwise_exclusive_or_expression)
+                    bitwise_and_expression = self.parse_bitwise_and_expression()
+                    bitwise_exclusive_or_expression.add_kid(bitwise_and_expression.tree)
+                case _:
+                    break
+        self.kind = ArtSyntaxKind.BITWISE_EXCLUSIVE_OR_EXPRESSION
+        return ParseResult(ParseResult.Status.OK, bitwise_exclusive_or_expression)
+
+    def parse_bitwise_inclusive_or_expression(self):
+        """
+        bitwise_inclusive_or_expression : bitwise_exclusive_or_expression
+                                        | bitwise_inclusive_or_expression '|' bitwise_exclusive_or_expression
+                                        ;
+        """  # noqa
+        bitwise_inclusive_or_expression = ArtAst.make_non_terminal_tree(ArtParseTreeKind.
+                                                                        BITWISE_INCLUSIVE_OR_EXPRESSION,
+                                                                        self.grammar)
+        self.consume_noise(bitwise_inclusive_or_expression)
+        bitwise_exclusive_or_expression = self.parse_bitwise_exclusive_or_expression()
+        bitwise_inclusive_or_expression.add_kid(bitwise_exclusive_or_expression.tree)
+        while True:
+            self.consume_noise(bitwise_inclusive_or_expression)
+            match self.lexer.token.kind:
+                case TokenKind.BITWISE_OR:
+                    self.consume_terminal(bitwise_inclusive_or_expression)
+                    bitwise_exclusive_or_expression = self.parse_bitwise_exclusive_or_expression()
+                    bitwise_inclusive_or_expression.add_kid(bitwise_exclusive_or_expression.tree)
+                case _:
+                    break
+        self.kind = ArtSyntaxKind.BITWISE_INCLUSIVE_OR_EXPRESSION
+        return ParseResult(ParseResult.Status.OK, bitwise_inclusive_or_expression)
+
+    def parse_logical_and_expression(self):
+        """
+        logical_and_expression : bitwise_inclusive_or_expression
+                               | logical_and_expression '&&' bitwise_inclusive_or_expression
+                               | logical_and_expression 'and' bitwise_inclusive_or_expression
+                               ;
+        """  # noqa
+        logical_and_expression = ArtAst.make_non_terminal_tree(ArtParseTreeKind.LOGICAL_AND_EXPRESSION, self.grammar)
+        self.consume_noise(logical_and_expression)
+        bitwise_inclusive_or_expression = self.parse_bitwise_inclusive_or_expression()
+        logical_and_expression.add_kid(bitwise_inclusive_or_expression.tree)
+        while True:
+            self.consume_noise(logical_and_expression)
+            match self.lexer.token.kind:
+                case (TokenKind.LOGICAL_AND | TokenKind.AND_KW):
+                    self.consume_terminal(logical_and_expression)
+                    bitwise_inclusive_or_expression = self.parse_bitwise_inclusive_or_expression()
+                    logical_and_expression.add_kid(bitwise_inclusive_or_expression.tree)
+                case _:
+                    break
+        self.kind = ArtSyntaxKind.LOGICAL_AND_EXPRESSION
+        return ParseResult(ParseResult.Status.OK, logical_and_expression)
+
+    def parse_logical_or_expression(self):
+        """
+        logical_or_expression : logical_and_expression
+                              | logical_or_expression '||' logical_and_expression
+                              | logical_or_expression 'or' logical_and_expression
+                              ;
+        """  # noqa
+        logical_or_expression = ArtAst.make_non_terminal_tree(ArtParseTreeKind.LOGICAL_OR_EXPRESSION, self.grammar)
+        self.consume_noise(logical_or_expression)
+        logical_and_expression = self.parse_logical_and_expression()
+        logical_or_expression.add_kid(logical_and_expression.tree)
+        while True:
+            self.consume_noise(logical_or_expression)
+            match self.lexer.token.kind:
+                case (TokenKind.LOGICAL_OR | TokenKind.OR_KW):
+                    self.consume_terminal(logical_or_expression)
+                    logical_and_expression = self.parse_logical_and_expression()
+                    logical_or_expression.add_kid(logical_and_expression.tree)
+                case _:
+                    break
+        self.kind = ArtSyntaxKind.LOGICAL_OR_EXPRESSION
+        return ParseResult(ParseResult.Status.OK, logical_or_expression)
 
     def parse_primary_expression(self):
         """
@@ -934,62 +1226,6 @@ class ArtParser(RecursiveDescentParser):
         self.accept(parenthesized_expression, TokenKind.RIGHT_PARENTHESIS)
         self.dec_recursion_level()
         return ParseResult(ParseResult.Status.OK, parenthesized_expression)
-
-    def parse_pre_increment_expression(self):
-        """
-        """  # noqa
-
-    def parse_pre_decrement_expression(self):
-        """
-        """  # noqa
-
-    def parse_post_increment_expression(self):
-        """
-        """  # noqa
-
-    def parse_post_decrement_expression(self):
-        """
-        """  # noqa
-
-    def parse_multiplicative_expression(self):
-        """
-        """  # noqa
-
-    def parse_additive_expression(self):
-        """
-        """  # noqa
-
-    def parse_relational_expression(self):
-        """
-        """  # noqa
-
-    def parse_equality_expression(self):
-        """
-        """  # noqa
-
-    def parse_and_expression(self):
-        """
-        """  # noqa
-
-    def parse_exclusive_or_expression(self):
-        """
-        """  # noqa
-
-    def parse_inclusive_or_expression(self):
-        """
-        """  # noqa
-
-    def parse_conditional_and_expression(self):
-        """
-        """  # noqa
-
-    def parse_conditional_or_expression(self):
-        """
-        """  # noqa
-        erroneous = ArtAst.make_non_terminal_tree(ArtParseTreeKind.CONDITIONAL_OR_EXPRESSION,
-                                                  self.grammar)
-        #self.kind = ArtSyntaxKind.CONDITIONAL_OR_EXPRESSION
-        return ParseResult(ParseResult.Status.OK, erroneous)
 
     def parse_assignment_operator(self, papa):
         """
@@ -1219,20 +1455,20 @@ class ArtParser(RecursiveDescentParser):
 
     def parse_argument_value_union(self):
         """
-        argument_value_union : non_assignment_expression
-                             | argument_value_union '|' non_assignment_expression
+        argument_value_union : expression
+                             | argument_value_union '|' expression
                              ;
         """  # noqa
         self.inc_recursion_level()
         argument_value_union = ArtAst.make_non_terminal_tree(ArtParseTreeKind.ARGUMENT_VALUE_UNION, self.grammar)
         self.consume_noise(argument_value_union)
-        non_assignment_expression = self.parse_non_assignment_expression()
-        argument_value_union.add_kid(non_assignment_expression.tree)
+        expression = self.parse_expression()
+        argument_value_union.add_kid(expression.tree)
         self.consume_noise(argument_value_union)
         while self.lexer.token.kind == TokenKind.BITWISE_OR:
             self.consume_terminal(argument_value_union)
-            non_assignment_expression = self.parse_non_assignment_expression()
-            argument_value_union.add_kid(non_assignment_expression.tree)
+            expression = self.parse_expression()
+            argument_value_union.add_kid(expression.tree)
             self.consume_noise(argument_value_union)
         self.dec_recursion_level()
         return ParseResult(ParseResult.Status.OK, argument_value_union)
