@@ -4,6 +4,8 @@
 #
 import inspect
 import unittest
+
+from art.framework.core.domain_helper import profile
 from art.framework.core.logger import Logger
 from art.framework.core.diagnostics import Diagnostics
 from art.framework.core.platform import Platform
@@ -154,53 +156,60 @@ class Test(unittest.TestCase):
             assert parser.diagnostics.status
 
     def test_pm_expression_array_slicing_success(self):
-        programs = [
-                    'a[:]',
-                    'a[: ]',
-                    'a[ :]',
-                    'a[ : ]',
-                    'a[1:]',
-                    'a[ 1 : ]',
-                    'a[:1]',
-                    'a[ : 1 ]',
-                    'a[1:1]',
-                    'a[ 1 : 1 ]',
-                    'a[1::]',
-                    'a[ 1 : : ]',
-                    'a[:1:]',
-                    'a[ : 1 : ]',
-                    'a[::1]',
-                    'a[ : : 1 ]',
-                    'a[1:1:]',
-                    'a[ 1 : 1 : ]',
-                    'a[1::1]',
-                    'a[ 1 : : 1 ]',
-                    'a[:1:1]',
-                    'a[ : 1 : 1 ]',
-                    'a[1:1:1]',
-                    'a[ 1 : 1 : 1 ]'
-                ]
-        for k, program in enumerate(programs):
-            parser = Test.get_parser(program)
-            parser.lexical_analyzer.next_lexeme()
-            pm_expr = parser.parse_primary_expression()
-            ParseTreeDomainHelper.\
-                generate_graphviz(pm_expr.tree, Test.get_dot_filepath(f'{inspect.currentframe().f_code.co_name}_{k}'))
-            assert parser.diagnostics.status
+        @profile('Array slicing...')
+        def test(filename):
+            programs = [
+                        'a[:]',
+                        'a[: ]',
+                        'a[ :]',
+                        'a[ : ]',
+                        'a[1:]',
+                        'a[ 1 : ]',
+                        'a[:1]',
+                        'a[ : 1 ]',
+                        'a[1:1]',
+                        'a[ 1 : 1 ]',
+                        'a[1::]',
+                        'a[ 1 : : ]',
+                        'a[:1:]',
+                        'a[ : 1 : ]',
+                        'a[::1]',
+                        'a[ : : 1 ]',
+                        'a[1:1:]',
+                        'a[ 1 : 1 : ]',
+                        'a[1::1]',
+                        'a[ 1 : : 1 ]',
+                        'a[:1:1]',
+                        'a[ : 1 : 1 ]',
+                        'a[1:1:1]',
+                        'a[ 1 : 1 : 1 ]'
+                    ]
+            for k, program in enumerate(programs):
+                parser = Test.get_parser(program)
+                parser.lexical_analyzer.next_lexeme()
+                pm_expr = parser.parse_primary_expression()
+                ParseTreeDomainHelper.\
+                    generate_graphviz(pm_expr.tree, Test.get_dot_filepath(f'{filename}_{k}'))
+                assert parser.diagnostics.status
+        test(inspect.currentframe().f_code.co_name)
 
     def test_pm_expression_object_creation_array_success(self):
-        programs =\
-            [
-                'int.len [ 1..5, -1..8,0..4 ]',
-                'real.len [column jagged sparse unchecked dynamic: 1..5, -1..8,0..4 ]'
-            ]
-        for k, program in enumerate(programs):
-            parser = Test.get_parser(program)
-            parser.lexical_analyzer.next_lexeme()
-            pm_expr = parser.parse_primary_expression()
-            ParseTreeDomainHelper.\
-                generate_graphviz(pm_expr.tree, Test.get_dot_filepath(f'{inspect.currentframe().f_code.co_name}_{k}'))
-            # assert parser.diagnostics.status
+        @profile('Array object creation...')
+        def test(filename):
+            programs =\
+                [
+                    'int.len [ 1..5, -1..8,0..4 ]',
+                    'real.len [column jagged sparse unchecked dynamic: 1..5, -1..8,0..4 ]',
+                    '[ 1..5, 8,0..4 ]'
+                ]
+            for k, program in enumerate(programs):
+                parser = Test.get_parser(program)
+                parser.lexical_analyzer.next_lexeme()
+                pm_expr = parser.parse_primary_expression()
+                ParseTreeDomainHelper.\
+                    generate_graphviz(pm_expr.tree, Test.get_dot_filepath(f'{filename}_{k}'))
+                assert parser.diagnostics.status
+        test(inspect.currentframe().f_code.co_name)
 
     def test_pm_expression_parenthesized_success(self):
         programs = [

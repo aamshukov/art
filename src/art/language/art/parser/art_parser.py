@@ -409,41 +409,32 @@ class ArtParser(RecursiveDescentParser):
         self.inc_recursion_level()
         array_dimension = ArtAst.make_non_terminal_tree(ArtParseTreeKind.ARRAY_DIMENSION, self.grammar)
         self.consume_noise(array_dimension)
-        array_bound = self.parse_array_lower_bound()
+        array_bound = self.parse_array_bound(lower=True)
         array_dimension.add_kid(array_bound.tree)
         self.consume_noise(array_dimension)
         if self.lexer.token.kind == TokenKind.RANGE:
             self.consume_terminal(array_dimension)
-            array_bound = self.parse_array_upper_bound()
+            array_bound = self.parse_array_bound(lower=False)
             array_dimension.add_kid(array_bound.tree)
         self.dec_recursion_level()
         return ParseResult(ParseResult.Status.OK, array_dimension)
 
-    def parse_array_lower_bound(self):
+    def parse_array_bound(self, lower):
         """
         array_lower_bound : array_bound_expression
                           ;
+        array_upper_bound : array_bound_expression
+                          ;
         """  # noqa
         self.inc_recursion_level()
-        array_lower_bound = ArtAst.make_non_terminal_tree(ArtParseTreeKind.ARRAY_LOWER_BOUND, self.grammar)
+        array_lower_bound = ArtAst.make_non_terminal_tree(ArtParseTreeKind.ARRAY_LOWER_BOUND if lower else
+                                                          ArtParseTreeKind.ARRAY_UPPER_BOUND,
+                                                          self.grammar)
         self.consume_noise(array_lower_bound)
         array_bound_expression = self.parse_array_bound_expression()
         array_lower_bound.add_kid(array_bound_expression.tree)
         self.dec_recursion_level()
         return ParseResult(ParseResult.Status.OK, array_lower_bound)
-
-    def parse_array_upper_bound(self):
-        """
-        array_upper_bound : array_bound_expression
-                          ;
-        """  # noqa
-        self.inc_recursion_level()
-        array_upper_bound = ArtAst.make_non_terminal_tree(ArtParseTreeKind.ARRAY_UPPER_BOUND, self.grammar)
-        self.consume_noise(array_upper_bound)
-        array_bound_expression = self.parse_array_bound_expression()
-        array_upper_bound.add_kid(array_bound_expression.tree)
-        self.dec_recursion_level()
-        return ParseResult(ParseResult.Status.OK, array_upper_bound)
 
     def parse_array_bound_expression(self):
         """
@@ -1160,7 +1151,7 @@ class ArtParser(RecursiveDescentParser):
         self.dec_recursion_level()
         return ParseResult(ParseResult.Status.OK, primary_expression)
 
-    # @profile('Parson build first set...')
+    # @profile('Array elements...')
     def parse_array_elements(self):
         """
         '[' argument_values ']'
