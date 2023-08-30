@@ -6,7 +6,7 @@
 from art.framework.core.base import Base
 from art.framework.frontend.lexical_analyzer.tokenizer.token_kind import TokenKind
 from art.framework.frontend.parser.parse_tree_factory import ParseTreeFactory
-from art.language.art.ast.art_cst_to_ast_visitor import ArtCstToAstVisitor
+from art.language.art.ast.art_parse_tree_visitor import ArtParseTreeVisitor
 from art.language.art.parser.art_parse_tree_kind import ArtParseTreeKind
 
 
@@ -31,17 +31,10 @@ class ArtAst(Base):
         return ParseTreeFactory.make_tree(kind, grammar)
 
     @staticmethod
-    def mutate_tree(tree, kind, grammar):
-        """
-        """
-        tree.kind = kind
-        tree.symbol.grammar_symbol = grammar.lookup_symbol(kind.name)
-
-    @staticmethod
     def type_cst_to_ast(cst, grammar):
         """
         """
-        class TypeVisitor(ArtCstToAstVisitor):
+        class TypeVisitor(ArtParseTreeVisitor):
             def __init__(self, cst, grammar):  # noqa
                 """
                 """

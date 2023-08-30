@@ -3,6 +3,7 @@
 # UI Lab Inc. Arthur Amshukov
 #
 """ Art parser """
+from functools import lru_cache
 from collections import deque
 from collections import namedtuple
 from art.framework.core.status import Status
@@ -14,6 +15,11 @@ from art.language.art.ast.art_ast import ArtAst
 from art.language.art.parser.art_parse_tree_kind import ArtParseTreeKind
 from art.language.art.parser.art_syntax_kind import ArtSyntaxKind
 from art.framework.core.domain_helper import profile
+from art.framework.frontend.parser.precedence.\
+    operator_precedence.operator_prcedence_parser import OperatorPrecedenceParser
+from art.framework.frontend.parser.precedence.\
+    operator_precedence.operator_precedence_level import OperatorPrecedenceLevel
+from art.framework.frontend.grammar.grammar_symbol_associativity import GrammarSymbolAssociativity
 
 
 class ArtParser(RecursiveDescentParser):
@@ -37,6 +43,10 @@ class ArtParser(RecursiveDescentParser):
         #self.kind = ArtSyntaxKind.UNKNOWN  # keep tack of which syntax construction has been parsing
         self.breadcrumbs = deque()  # keep tack of syntax constructions have been parsed
         self.lexer = lexical_analyzer  # primary lexer, but might be switched to another one (import, include, etc.)
+        self.operators = {
+            TokenKind.OR_KW: OperatorPrecedenceParser.OperatorInfo(OperatorPrecedenceLevel.LOGICAL_OR,
+                                                                   GrammarSymbolAssociativity.LEFT)
+        }  # self.operators[TokeKind]
 
     def parse(self, *args, **kwargs):
         """
@@ -1177,7 +1187,7 @@ class ArtParser(RecursiveDescentParser):
                     array_elements.insert_kid(cached_tree.tree, index=k)
                 cached_trees.clear()
             else:
-                argument_values = self.parse_argument_values_tentative()
+                argument_values = self.parse_argument_values_tentatively()
                 if argument_values.status == ParseResult.Status.BACKTRACK:
                     if argument_values.hint == TokenKind.RANGE:
                         array_elements = self.parse_array_type_specifier().tree
@@ -1365,7 +1375,7 @@ class ArtParser(RecursiveDescentParser):
         self.dec_recursion_level()
         return ParseResult(ParseResult.Status.OK, argument_values)
 
-    def parse_argument_values_tentative(self):
+    def parse_argument_values_tentatively(self):
         """
         argument_values : argument_value
                         | argument_values ',' argument_value

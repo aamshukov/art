@@ -10,6 +10,14 @@ from art.framework.core.visitor import Visitor
 class ParseTreeVisitor(Visitor):
     """
     """
+    class TvpPair:
+        __slots__ = ['tree', 'value', 'papa']
+
+        def __init__(self, tree, value, papa):
+            self.tree = tree
+            self.value = value
+            self.papa = papa
+
     def __init__(self, tree):
         """
         """

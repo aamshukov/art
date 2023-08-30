@@ -2,18 +2,16 @@
 # -*- encoding: utf-8 -*-
 # UI Lab Inc. Arthur Amshukov
 #
-""" Operator precedence parser """
-from abc import abstractmethod
-from collections import namedtuple
-from art.framework.frontend.parser.parser import Parser
+""" Art precedence climbing parser """
+from art.framework.frontend.parser.precedence.precedence_climbing_pratt.pratt_parser import \
+    PrattParser
 
 
-class OperatorPrecedenceParser(Parser):
+class ArtPrecedenceClimbingParser(PrattParser):
     """
     """
-    OperatorInfo = namedtuple('OperatorInfo', 'precedence associativity')
-
     def __init__(self,
+                 operators,
                  context,
                  lexical_analyzer,
                  grammar,
@@ -21,14 +19,14 @@ class OperatorPrecedenceParser(Parser):
                  diagnostics):
         """
         """
-        super().__init__(context,
+        super().__init__(operators,
+                         context,
                          lexical_analyzer,
                          grammar,
                          statistics,
                          diagnostics)
 
-    @abstractmethod
     def parse(self, *args, **kwargs):
         """
         """
-        raise NotImplemented(self.parse.__qualname__)
+        pass

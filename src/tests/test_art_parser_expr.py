@@ -226,3 +226,34 @@ class Test(unittest.TestCase):
             ParseTreeDomainHelper.\
                 generate_graphviz(pm_expr.tree, Test.get_dot_filepath(f'{inspect.currentframe().f_code.co_name}_{k}'))
             assert parser.diagnostics.status
+
+    def test_pm_expression_arithmetic_success(self):
+        programs = [
+            '1',
+            '1+ 2',
+            '1 + 2 * 3',
+            '1 * 2 + 3',
+            '2 + 3 + 4'
+        ]
+        for k, program in enumerate(programs):
+            parser = Test.get_parser(program)
+            parser.lexical_analyzer.next_lexeme()
+            pm_expr = parser.parse_expression()
+            ParseTreeDomainHelper.\
+                generate_graphviz(pm_expr.tree, Test.get_dot_filepath(f'{inspect.currentframe().f_code.co_name}_{k}'))
+            assert parser.diagnostics.status
+
+    def test_pm_expression_arithmetic_unary_success(self):
+        programs = [
+            '-1',
+            '-1+ -2',
+            '1 + 2 * -3',
+            '-1 * 2 + 3'
+        ]
+        for k, program in enumerate(programs):
+            parser = Test.get_parser(program)
+            parser.lexical_analyzer.next_lexeme()
+            pm_expr = parser.parse_expression()
+            ParseTreeDomainHelper.\
+                generate_graphviz(pm_expr.tree, Test.get_dot_filepath(f'{inspect.currentframe().f_code.co_name}_{k}'))
+            assert parser.diagnostics.status

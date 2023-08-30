@@ -142,7 +142,7 @@ class TokenKind(IntEnum):
     AND_KW = auto()
     OR_KW = auto()
     NOT_KW = auto()                     # !
-    NEG_KW = auto()                     # negate
+    NEG_KW = auto()                     # negate neg
 
     EQUAL_KW = auto()                   # eq
     NOT_EQUAL_KW = auto()               # ne
