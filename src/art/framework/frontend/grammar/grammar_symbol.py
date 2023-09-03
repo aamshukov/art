@@ -5,7 +5,6 @@
 from art.framework.core.domain_helper import DomainHelper
 from art.framework.core.entity import Entity
 from art.framework.core.flags import Flags
-from art.framework.frontend.grammar.grammar_symbol_associativity import GrammarSymbolAssociativity
 from art.framework.frontend.grammar.grammar_symbol_kind import GrammarSymbolKind
 from art.framework.frontend.lexical_analyzer.tokenizer.token_kind import TokenKind
 
@@ -29,7 +28,6 @@ class GrammarSymbol(Entity):
         self.type = symbol_type
         self.token = token_kind
         self.rules = list()  # rules this symbol belongs too, only fot non-terminals
-        self.associativity = GrammarSymbolAssociativity.LEFT
         self.nullable = False  # if A ->* ε or TERMINAL
         self.first = list()  # first set
         self.follow = list()  # follow set
@@ -94,8 +92,7 @@ class GrammarSymbol(Entity):
         quote = "'" if self.terminal else ""
         result = f"{quote}{self.name}{quote} " \
                  f"({self.type.name}, " \
-                 f"{'NULLABLE' if self.nullable else 'NON-NULLABLE'}, " \
-                 f"{self.associativity.name})"
+                 f"{'NULLABLE' if self.nullable else 'NON-NULLABLE'}, "
         if full:
             result = f"\n{result}\n"
             result = f"{result} FIRST: [{GrammarSymbol.sets_to_string(self.first)}]\n"

@@ -1,11 +1,11 @@
 # -*- encoding: utf-8 -*-
 # UI Lab Inc. Arthur Amshukov
 #
-""" Grammar symbol associativity """
+""" Operator associativity """
 from enum import IntEnum, auto
 
 
-class GrammarSymbolAssociativity(IntEnum):
+class OperatorAssociativity(IntEnum):
     """
     """
     LEFT = auto()

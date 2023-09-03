@@ -19,7 +19,6 @@ from art.framework.frontend.parser.precedence.\
     operator_precedence.operator_prcedence_parser import OperatorPrecedenceParser
 from art.framework.frontend.parser.precedence.\
     operator_precedence.operator_precedence_level import OperatorPrecedenceLevel
-from art.framework.frontend.grammar.grammar_symbol_associativity import GrammarSymbolAssociativity
 
 
 class ArtParser(RecursiveDescentParser):
@@ -43,10 +42,6 @@ class ArtParser(RecursiveDescentParser):
         #self.kind = ArtSyntaxKind.UNKNOWN  # keep tack of which syntax construction has been parsing
         self.breadcrumbs = deque()  # keep tack of syntax constructions have been parsed
         self.lexer = lexical_analyzer  # primary lexer, but might be switched to another one (import, include, etc.)
-        self.operators = {
-            TokenKind.OR_KW: OperatorPrecedenceParser.OperatorInfo(OperatorPrecedenceLevel.LOGICAL_OR,
-                                                                   GrammarSymbolAssociativity.LEFT)
-        }  # self.operators[TokeKind]
 
     def parse(self, *args, **kwargs):
         """

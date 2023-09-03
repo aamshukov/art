@@ -15,9 +15,9 @@ class PrattParserHandler(Base):
         http://crockford.com/javascript/tdop/tdop.html
             nud - null denotation, null context - nothing on the left, nud does not care about the tokens to the left
             led - left denotation, left context - led does
-            lbp - left binding power
-            rbp - right binding power
-        """
+            lbp - left binding power, precedence
+            rbp - right binding power, precedence
+        """  # noqa
         super().__init__()
         self.lbp = lbp
         self.nud = nud

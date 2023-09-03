@@ -440,13 +440,17 @@ DEDENT                              : 'dedent'
 
 expr                                : expr ','   expr
                                     | expr '?'   expr ':' expr
+                                    | expr 'if'  expr 'else' expr
                                     | '+'        expr
                                     | '-'        expr
                                     | '!'        expr
+                                    | expr       '!'
                                     | 'not'      expr
                                     | '~'        expr
                                     | '++'       expr
                                     | '--'       expr
+                                    | expr       '++'
+                                    | expr       '--'
                                     | expr '*'   expr
                                     | expr 'mul' expr
                                     | expr '/'   expr
@@ -482,5 +486,15 @@ expr                                : expr ','   expr
                                     | expr 'and' expr
                                     | expr '||'  expr
                                     | expr 'or'  expr
-                                    | primary_expression
+                                    | '(' expr ')'
+                                    | primary_expr
+                                    ;
+
+primary_expr                        : literal                                                                           # 5, 3.14, 'text', true
+                                    | identifier                                                                        # A<T>
+                                    | member_access                                                                     # Foo.name, foo.name
+                                    | invocation_expression                                                             # foo(...)
+                                    | array_element_access                                                              # array[0,2]
+                                    | array_slicing_expression                                                          # a[start:stop:step]
+                                    | object_creation_expression
                                     ;

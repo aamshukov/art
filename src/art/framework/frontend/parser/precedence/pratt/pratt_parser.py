@@ -12,7 +12,6 @@ class PrattParser(OperatorPrecedenceParser):
     """
     """
     def __init__(self,
-                 handlers,
                  context,
                  lexical_analyzer,
                  grammar,
@@ -25,7 +24,7 @@ class PrattParser(OperatorPrecedenceParser):
                          grammar,
                          statistics,
                          diagnostics)
-        self.handlers = handlers  # dict of TokeKind:PrattParserHandler
+        self.handlers = None  # dict of TokeKind:PrattParserHandler
 
     @abstractmethod
     def parse(self, *args, **kwargs):
@@ -34,16 +33,16 @@ class PrattParser(OperatorPrecedenceParser):
         http://crockford.com/javascript/tdop/tdop.html
             nud - null denotation, null context - nothing on the left, nud does not care about the tokens to the left
             led - left denotation, left context - led does
-            lbp - left binding power
-            rbp - right binding power
+            lbp - left binding power, precedence
+            rbp - right binding power, precedence
         """  # noqa
-        rbp = kwargs['rbp']
+        assert self.handlers, "Handlers of Pratt parser are not initialized."
+        rbp = kwargs['rbp']  # precedence
         lexer = self.lexical_analyzer
-        token = lexer.token
-        handler = self.handlers[token.kind]
+        handler = self.handlers[lexer.token.kind]
         left = handler.nud()
         while rbp < handler.lbp:
-            handler = self.context.handler(lexer.token.kind)
             lexer.next_lexeme()
+            handler = self.context.handler(lexer.token.kind)
             left = handler.led(left)
         return left
