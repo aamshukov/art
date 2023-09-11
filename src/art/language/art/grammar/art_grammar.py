@@ -179,6 +179,8 @@ class ArtGrammar(Grammar):
                 return TokenKind.COMMA
             case '?':
                 return TokenKind.QUESTION_MARK
+            case '??':
+                return TokenKind.NULL_COALESCING_OPERATOR
             case '@':
                 return TokenKind.COMMERCIAL_AT
             case '`':

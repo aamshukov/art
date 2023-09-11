@@ -9,7 +9,7 @@ from art.framework.core.base import Base
 class PrattParserHandler(Base):
     """
     """
-    def __init__(self, lbp, nud, led):
+    def __init__(self, lbp, nud=None, led=None):
         """
         Top Down Operator Precedence, Douglas Crockford
         http://crockford.com/javascript/tdop/tdop.html

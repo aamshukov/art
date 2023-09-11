@@ -1635,7 +1635,7 @@ class ArtParser(RecursiveDescentParser):
         tree = ArtAst.make_terminal_tree(tree_kind,
                                          self.grammar,
                                          token if token else self.lexer.token)
-        if link:
+        if link and papa:
             if insert_index < 0:
                 papa.add_kid(tree)
             else:

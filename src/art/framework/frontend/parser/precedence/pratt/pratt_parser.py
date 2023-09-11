@@ -40,9 +40,13 @@ class PrattParser(OperatorPrecedenceParser):
         rbp = kwargs['rbp']  # precedence
         lexer = self.lexical_analyzer
         handler = self.handlers[lexer.token.kind]
+        assert handler.nud, f"Invalid Nud member of the Pratt parser's handler for '{lexer.token.kind.name}'."
         left = handler.nud()
         while rbp < handler.lbp:
             lexer.next_lexeme()
+            if lexer.eos():
+                break
             handler = self.context.handler(lexer.token.kind)
+            assert handler.led, f"Invalid Led member of the Pratt parser's handler for '{lexer.token.kind.name}'."
             left = handler.led(left)
         return left

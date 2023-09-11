@@ -166,6 +166,7 @@ class TokenKind(IntEnum):
     SEMICOLON = auto()                  # ;
     COMMA = auto()                      # ,
     QUESTION_MARK = auto()              # ?
+    NULL_COALESCING_OPERATOR = auto()   # null-coalescing operator, C#
     COMMERCIAL_AT = auto()              # @
     GRAVE_ACCENT = auto()               # `
     BACK_SLASH = auto()                 # \

@@ -438,63 +438,59 @@ DEDENT                              : 'dedent'
 
 
 
-expr                                : expr ','   expr
-                                    | expr '?'   expr ':' expr
-                                    | expr 'if'  expr 'else' expr
-                                    | '+'        expr
-                                    | '-'        expr
-                                    | '!'        expr
-                                    | expr       '!'
-                                    | 'not'      expr
-                                    | '~'        expr
-                                    | '++'       expr
-                                    | '--'       expr
-                                    | expr       '++'
-                                    | expr       '--'
-                                    | expr '*'   expr
-                                    | expr 'mul' expr
-                                    | expr '/'   expr
-                                    | expr 'div' expr
-                                    | expr '%'   expr
-                                    | expr 'mod' expr
-                                    | expr '+'   expr
-                                    | expr 'add' expr
-                                    | expr '-'   expr
-                                    | expr 'sub' expr
-                                    | expr '<<'  expr
-                                    | expr 'shl' expr
-                                    | expr '>>'  expr
-                                    | expr 'shr' expr
-                                    | expr '<'   expr
-                                    | expr 'lt'  expr
-                                    | expr '>'   expr
-                                    | expr 'gt'  expr
-                                    | expr '<='  expr
-                                    | expr 'le'  expr
-                                    | expr '>='  expr
-                                    | expr 'ge'  expr
-                                    | expr 'is'  TYPE
-                                    | expr '=='  expr
-                                    | expr 'eq'  expr
-                                    | expr '!='  expr
-                                    | expr 'ne'  expr
-                                    | expr '&'   expr
-                                    | expr '^'   expr
-                                    | expr 'xor' expr
-                                    | expr '|'   expr
-                                    | expr '&&'  expr
-                                    | expr 'and' expr
-                                    | expr '||'  expr
-                                    | expr 'or'  expr
-                                    | '(' expr ')'
+expr                                : expr  ','   expr
+                                    |       '+'   expr                                                                  # prefix
+                                    |       '-'   expr
+                                    |       '!'   expr
+                                    |       expr  '!'                                                                   # postfix
+                                    |       'not' expr
+                                    |       '~'   expr
+                                    |       '++'  expr
+                                    |       '--'  expr
+                                    |       expr  '++'
+                                    |       expr  '--'
+                                    | expr  '*'   expr                                                                  # infix
+                                    | expr  'mul' expr
+                                    | expr  '/'   expr
+                                    | expr  'div' expr
+                                    | expr  '%'   expr
+                                    | expr  'mod' expr
+                                    | expr  '+'   expr
+                                    | expr  'add' expr
+                                    | expr  '-'   expr
+                                    | expr  'sub' expr
+                                    | expr  '<<'  expr
+                                    | expr  'shl' expr
+                                    | expr  '>>'  expr
+                                    | expr  'shr' expr
+                                    | expr  '<'   expr
+                                    | expr  'lt'  expr
+                                    | expr  '>'   expr
+                                    | expr  'gt'  expr
+                                    | expr  '<='  expr
+                                    | expr  'le'  expr
+                                    | expr  '>='  expr
+                                    | expr  'ge'  expr
+                                    | expr  'is'  TYPE
+                                    | expr  '=='  expr
+                                    | expr  'eq'  expr
+                                    | expr  '!='  expr
+                                    | expr  'ne'  expr
+                                    | expr  '&'   expr
+                                    | expr  '^'   expr
+                                    | expr  'xor' expr
+                                    | expr  '|'   expr
+                                    | expr  '&&'  expr
+                                    | expr  'and' expr
+                                    | expr  '||'  expr
+                                    | expr  'or'  expr
+                                    | expr  '??'  expr                                                                  # null-coalescing operator, C#
+                                    | expr  '?'   expr ':' expr                                                         # ternary
+                                    | expr  'if'  expr 'else' expr
+                                    | '('   expr  ')'
                                     | primary_expr
                                     ;
 
 primary_expr                        : literal                                                                           # 5, 3.14, 'text', true
                                     | identifier                                                                        # A<T>
-                                    | member_access                                                                     # Foo.name, foo.name
-                                    | invocation_expression                                                             # foo(...)
-                                    | array_element_access                                                              # array[0,2]
-                                    | array_slicing_expression                                                          # a[start:stop:step]
-                                    | object_creation_expression
                                     ;

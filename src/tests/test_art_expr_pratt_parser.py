@@ -19,7 +19,7 @@ from art.framework.frontend.parser.parse_domain_helper import ParseTreeDomainHel
 from art.framework.frontend.statistics.statistics import Statistics
 from art.framework.frontend.lexical_analyzer.lexical_analyzer import LexicalAnalyzer
 from art.language.art.grammar.art_grammar import ArtGrammar
-from art.language.art.parser.art_expr_pratt_parser import ArtExprPrattParser
+from art.language.art.parser.art_expr_parser import ArtExprParser
 from art.language.art.parser.art_parser import ArtParser
 from art.language.art.parser.art_tokenizer import ArtTokenizer
 
@@ -70,7 +70,7 @@ class Test(unittest.TestCase):
         tokenizer = ArtTokenizer(0, content, statistics, diagnostics)
         lexer = LexicalAnalyzer(0, tokenizer, statistics, diagnostics)
         context = ParseContext()
-        parser = ArtExprPrattParser(context, lexer, Test.grammar, statistics, diagnostics)
+        parser = ArtParser(context, lexer, Test.grammar, statistics, diagnostics)
         return parser
 
     @staticmethod
@@ -90,7 +90,8 @@ class Test(unittest.TestCase):
         for k, program in enumerate(programs):
             parser = Test.get_parser(program)
             parser.lexical_analyzer.next_lexeme()
-            # pm_expr = parser.parse()
-            # ParseTreeDomainHelper.\
-            #     generate_graphviz(pm_expr.tree, Test.get_dot_filepath(f'{inspect.currentframe().f_code.co_name}_{k}'))
-            # assert parser.diagnostics.status
+            pratt_parser = ArtExprParser(parser)
+            expr = pratt_parser.parse()
+            ParseTreeDomainHelper.\
+                generate_graphviz(expr.tree, Test.get_dot_filepath(f'{inspect.currentframe().f_code.co_name}_{k}'))
+            assert parser.diagnostics.status

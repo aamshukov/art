@@ -621,21 +621,26 @@ class ArtTokenizer(Tokenizer):
             else:
                 self.token.kind = TokenKind.BITWISE_NOT
         elif Text.colon(codepoint):  # ':' '::'
-            codepoint = self.advance()
+            # codepoint = self.advance()  CONFLICT with array slicing a[1::], a[::1]
             # if Text.colon(codepoint):
             #     self.token.kind = TokenKind.COLONS
             #     self.advance()
             # else:
             self.token.kind = TokenKind.COLON
+            self.advance()
         elif Text.semicolon(codepoint):  # ';'
             self.token.kind = TokenKind.SEMICOLON
             self.advance()
         elif Text.comma(codepoint):  # ','
             self.token.kind = TokenKind.COMMA
             self.advance()
-        elif Text.question_mark(codepoint):  # '?'
-            self.token.kind = TokenKind.QUESTION_MARK
-            self.advance()
+        elif Text.question_mark(codepoint):  # '?' '??'
+            codepoint = self.advance()
+            if Text.colon(codepoint):
+                self.token.kind = TokenKind.NULL_COALESCING_OPERATOR
+                self.advance()
+            else:
+                self.token.kind = TokenKind.QUESTION_MARK
         elif Text.commercial_at(codepoint):  # '@'
             self.token.kind = TokenKind.COMMERCIAL_AT
             self.advance()
