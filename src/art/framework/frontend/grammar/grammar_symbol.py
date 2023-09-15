@@ -92,7 +92,7 @@ class GrammarSymbol(Entity):
         quote = "'" if self.terminal else ""
         result = f"{quote}{self.name}{quote} " \
                  f"({self.type.name}, " \
-                 f"{'NULLABLE' if self.nullable else 'NON-NULLABLE'}, "
+                 f"{'NULLABLE' if self.nullable else 'NON-NULLABLE'}) "
         if full:
             result = f"\n{result}\n"
             result = f"{result} FIRST: [{GrammarSymbol.sets_to_string(self.first)}]\n"

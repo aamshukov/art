@@ -963,6 +963,11 @@ class Test(unittest.TestCase):
         assert ([a] in C.first) and \
             len(C.first) == 1
         GrammarAlgorithms.build_first_set(grammar, 3)
+        decorated_grammar = grammar.decorate()
+        logger = Logger()
+        logger.info(decorated_grammar)
+        decorated_pool = grammar.decorate_pool()
+        logger.info(decorated_pool)
         assert len(S.first) == 11
         assert len(A.first) == 11
         assert len(B.first) == 4
@@ -1679,6 +1684,44 @@ class Test(unittest.TestCase):
                 | S
                 | 'n'
                 ;
+        """
+        for k in range(1, 5):
+            print(k)
+            grammar = Test.get_grammar(schema)
+            for rule in grammar.rules:
+                la = GrammarAlgorithms.build_la_set_rule(grammar, rule, k)
+                assert la
+
+    def test_build_first_follow_la_set_expr_success(self):
+        """
+        """
+        schema = """
+            S            : expr
+                         ;
+
+            identifier   : 'identifier'
+                         ;
+
+            literal      : 'integer_number_literal'
+                         | 'real_number_literal'
+                         | 'boolean_literal'
+                         | 'string_literal'
+                         ;
+
+            expr_opt     : expr
+                         | ε
+                         ;
+
+            expr         : expr  ','   expr
+                         |       '+'   expr
+                         |       expr  '++'
+                         | expr  '*'   expr
+                         | primary_expr
+                         ;
+
+            primary_expr : literal
+                         | identifier
+                         ;
         """
         for k in range(1, 5):
             print(k)

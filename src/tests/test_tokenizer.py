@@ -39,12 +39,13 @@ class Test(unittest.TestCase):
         dp = StringDataProvider('')
         data = dp.load()
         assert len(data) == 0
-        content = Content(data, '')
+        content = Content(data, ' ')
         content.build_line_map()
         assert len(data) == content.count
         assert data == content.data
         tokenizer = Test.TestTokenizer(0, content)
         codepoint = tokenizer.codepoint
+        codepoint = tokenizer.advance()
         assert codepoint == Text.eos_codepoint()
         codepoint = tokenizer.advance()
         assert codepoint == Text.eos_codepoint()

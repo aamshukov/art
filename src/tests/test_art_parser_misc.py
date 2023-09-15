@@ -39,6 +39,7 @@ class Test(unittest.TestCase):
             grammar = ArtGrammar(logger=logger)
             grammar.load(dp)
             k = 1
+            GrammarAlgorithms.build_nullability_set(grammar)
             GrammarAlgorithms.build_first_set(grammar, k)
             GrammarAlgorithms.build_follow_set(grammar, k)
             GrammarAlgorithms.build_la_set(grammar, k)
@@ -75,6 +76,6 @@ class Test(unittest.TestCase):
     def get_dot_filepath(filename):
         return rf'd:\tmp\art\{filename}.png'
 
-    def test_build_recovery_synch_set_success(self):
+    def test_art_grammar_success(self):
         parser = Test.get_parser("")
         assert parser

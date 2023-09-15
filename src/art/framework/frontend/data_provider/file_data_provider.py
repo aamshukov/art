@@ -22,7 +22,6 @@ class FileDataProvider(DataProvider):
         https://docs.python.org/3/library/codecs.html#encodings-and-unicode
         """
         encoding = 'UTF-8'
-        bom = None
         offset = 0
         with open(self.source, 'rb', buffering=0) as stream:
             bom = stream.read(4)
@@ -46,6 +45,7 @@ class FileDataProvider(DataProvider):
         with open(self.source, 'rt', encoding=encoding, newline=os.linesep) as stream:
             stream.seek(offset, os.SEEK_SET)
             text = stream.read()
+        # text = text or ' '
         if to_codepoints:
             result = Text.string_to_codepoints(text)
         else:

@@ -128,7 +128,7 @@ class Content(Base):
     def get_column(self, position):
         """
         """
-        # assert position < self.count, "Position out of range."
+        assert position <= self.count, f"Position out of range, {position}:{self.count}."
         line_start = self.line_map[self.get_line(position) - Content.FIRST_LINE]
         column = 0
         if self.tab_size > 0:  # consider tabs

@@ -1,8 +1,4 @@
-﻿#
-compilation_unit                    : expr
-                                    ;
-
-# TYPE
+﻿# TYPE
 TYPE                                : integral_type array_type_rank_specifier_opt
                                     | type_name array_type_rank_specifier_opt
                                     | type_parameter array_type_rank_specifier_opt
@@ -498,8 +494,8 @@ expr                                : expr  ','   expr
                                     | expr  '?'   expr ':' expr                                                         # ternary
                                     | expr  'if'  expr 'else' expr
                                     | '('   expr  ')'
-                                    | expr '(' expr_opt ')'
                                     | expr  '.'  expr                                                                   # Foo.name, foo.name
+                                    | expr '(' expr_opt ')'
                                     | expr '[' expr ']'                                                                 # array[0,2]
                                     | expr '[' expr_opt ':' expr_opt array_slicing_step_opt ']'                         # a[start:stop:step]
                                     | primary_expr

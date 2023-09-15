@@ -4,7 +4,6 @@
 #
 import inspect
 import unittest
-
 from art.framework.core.domain_helper import profile
 from art.framework.core.logger import Logger
 from art.framework.core.diagnostics import Diagnostics
@@ -79,6 +78,7 @@ class Test(unittest.TestCase):
 
     def test_expr_pratt_success(self):
         programs = [
+            ' ',
             '1',
             '1+2',
             '1+2*3',
@@ -92,6 +92,8 @@ class Test(unittest.TestCase):
             parser.lexical_analyzer.next_lexeme()
             pratt_parser = ArtExprParser(parser)
             expr = pratt_parser.parse()
+            if not program:
+                continue  # for ''
             ParseTreeDomainHelper.\
                 generate_graphviz(expr.tree, Test.get_dot_filepath(f'{inspect.currentframe().f_code.co_name}_{k}'))
             assert parser.diagnostics.status

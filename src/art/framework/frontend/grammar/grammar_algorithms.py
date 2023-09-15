@@ -3,6 +3,8 @@
 #
 """ Context Free Grammar algorithms """
 import itertools
+from copy import deepcopy
+
 from art.framework.core.base import Base
 from art.framework.core.text import Text
 
@@ -110,7 +112,8 @@ class GrammarAlgorithms(Base):
                 line = list()
                 for symbols in product:
                     for symbol in symbols:
-                        assert symbol.terminal or symbol.epsilon, f"Symbol {symbol.name} must be TERMINAl or EPSILON."
+                        assert symbol.terminal or symbol.epsilon,\
+                            f"Symbol {symbol.name} must be TERMINAl or EPSILON."  # noqa
                         line.append(symbol)
                         if symbol.terminal:
                             n += 1
@@ -275,11 +278,11 @@ class GrammarAlgorithms(Base):
                 fls[non_terminal] = [[]]
         while True:
             for non_terminal in non_terminals:  # for each A ∈ N do ...
-                fls_prime[non_terminal] = fls[non_terminal].copy()  # F`(A) = F(A)
+                fls_prime[non_terminal] = deepcopy(fls[non_terminal])  # F`(A) = F(A)
             for rule in grammar.rules:  # for each rule A -> w = u1 u2 ... uN ...
                 if all(symbol.terminal for symbol in rule.rhs):  # ... with w ∉ T*
                     continue
-                ls = fls_prime[rule.lhs].copy()  # L = FL'(A)
+                ls = deepcopy(fls_prime[rule.lhs])  # L = FL'(A)
                 un = rule.rhs[-1]
                 if un.non_terminal:  # if uN ∈ N ...
                     fls[un] = GrammarAlgorithms.union_lists(fls[un], ls)  # ... then FL(uN) = FL(uN) ∪ L

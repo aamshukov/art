@@ -22,18 +22,14 @@ class ArtExprParser(PrattParser):
     def __init__(self, parser):
         """
         """
-        super().__init__(parser.context,
-                         parser.lexical_analyzer,
-                         parser.grammar,
-                         parser.statistics,
-                         parser.diagnostics)
-        self.parser = parser  # master parser
+        super().__init__(parser)
         self.handlers = self.build_handlers()
 
     def parse(self, *args, **kwargs):
         """
         """
-        return super().parse(rbp=OperatorPrecedenceLevel.UNKNOWN)
+        expression = ArtAst.make_non_terminal_tree(ArtParseTreeKind.EXPRESSION, self.grammar)
+        return super().parse(rbp=OperatorPrecedenceLevel.UNKNOWN, papa=expression)
 
     def parse_primary_expr(self):
         """
@@ -43,6 +39,7 @@ class ArtExprParser(PrattParser):
         """ # noqa
         self.parser.inc_recursion_level()
         primary_expression = ArtAst.make_non_terminal_tree(ArtParseTreeKind.PRIMARY_EXPRESSION, self.grammar)
+        self.parser.consume_noise(primary_expression)
         if self.parser.literal():
             self.parser.parse_literal(primary_expression)
         elif self.parser.lexer.token.kind == TokenKind.IDENTIFIER:
@@ -82,12 +79,17 @@ class ArtExprParser(PrattParser):
         handlers[TokenKind.FALSE_KW] = PrattParserHandler(OperatorPrecedenceLevel.LITERAL,
                                                           nud=self.parse_primary_expr)
 
+
         handlers[TokenKind.PLUS_SIGN] = PrattParserHandler(OperatorPrecedenceLevel.ADDITIVE,
+                                                           nud=self.parse_prefix_operator,
                                                            led=self.parse_infix_operator)
         handlers[TokenKind.ADD_KW] = PrattParserHandler(OperatorPrecedenceLevel.ADDITIVE,
+                                                        nud=self.parse_prefix_operator,
                                                         led=self.parse_infix_operator)
         handlers[TokenKind.HYPHEN_MINUS] = PrattParserHandler(OperatorPrecedenceLevel.ADDITIVE,
+                                                              nud=self.parse_prefix_operator,
                                                               led=self.parse_infix_operator)
         handlers[TokenKind.SUB_KW] = PrattParserHandler(OperatorPrecedenceLevel.ADDITIVE,
+                                                        nud=self.parse_prefix_operator,
                                                         led=self.parse_infix_operator)
         return handlers
