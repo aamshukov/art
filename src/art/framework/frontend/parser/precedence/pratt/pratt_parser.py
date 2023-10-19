@@ -40,14 +40,14 @@ class PrattParser(OperatorPrecedenceParser):
         rbp = kwargs.get('rbp')  # precedence
         papa = kwargs.get('papa')
         lexer = self.lexical_analyzer
-        lexer.consume_noise(papa)
+        self.parser.consume_noise(papa)
         if lexer.eos():
             return self.parser.syntax_error(None, Status.UNEXPEXTED_EOS, f'Unexpected EOS')
         handler = self.handlers[lexer.token.kind]
         assert handler.nud, f"Nud of the Pratt parser's handler is not defined for {lexer.token.kind.name}."
         lhs = handler.nud()
         while rbp < handler.lbp:
-            lexer.consume_noise(papa)
+            self.parser.consume_noise(papa)
             lexer.next_lexeme()
             if lexer.eos():
                 break

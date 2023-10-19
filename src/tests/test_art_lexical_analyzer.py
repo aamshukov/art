@@ -252,7 +252,7 @@ class Test(unittest.TestCase):
 
         
             a22
-        end
+        done
         """
         Test.evaluate(program, tokens, validate=True)
 
@@ -295,7 +295,7 @@ class Test(unittest.TestCase):
                   TokenKind.RIGHT_PARENTHESIS,
                   TokenKind.EOL,
                   TokenKind.DEDENT,
-                  TokenKind.IDENTIFIER,  # end
+                  TokenKind.END_KW,  # end
                   TokenKind.EOL,
                   TokenKind.WS,
                   TokenKind.EOS

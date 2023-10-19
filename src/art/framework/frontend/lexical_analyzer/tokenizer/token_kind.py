@@ -51,6 +51,8 @@ class TokenKind(IntEnum):
     TYPE_KW = auto()
     DEF_KW = auto()
 
+    END_KW = auto()                     # if ... end, while ... end
+
     INTERFACE_KW = auto()
     CLASS_KW = auto()
     STRUCT_KW = auto()
@@ -245,6 +247,7 @@ class TokenKind(IntEnum):
         result['alias'] = TokenKind.ALIAS_KW
         result['type'] = TokenKind.TYPE_KW
         result['def'] = TokenKind.DEF_KW
+        result['end'] = TokenKind.END_KW
         result['interface'] = TokenKind.INTERFACE_KW
         result['class'] = TokenKind.CLASS_KW
         result['struct'] = TokenKind.STRUCT_KW

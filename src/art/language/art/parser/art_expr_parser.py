@@ -79,7 +79,6 @@ class ArtExprParser(PrattParser):
         handlers[TokenKind.FALSE_KW] = PrattParserHandler(OperatorPrecedenceLevel.LITERAL,
                                                           nud=self.parse_primary_expr)
 
-
         handlers[TokenKind.PLUS_SIGN] = PrattParserHandler(OperatorPrecedenceLevel.ADDITIVE,
                                                            nud=self.parse_prefix_operator,
                                                            led=self.parse_infix_operator)
