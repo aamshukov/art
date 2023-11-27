@@ -188,8 +188,7 @@ class Test(unittest.TestCase):
                 parser = Test.get_parser(program)
                 parser.lexical_analyzer.next_lexeme()
                 pm_expr = parser.parse_primary_expression()
-                ParseTreeDomainHelper.\
-                    generate_graphviz(pm_expr.tree, Test.get_dot_filepath(f'{filename}_{k}'))
+                ParseTreeDomainHelper.generate_graphviz(pm_expr.tree, Test.get_dot_filepath(f'{filename}_{k}'))
                 assert parser.diagnostics.status
         test(inspect.currentframe().f_code.co_name)
 
