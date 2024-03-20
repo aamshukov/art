@@ -3,7 +3,7 @@
 # UI Lab Inc. Arthur Amshukov
 #
 """ Parse context """
-from art.framework.core.context import Context
+from art.framework.core.context.context import Context
 
 
 class ParseContext(Context):

@@ -4,11 +4,9 @@
 #
 """ Pratt/Precedence climbing parser """
 from abc import abstractmethod
-from art.framework.core.status import Status
+from art.framework.core.diagnostics.status import Status
 from art.framework.frontend.parser.precedence.operator_precedence.operator_prcedence_parser import \
     OperatorPrecedenceParser
-from art.language.art.ast.art_ast import ArtAst
-from art.language.art.parser.art_parse_tree_kind import ArtParseTreeKind
 
 
 class PrattParser(OperatorPrecedenceParser):

@@ -3,7 +3,7 @@
 # UI Lab Inc. Arthur Amshukov
 #
 """ Art parser Ast routines """
-from art.framework.core.base import Base
+from art.framework.core.domain.base import Base
 from art.framework.frontend.lexical_analyzer.tokenizer.token_kind import TokenKind
 from art.framework.frontend.parser.parse_tree_factory import ParseTreeFactory
 from art.language.art.ast.art_parse_tree_visitor import ArtParseTreeVisitor

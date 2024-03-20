@@ -5,8 +5,8 @@
 import itertools
 from copy import deepcopy
 
-from art.framework.core.base import Base
-from art.framework.core.text import Text
+from art.framework.core.domain.base import Base
+from art.framework.core.utils.text import Text
 
 
 class GrammarAlgorithms(Base):

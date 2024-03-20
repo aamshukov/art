@@ -2,7 +2,7 @@
 # UI Lab Inc. Arthur Amshukov
 #
 """ FSA status """
-from art.framework.core.vertex import Vertex
+from art.framework.core.adt.graph.vertex import Vertex
 from art.framework.frontend.lexical_analyzer.tokenizer.token_kind import TokenKind
 
 

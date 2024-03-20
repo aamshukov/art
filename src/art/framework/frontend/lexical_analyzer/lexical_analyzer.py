@@ -4,8 +4,8 @@
 """ Lexical Analyzer """
 from collections import deque
 from copy import deepcopy
-from art.framework.core.entity import Entity
-from art.framework.core.flags import Flags
+from art.framework.core.domain.entity import Entity
+from art.framework.core.utils.flags import Flags
 from art.framework.frontend.lexical_analyzer.tokenizer.token_factory import TokenFactory
 from art.framework.frontend.lexical_analyzer.tokenizer.token_kind import TokenKind
 

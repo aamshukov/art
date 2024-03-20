@@ -2,10 +2,9 @@
 # UI Lab Inc. Arthur Amshukov
 #
 """ Context Free Grammar """
-import os
 from abc import abstractmethod
 from functools import lru_cache
-from art.framework.core.base import Base
+from art.framework.core.domain.base import Base
 from art.framework.frontend.grammar.grammar_symbol import GrammarSymbol
 from art.framework.frontend.grammar.grammar_symbol_factory import GrammarSymbolFactory
 

@@ -4,7 +4,7 @@
 #
 """ Parse tree """
 from enum import IntEnum, auto
-from art.framework.core.base import Base
+from art.framework.core.domain.base import Base
 from art.framework.frontend.lexical_analyzer.tokenizer.token_kind import TokenKind
 
 

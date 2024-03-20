@@ -5,10 +5,10 @@
 from copy import deepcopy
 from collections import deque
 from abc import abstractmethod
-from art.framework.core.entity import Entity
-from art.framework.core.flags import Flags
-from art.framework.core.status import Status
-from art.framework.core.text import Text
+from art.framework.core.domain.entity import Entity
+from art.framework.core.utils.flags import Flags
+from art.framework.core.diagnostics.status import Status
+from art.framework.core.utils.text import Text
 from art.framework.frontend.lexical_analyzer.tokenizer.token_factory import TokenFactory
 
 

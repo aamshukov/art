@@ -3,7 +3,7 @@
 # UI Lab Inc. Arthur Amshukov
 #
 import unittest
-from art.framework.core.unification import Unification
+from art.framework.core.algorithm.unification import Unification
 
 
 class Test(unittest.TestCase):

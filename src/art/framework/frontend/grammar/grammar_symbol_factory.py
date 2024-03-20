@@ -4,8 +4,8 @@
 #
 """ Grammar symbol factory """
 from copy import deepcopy
-from art.framework.core.base import Base
-from art.framework.core.flags import Flags
+from art.framework.core.domain.base import Base
+from art.framework.core.utils.flags import Flags
 from art.framework.frontend.grammar.grammar_symbol import GrammarSymbol
 from art.framework.frontend.grammar.grammar_symbol_kind import GrammarSymbolKind
 from art.framework.frontend.lexical_analyzer.tokenizer.token_kind import TokenKind

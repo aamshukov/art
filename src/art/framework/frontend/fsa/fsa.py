@@ -2,9 +2,9 @@
 # UI Lab Inc. Arthur Amshukov
 #
 """ FSA """
-from art.framework.core.flags import Flags
-from art.framework.core.text import Text
-from art.framework.core.graph import Graph
+from art.framework.core.utils.flags import Flags
+from art.framework.core.utils.text import Text
+from art.framework.core.adt.graph.graph import Graph
 
 
 class Fsa(Graph):

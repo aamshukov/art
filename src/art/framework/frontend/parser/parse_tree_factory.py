@@ -4,9 +4,9 @@
 #
 """ Parse tree factory """
 from copy import deepcopy
-from art.framework.core.base import Base
-from art.framework.core.colors import Colors
-from art.framework.core.flags import Flags
+from art.framework.core.domain.base import Base
+from art.framework.core.utils.colors import Colors
+from art.framework.core.utils.flags import Flags
 from art.framework.frontend.parser.parse_tree import ParseTree
 from art.framework.frontend.symtable.symbol_factory import SymbolFactory
 

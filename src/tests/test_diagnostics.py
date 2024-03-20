@@ -2,10 +2,9 @@
 # -*- encoding: utf-8 -*-
 # UI Lab Inc. Arthur Amshukov
 #
-import os
 import unittest
-from art.framework.core.status import Status
-from art.framework.core.diagnostics import Diagnostics
+from art.framework.core.diagnostics.status import Status
+from art.framework.core.diagnostics.diagnostics import Diagnostics
 
 
 class Test(unittest.TestCase):

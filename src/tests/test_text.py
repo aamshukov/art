@@ -2,9 +2,8 @@
 # -*- encoding: utf-8 -*-
 # UI Lab Inc. Arthur Amshukov
 #
-import os
 import unittest
-from art.framework.core.text import Text
+from art.framework.core.utils.text import Text
 
 
 class Test(unittest.TestCase):

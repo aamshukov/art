@@ -4,7 +4,7 @@
 #
 """ Parse tree visitor """
 from abc import abstractmethod
-from art.framework.core.visitor import Visitor
+from art.framework.core.patterns.visitor import Visitor
 
 
 class ParseTreeVisitor(Visitor):

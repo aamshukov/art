@@ -4,10 +4,10 @@
 #
 import os
 import unittest
-from art.framework.core.flags import Flags
-from art.framework.core.logger import Logger
-from art.framework.core.domain_helper import DomainHelper
-from art.framework.core.platform import Platform
+from art.framework.core.utils.flags import Flags
+from art.framework.core.logging.logger import Logger
+from art.framework.core.utils.helper import DomainHelper
+from art.framework.core.utils.platform import Platform
 
 
 class Test(unittest.TestCase):

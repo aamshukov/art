@@ -20,6 +20,7 @@ parts/
 sdist/
 var/
 wheels/
+pip-wheel-metadata/
 share/python-wheels/
 *.egg-info/
 .installed.cfg
@@ -163,12 +164,15 @@ cython_debug/
 staging
 grammars
 libs/
+build/
 projects/.vs
 tmp/
 x64/
+tmp/
 *.user
 .vs/
 TestResults/
+.pytest_cache/
 
 docs/snippets.txt
 

@@ -4,9 +4,9 @@
 """ Art tokenizer """
 from collections import deque
 from copy import deepcopy
-from art.framework.core.flags import Flags
-from art.framework.core.status import Status
-from art.framework.core.text import Text
+from art.framework.core.utils.flags import Flags
+from art.framework.core.diagnostics.status import Status
+from art.framework.core.utils.text import Text
 from art.framework.frontend.lexical_analyzer.tokenizer.token_kind import TokenKind
 from art.framework.frontend.lexical_analyzer.tokenizer.tokenizer import Tokenizer
 

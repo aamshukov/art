@@ -4,7 +4,7 @@
 #
 """ Data provider interface """
 from abc import abstractmethod
-from art.framework.core.base import Base
+from art.framework.core.domain.base import Base
 
 
 class DataProvider(Base):

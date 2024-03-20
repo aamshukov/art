@@ -5,9 +5,9 @@
 """ Parse domain helper """
 from anytree import Node
 from anytree.exporter import DotExporter
-from art.framework.core.base import Base
-from art.framework.core.domain_helper import DomainHelper
-from art.framework.core.graph_algorithms import GraphAlgorithms
+from art.framework.core.domain.base import Base
+from art.framework.core.utils.helper import DomainHelper
+from art.framework.core.adt.graph.graph_algorithms import GraphAlgorithms
 from art.framework.frontend.lexical_analyzer.tokenizer.token_kind import TokenKind
 
 

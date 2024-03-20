@@ -3,7 +3,7 @@
 # UI Lab Inc. Arthur Amshukov
 #
 """ Pratt parser handler """
-from art.framework.core.base import Base
+from art.framework.core.domain.base import Base
 
 
 class PrattParserHandler(Base):

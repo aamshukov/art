@@ -4,7 +4,6 @@
 #
 """ Scope kinds """
 from enum import IntEnum, auto
-from art.framework.core.tree import Tree
 
 
 class ScopeKind(IntEnum):

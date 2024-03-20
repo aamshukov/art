@@ -3,7 +3,6 @@
 # UI Lab Inc. Arthur Amshukov
 #
 import unittest
-from art.framework.core.text import Text
 from art.framework.frontend.data_provider.string_data_provider import StringDataProvider
 from art.framework.frontend.data_provider.file_data_provider import FileDataProvider
 from tests.__init__ import data_equal

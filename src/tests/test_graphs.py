@@ -11,16 +11,16 @@ import networkx as nx
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
-from art.framework.core.flags import Flags
-from art.framework.core.colors import Colors
-from art.framework.core.domain_helper import DomainHelper
-from art.framework.core.disjoint_set import DisjointSet
-from art.framework.core.vertex import Vertex
-from art.framework.core.graph import Graph
-from art.framework.core.tree import Tree
-from art.framework.core.algorithms import Algorithms
-from art.framework.core.graph_algorithms import GraphAlgorithms
-from art.framework.core.graph_visitor import GraphVisitor
+from art.framework.core.utils.flags import Flags
+from art.framework.core.utils.colors import Colors
+from art.framework.core.utils.helper import DomainHelper
+from art.framework.core.adt.union_find.disjoint_set import DisjointSet
+from art.framework.core.adt.graph.vertex import Vertex
+from art.framework.core.adt.graph.graph import Graph
+from art.framework.core.adt.tree.tree import Tree
+from art.framework.core.algorithm.algorithms import Algorithms
+from art.framework.core.adt.graph.graph_algorithms import GraphAlgorithms
+from art.framework.core.adt.graph.graph_visitor import GraphVisitor
 
 
 class Test(unittest.TestCase):

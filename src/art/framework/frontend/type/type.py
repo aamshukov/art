@@ -4,9 +4,9 @@
 #
 """ Type """
 from abc import abstractmethod
-from art.framework.core.domain_helper import DomainHelper
-from art.framework.core.entity import Entity
-from art.framework.core.flags import Flags
+from art.framework.core.utils.helper import DomainHelper
+from art.framework.core.domain.entity import Entity
+from art.framework.core.utils.flags import Flags
 from art.framework.frontend.type.type_kind import TypeKind
 
 

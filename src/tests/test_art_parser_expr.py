@@ -5,10 +5,10 @@
 import inspect
 import unittest
 
-from art.framework.core.domain_helper import profile
-from art.framework.core.logger import Logger
-from art.framework.core.diagnostics import Diagnostics
-from art.framework.core.platform import Platform
+from art.framework.core.utils.helper import profile
+from art.framework.core.logging.logger import Logger
+from art.framework.core.diagnostics.diagnostics import Diagnostics
+from art.framework.core.utils.platform import Platform
 from art.framework.frontend.data_provider.file_data_provider import FileDataProvider
 from art.framework.frontend.data_provider.string_data_provider import StringDataProvider
 from art.framework.frontend.content.content import Content

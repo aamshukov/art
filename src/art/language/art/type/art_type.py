@@ -4,7 +4,7 @@
 #
 """ Art type """
 from abc import abstractmethod
-from art.framework.core.flags import Flags
+from art.framework.core.utils.flags import Flags
 from art.framework.frontend.type.type import Type
 from art.framework.frontend.type.type_kind import TypeKind
 

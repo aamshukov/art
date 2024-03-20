@@ -2,12 +2,10 @@
 # -*- encoding: utf-8 -*-
 # UI Lab Inc. Arthur Amshukov
 #
-import inspect
 import unittest
-from art.framework.core.domain_helper import DomainHelper
-from art.framework.core.logger import Logger
-from art.framework.core.diagnostics import Diagnostics
-from art.framework.core.platform import Platform
+from art.framework.core.logging.logger import Logger
+from art.framework.core.diagnostics.diagnostics import Diagnostics
+from art.framework.core.utils.platform import Platform
 from art.framework.frontend.data_provider.file_data_provider import FileDataProvider
 from art.framework.frontend.data_provider.string_data_provider import StringDataProvider
 from art.framework.frontend.content.content import Content
@@ -17,7 +15,6 @@ from art.framework.frontend.parser.parse_context import ParseContext
 from art.framework.frontend.statistics.statistics import Statistics
 from art.framework.frontend.lexical_analyzer.lexical_analyzer import LexicalAnalyzer
 from art.language.art.grammar.art_grammar import ArtGrammar
-from art.language.art.parser.art_parse_tree_kind import ArtParseTreeKind
 from art.language.art.parser.art_parser import ArtParser
 from art.language.art.parser.art_tokenizer import ArtTokenizer
 

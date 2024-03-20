@@ -3,8 +3,8 @@
 # UI Lab Inc. Arthur Amshukov
 #
 import unittest
-from art.framework.core.text import Text
-from art.framework.core.diagnostics import Diagnostics
+from art.framework.core.utils.text import Text
+from art.framework.core.diagnostics.diagnostics import Diagnostics
 from art.framework.frontend.content.content import Content
 from art.framework.frontend.data_provider.string_data_provider import StringDataProvider
 from art.framework.frontend.lexical_analyzer.tokenizer.token import Token

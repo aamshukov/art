@@ -3,7 +3,7 @@
 # UI Lab Inc. Arthur Amshukov
 #
 """ Symbol table """
-from art.framework.core.base import Base
+from art.framework.core.domain.base import Base
 
 
 class SymbolTable(Base):

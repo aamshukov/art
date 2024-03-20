@@ -3,7 +3,7 @@
 # UI Lab Inc. Arthur Amshukov
 #
 """ Type environment """
-from art.framework.core.base import Base
+from art.framework.core.domain.base import Base
 
 
 class TypeEnvironment(Base):

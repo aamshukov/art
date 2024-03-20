@@ -4,7 +4,7 @@
 #
 """ Token factory """
 from copy import deepcopy
-from art.framework.core.base import Base
+from art.framework.core.domain.base import Base
 from art.framework.frontend.lexical_analyzer.tokenizer.token import Token
 from art.framework.frontend.lexical_analyzer.tokenizer.token_kind import TokenKind
 

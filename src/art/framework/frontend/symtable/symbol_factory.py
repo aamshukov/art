@@ -4,8 +4,8 @@
 #
 """ IR symbol factory """
 from copy import deepcopy
-from art.framework.core.base import Base
-from art.framework.core.flags import Flags
+from art.framework.core.domain.base import Base
+from art.framework.core.utils.flags import Flags
 from art.framework.frontend.symtable.symbol import Symbol
 from art.framework.frontend.symtable.symbol_kind import SymbolKind
 

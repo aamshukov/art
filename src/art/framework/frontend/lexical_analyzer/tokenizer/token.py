@@ -3,9 +3,9 @@
 # UI Lab Inc. Arthur Amshukov
 #
 """ Token """
-from art.framework.core.text import Text
-from art.framework.core.value import Value
-from art.framework.core.flags import Flags
+from art.framework.core.utils.text import Text
+from art.framework.core.domain.value import Value
+from art.framework.core.utils.flags import Flags
 from art.framework.frontend.lexical_analyzer.tokenizer.token_kind import TokenKind
 
 

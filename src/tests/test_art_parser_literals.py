@@ -4,8 +4,8 @@
 #
 import inspect
 import unittest
-from art.framework.core.logger import Logger
-from art.framework.core.diagnostics import Diagnostics
+from art.framework.core.logging.logger import Logger
+from art.framework.core.diagnostics.diagnostics import Diagnostics
 from art.framework.frontend.data_provider.string_data_provider import StringDataProvider
 from art.framework.frontend.content.content import Content
 from art.framework.frontend.grammar.grammar_algorithms import GrammarAlgorithms

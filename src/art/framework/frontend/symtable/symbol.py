@@ -2,9 +2,9 @@
 # UI Lab Inc. Arthur Amshukov
 #
 """ IR (Intermediate Representation) symbol """
-from art.framework.core.domain_helper import DomainHelper
-from art.framework.core.entity import Entity
-from art.framework.core.flags import Flags
+from art.framework.core.utils.helper import DomainHelper
+from art.framework.core.domain.entity import Entity
+from art.framework.core.utils.flags import Flags
 from art.framework.frontend.symtable.symbol_kind import SymbolKind
 
 

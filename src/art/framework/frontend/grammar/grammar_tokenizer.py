@@ -2,7 +2,7 @@
 # UI Lab Inc. Arthur Amshukov
 #
 """ Grammar Tokenizer """
-from art.framework.core.flags import Flags
+from art.framework.core.utils.flags import Flags
 from art.language.art.parser.art_tokenizer import ArtTokenizer
 
 

@@ -3,9 +3,9 @@
 # UI Lab Inc. Arthur Amshukov
 #
 """ Scope """
-from art.framework.core.colors import Colors
-from art.framework.core.flags import Flags
-from art.framework.core.tree import Tree
+from art.framework.core.utils.colors import Colors
+from art.framework.core.utils.flags import Flags
+from art.framework.core.adt.tree.tree import Tree
 from art.framework.frontend.symtable.scope.scope_kind import ScopeKind
 
 

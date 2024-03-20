@@ -3,10 +3,9 @@
 # UI Lab Inc. Arthur Amshukov
 #
 """ Art parser """
-from functools import lru_cache
 from collections import deque
 from collections import namedtuple
-from art.framework.core.status import Status
+from art.framework.core.diagnostics.status import Status
 from art.framework.frontend.parser.backtracking.\
     recursive_descent.recursive_descent_parser import RecursiveDescentParser
 from art.framework.frontend.lexical_analyzer.tokenizer.token_kind import TokenKind
@@ -14,11 +13,6 @@ from art.framework.frontend.parser.parse_result import ParseResult
 from art.language.art.ast.art_ast import ArtAst
 from art.language.art.parser.art_parse_tree_kind import ArtParseTreeKind
 from art.language.art.parser.art_syntax_kind import ArtSyntaxKind
-from art.framework.core.domain_helper import profile
-from art.framework.frontend.parser.precedence.\
-    operator_precedence.operator_prcedence_parser import OperatorPrecedenceParser
-from art.framework.frontend.parser.precedence.\
-    operator_precedence.operator_precedence_level import OperatorPrecedenceLevel
 
 
 class ArtParser(RecursiveDescentParser):
