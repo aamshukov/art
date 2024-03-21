@@ -16,11 +16,6 @@ class GraphVisitor(Visitor):
         super().__init__()
         self.graph = graph
 
-    def __repr__(self):
-        return self.__class__.__name__
-
-    __str__ = __repr__
-
     @abstractmethod
     def visit(self, vertex, *args, **kwargs):
         """

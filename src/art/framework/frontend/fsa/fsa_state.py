@@ -18,6 +18,38 @@ class FsaState(Vertex):
         """
         super().__init__(id, label, token, version=version)
 
+    def __hash__(self):
+        """
+        """
+        return hash((super().__hash__(), self.__class__))
+
+    def __eq__(self, other):
+        """
+        """
+        if other.__class__ is self.__class__:
+            result = super().__eq__(other)
+        else:
+            result = NotImplemented
+        return result
+
+    def __lt__(self, other):
+        """
+        """
+        if other.__class__ is self.__class__:
+            result = super().__lt__(other)
+        else:
+            result = NotImplemented
+        return result
+
+    def __le__(self, other):
+        """
+        """
+        if other.__class__ is self.__class__:
+            result = super().__le__(other)
+        else:
+            result = NotImplemented
+        return result
+
     @property
     def token(self):
         """

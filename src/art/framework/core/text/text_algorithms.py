@@ -4,7 +4,7 @@
 #
 """ Text algorithms """
 from functools import lru_cache
-from graph.core.base import Base
+from art.framework.core.domain.base import Base
 
 
 class TextAlgorithms(Base):

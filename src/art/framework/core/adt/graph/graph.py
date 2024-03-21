@@ -24,39 +24,43 @@ class Graph(Entity):
         """
         """
         super().__init__(id, value, attributes, flags, version)
-        self.label=label
+        self.label = label
         self.root = None  # optional, used in some digraph algorithms
         self.digraph = digraph  # directed or not
         self.vertices = dict()
         self.edges = dict()
 
-    def __repr__(self):
-        """
-        """
-        return f"{type(self).__name__}:{self.id}:{self.label}:{self.value}:" \
-               f"({DomainHelper.dict_to_string(self.attributes)}):{self.version}"
-
-    __str__ = __repr__
-
     def __hash__(self):
         """
         """
-        return super().__hash__()
+        return hash((super().__hash__(), self.__class__))
 
     def __eq__(self, other):
         """
         """
-        return super().__eq__(other)
+        if other.__class__ is self.__class__:
+            result = super().__eq__(other)
+        else:
+            result = NotImplemented
+        return result
 
     def __lt__(self, other):
         """
         """
-        return super().__lt__(other)
+        if other.__class__ is self.__class__:
+            result = super().__lt__(other)
+        else:
+            result = NotImplemented
+        return result
 
     def __le__(self, other):
         """
         """
-        return super().__le__(other)
+        if other.__class__ is self.__class__:
+            result = super().__le__(other)
+        else:
+            result = NotImplemented
+        return result
 
     def matrix(self, value_type=float):
         size = len(self.vertices)
@@ -134,3 +138,8 @@ class Graph(Entity):
         """
         """
         return True
+
+    def stringify(self):
+        """
+        """
+        return f"{super().stringify()}:{self.label}"

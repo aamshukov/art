@@ -27,60 +27,61 @@ class Token(Value):
         self.source = source  # lexical analyser which recognizes this lexeme, could be from different files
         self.flags = Flags.CLEAR | Flags.GENUINE
 
-    def __repr__(self):
-        """
-        """
-        return f"{self.kind.name.ljust(16)}: '{self.literal}', '{self.value}', {self.offset}," \
-               f"{self.length}, '{self.source}', {self.flags}, {self.version}"
-
-    __str__ = __repr__
-
     def __hash__(self):
         """
         """
-        result = (super().__hash__() ^
-                  hash(self.kind) ^
-                  hash(self.offset) ^
-                  hash(self.length) ^
-                  hash(self.literal) ^
-                  hash(self.value) ^
-                  hash(self.source))
-        return result
+        return hash((super().__hash__(),
+                     self.__class__,
+                     self.kind,
+                     self.offset,
+                     self.length,
+                     self.literal,
+                     self.value,
+                     self.source))
 
     def __eq__(self, other):
         """
         """
-        result = (super().__eq__(other) and
-                  self.kind == other.kind and
-                  self.offset == other.offset and
-                  self.length == other.length and
-                  Text.equal(self.literal, other.literal) and
-                  self.value == other.value and
-                  self.source == other.source)
+        if other.__class__ is self.__class__:
+            result = (super().__eq__(other) and
+                      self.kind == other.kind and
+                      self.offset == other.offset and
+                      self.length == other.length and
+                      Text.equal(self.literal, other.literal) and
+                      self.value == other.value and
+                      self.source == other.source)
+        else:
+            result = NotImplemented
         return result
 
     def __lt__(self, other):
         """
         """
-        result = (super().__lt__(other) and
-                  self.kind < other.kind and
-                  self.offset < other.offset and
-                  self.length < other.length and
-                  Text.compare(self.literal, other.literal) < 0 and
-                  self.value < other.value and
-                  self.source < other.source)
+        if other.__class__ is self.__class__:
+            result = (super().__lt__(other) and
+                      self.kind < other.kind and
+                      self.offset < other.offset and
+                      self.length < other.length and
+                      Text.compare(self.literal, other.literal) < 0 and
+                      self.value < other.value and
+                      self.source < other.source)
+        else:
+            result = NotImplemented
         return result
 
     def __le__(self, other):
         """
         """
-        result = (super().__le__(other) and
-                  self.kind <= other.kind and
-                  self.offset <= other.offset and
-                  self.length <= other.length and
-                  Text.compare(self.literal, other.literal) <= 0 and
-                  self.value <= other.value and
-                  self.source <= other.source)
+        if other.__class__ is self.__class__:
+            result = (super().__le__(other) and
+                      self.kind <= other.kind and
+                      self.offset <= other.offset and
+                      self.length <= other.length and
+                      Text.compare(self.literal, other.literal) <= 0 and
+                      self.value <= other.value and
+                      self.source <= other.source)
+        else:
+            result = NotImplemented
         return result
 
     @property
@@ -93,6 +94,12 @@ class Token(Value):
         """
         """
         return True
+
+    def stringify(self):
+        """
+        """
+        return f"{super().stringify()}:{self.kind.name.ljust(16)}: '{self.literal}', '{self.value}'," \
+               f"{self.offset}, {self.length}, '{self.source}', {self.flags}"
 
     def accept(self, token):
         """

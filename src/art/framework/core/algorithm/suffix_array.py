@@ -158,12 +158,6 @@ class SuffixArray(Base):
                 self.tail = 0
                 self.char = 0
 
-            def __repr__(self):
-                """
-                """
-                return f"({self.size},{self.head},{self.tail},{self.char})"
-            __str__ = __repr__
-
         def build_buckets(string, abc_size):
             """
             """

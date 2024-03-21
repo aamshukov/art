@@ -3,7 +3,7 @@
 # UI Lab Inc. Arthur Amshukov
 #
 """ Root class """
-from abc import ABCMeta
+from abc import ABCMeta, abstractmethod
 
 
 class Base(metaclass=ABCMeta):
@@ -13,3 +13,15 @@ class Base(metaclass=ABCMeta):
         """
         """
         pass
+
+    def __repr__(self):
+        """
+        """
+        return self.stringify()
+
+    __str__ = __repr__
+
+    def stringify(self):
+        """
+        """
+        return f"{type(self).__name__}"

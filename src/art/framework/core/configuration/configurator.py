@@ -4,6 +4,7 @@
 #
 """ Configuration """
 from art.framework.core.domain.base import Base
+from art.framework.core.patterns.singleton import singleton
 
 
 class Configurator(Base):
@@ -26,11 +27,11 @@ class Configurator(Base):
 # from singleton import singleton
 #
 #
-# @singleton
-# class Configurator:
-#     """
-#     Configuration manager
-#     """
+@singleton
+class Configurator:
+    """
+    Configuration manager
+    """
 #     def __init__(self):
 #         self._db_host = 'localhost'
 #         self._db_port = 33054

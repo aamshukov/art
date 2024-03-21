@@ -3,6 +3,8 @@
 #
 """ Vertex """
 from collections import namedtuple
+
+from art.framework.core.text.text import Text
 from art.framework.core.utils.flags import Flags
 from art.framework.core.utils.colors import Colors
 from art.framework.core.utils.helper import DomainHelper
@@ -30,35 +32,40 @@ class Vertex(Entity, Visitable):
         self.color = color
         self.adjacencies = list()  # list of Vn/Em pairs (AdjValue)
 
-    def __repr__(self):
-        """
-        """
-        return f"{type(self).__name__}:{self.id}:{self.label}:{self.value}:" \
-               f"({DomainHelper.dict_to_string(self.attributes)}):{self.version}"
-
-    __str__ = __repr__
-
     def __hash__(self):
         """
         """
-        result = super().__hash__()
-        result ^= hash(self.label)
-        return result
+        return hash((super().__hash__(), self.__class__, self.label))
 
     def __eq__(self, other):
         """
         """
-        return super().__eq__(other)
+        if other.__class__ is self.__class__:
+            result = (super().__eq__(other) and
+                      Text.equal(self.label, other.label))
+        else:
+            result = NotImplemented
+        return result
 
     def __lt__(self, other):
         """
         """
-        return super().__lt__(other)
+        if other.__class__ is self.__class__:
+            result = (super().__lt__(other) and
+                      Text.compare(self.label, other.label) < 0)
+        else:
+            result = NotImplemented
+        return result
 
     def __le__(self, other):
         """
         """
-        return super().__le__(other)
+        if other.__class__ is self.__class__:
+            result = (super().__le__(other) and
+                      Text.compare(self.label, other.label) <= 0)
+        else:
+            result = NotImplemented
+        return result
 
     @property
     def edges(self):
@@ -80,6 +87,11 @@ class Vertex(Entity, Visitable):
         """
         """
         return True
+
+    def stringify(self):
+        """
+        """
+        return f"{super().stringify()}:{self.label}"
 
     def accept(self, visitor, *args, **kwargs):
         """

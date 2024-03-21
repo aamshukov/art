@@ -37,13 +37,6 @@ def singleton(класс):  # noqa
             """
             self.instance = None
 
-        def __repr__(self):
-            """
-            """
-            return класс.__name__
-
-        __str__ = __repr__
-
         def __call__(self, *args, **kwargs):
             """
             """

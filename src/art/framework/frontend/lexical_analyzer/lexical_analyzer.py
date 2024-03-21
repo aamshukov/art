@@ -39,22 +39,34 @@ class LexicalAnalyzer(Entity):
     def __hash__(self):
         """
         """
-        return super().__hash__()
+        return hash((super().__hash__(), self.__class__))
 
     def __eq__(self, other):
         """
         """
-        return super().__eq__(other)
+        if other.__class__ is self.__class__:
+            result = super().__eq__(other)
+        else:
+            result = NotImplemented
+        return result
 
     def __lt__(self, other):
         """
         """
-        return super().__lt__(other)
+        if other.__class__ is self.__class__:
+            result = super().__lt__(other)
+        else:
+            result = NotImplemented
+        return result
 
     def __le__(self, other):
         """
         """
-        return super().__le__(other)
+        if other.__class__ is self.__class__:
+            result = super().__le__(other)
+        else:
+            result = NotImplemented
+        return result
 
     def eol(self):
         """

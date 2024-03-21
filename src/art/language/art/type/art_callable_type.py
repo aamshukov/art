@@ -24,8 +24,50 @@ class ArtCallableType(ArtType):
         """
         super().__init__(id, name, kind, value, attributes, flags, version)
 
+    def __hash__(self):
+        """
+        """
+        return hash((super().__hash__(), self.__class__))
+
+    def __eq__(self, other):
+        """
+        """
+        if other.__class__ is self.__class__:
+            result = super().__eq__(other)
+        else:
+            result = NotImplemented
+        return result
+
+    def __lt__(self, other):
+        """
+        """
+        if other.__class__ is self.__class__:
+            result = super().__lt__(other)
+        else:
+            result = NotImplemented
+        return result
+
+    def __le__(self, other):
+        """
+        """
+        if other.__class__ is self.__class__:
+            result = super().__le__(other)
+        else:
+            result = NotImplemented
+        return result
+
     @abstractmethod
     def equivalent(self, other):
         """
         """
         raise NotImplemented(self.equivalent.__qualname__)
+
+    def validate(self):
+        """
+        """
+        return True
+
+    def stringify(self):
+        """
+        """
+        return f"{super().stringify()}"

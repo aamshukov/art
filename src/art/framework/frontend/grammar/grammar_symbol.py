@@ -2,6 +2,7 @@
 # UI Lab Inc. Arthur Amshukov
 #
 """ Grammar symbol """
+from art.framework.core.text.text import Text
 from art.framework.core.utils.helper import DomainHelper
 from art.framework.core.domain.entity import Entity
 from art.framework.core.utils.flags import Flags
@@ -33,35 +34,40 @@ class GrammarSymbol(Entity):
         self.follow = list()  # follow set
         self.la = list()  # lookahead set
 
-    def __repr__(self):
-        """
-        """
-        return f"{type(self).__name__}:{self.id}:{self.name}:{self.value}:" \
-               f"({DomainHelper.dict_to_string(self.attributes)}):{self.version}"
-
-    __str__ = __repr__
-
     def __hash__(self):
         """
         """
-        result = super().__hash__()
-        result ^= hash(self.name)
-        return result
+        return hash((super().__hash__(), self.__class__, self.name))
 
     def __eq__(self, other):
         """
         """
-        return super().__eq__(other)
+        if other.__class__ is self.__class__:
+            result = (super().__eq__(other) and
+                      Text.equal(self.name, other.name))
+        else:
+            result = NotImplemented
+        return result
 
     def __lt__(self, other):
         """
         """
-        return super().__lt__(other)
+        if other.__class__ is self.__class__:
+            result = (super().__lt__(other) and
+                      Text.compare(self.name, other.name) < 0)
+        else:
+            result = NotImplemented
+        return result
 
     def __le__(self, other):
         """
         """
-        return super().__le__(other)
+        if other.__class__ is self.__class__:
+            result = (super().__le__(other) and
+                      Text.compare(self.name, other.name) <= 0)
+        else:
+            result = NotImplemented
+        return result
 
     @property
     def terminal(self):
@@ -85,6 +91,11 @@ class GrammarSymbol(Entity):
         """
         """
         return True
+
+    def stringify(self):
+        """
+        """
+        return f"{super().stringify()}:{self.name}:{self.type}:{self.token}"
 
     def decorate(self, full=False):
         """

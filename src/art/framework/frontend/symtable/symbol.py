@@ -2,6 +2,7 @@
 # UI Lab Inc. Arthur Amshukov
 #
 """ IR (Intermediate Representation) symbol """
+from art.framework.core.text.text import Text
 from art.framework.core.utils.helper import DomainHelper
 from art.framework.core.domain.entity import Entity
 from art.framework.core.utils.flags import Flags
@@ -34,37 +35,47 @@ class Symbol(Entity):
         self.size = 0  # ?? runtime size in bytes, might be aligned
         self.bits_size = 0  # ?? runtime size in bits
 
-    def __repr__(self):
-        """
-        """
-        return f"{type(self).__name__}:{self.id}:{self.label}:{self.value}:" \
-               f"({DomainHelper.dict_to_string(self.attributes)}):{self.version}"
-
-    __str__ = __repr__
-
     def __hash__(self):
         """
         """
-        result = super().__hash__()
-        result ^= hash(self.label)
-        return result
+        return hash((super().__hash__(), self.__class__, self.label))
 
     def __eq__(self, other):
         """
         """
-        return super().__eq__(other)
+        if other.__class__ is self.__class__:
+            result = (super().__eq__(other) and
+                      Text.equal(self.label, other.label))
+        else:
+            result = NotImplemented
+        return result
 
     def __lt__(self, other):
         """
         """
-        return super().__lt__(other)
+        if other.__class__ is self.__class__:
+            result = (super().__lt__(other) and
+                      Text.compare(self.label, other.label) < 0)
+        else:
+            result = NotImplemented
+        return result
 
     def __le__(self, other):
         """
         """
-        return super().__le__(other)
+        if other.__class__ is self.__class__:
+            result = (super().__le__(other) and
+                      Text.compare(self.label, other.label) <= 0)
+        else:
+            result = NotImplemented
+        return result
 
     def validate(self):
         """
         """
         return True
+
+    def stringify(self):
+        """
+        """
+        return f"{super().stringify()}:{self.label}"

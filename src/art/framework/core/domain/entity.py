@@ -28,15 +28,14 @@ class Entity(Value):
     def __hash__(self):
         """
         """
-        return hash((super().__hash__(), self.id))
+        return hash((super().__hash__(), self.__class__, self.id))
 
     @abstractmethod
     def __eq__(self, other):
         """
         """
         if other.__class__ is self.__class__:
-            result = (super().__eq__(other) and
-                      self.id == other.id)
+            result = (super().__eq__(other) and self.id == other.id)
         else:
             result = NotImplemented
         return result
@@ -45,16 +44,20 @@ class Entity(Value):
     def __lt__(self, other):
         """
         """
-        result = (super().__lt__(other) and
-                  self.id < other.id)
+        if other.__class__ is self.__class__:
+            result = (super().__lt__(other) and self.id < other.id)
+        else:
+            result = NotImplemented
         return result
 
     @abstractmethod
     def __le__(self, other):
         """
         """
-        result = (super().__le__(other) and
-                  self.id <= other.id)
+        if other.__class__ is self.__class__:
+            result = (super().__le__(other) and self.id <= other.id)
+        else:
+            result = NotImplemented
         return result
 
     @abstractmethod
@@ -62,3 +65,8 @@ class Entity(Value):
         """
         """
         raise NotImplemented(self.validate.__qualname__)
+
+    def stringify(self):
+        """
+        """
+        return f"{super().stringify()}:{self.id}"

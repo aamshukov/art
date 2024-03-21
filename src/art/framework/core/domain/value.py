@@ -39,18 +39,31 @@ class Value(Equatable):
     def __lt__(self, other):
         """
         """
-        return (self.value < other.value and
-                Text.compare(self.version, other.version) < 0)
+        if other.__class__ is self.__class__:
+            result = (self.value < other.value and
+                      Text.compare(self.version, other.version) < 0)
+        else:
+            result = NotImplemented
+        return result
 
     @abstractmethod
     def __le__(self, other):
         """
         """
-        return (self.value <= other.value and
-                Text.compare(self.version, other.version) <= 0)
+        if other.__class__ is self.__class__:
+            result = (self.value <= other.value and
+                      Text.compare(self.version, other.version) <= 0)
+        else:
+            result = NotImplemented
+        return result
 
     @abstractmethod
     def validate(self):
         """
         """
         raise NotImplemented(self.validate.__qualname__)
+
+    def stringify(self):
+        """
+        """
+        return f"{super().stringify()}:{self.value}:{self.version}"

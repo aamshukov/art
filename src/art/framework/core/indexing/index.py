@@ -43,38 +43,39 @@ class Index(Entity):
         self.number_of_branches = 0
         self.number_of_leaves = 0
 
-    def __repr__(self):
-        """
-        """
-        return f"{type(self).__name__}:{self.id}:{self.value}:"
-
-    __str__ = __repr__
-
     def __hash__(self):
         """
         """
-        result = super().__hash__()
-        result ^= hash(self.label)
-        return result
+        return hash((super().__hash__(), self.__class__, self.label))
 
     def __eq__(self, other):
         """
         """
-        result = super().__eq__(other) and Text.equal(self.label, other.label)
+        if other.__class__ is self.__class__:
+            result = (super().__eq__(other) and
+                      Text.equal(self.label, other.label))
+        else:
+            result = NotImplemented
         return result
 
     def __lt__(self, other):
         """
         """
-        result = (super().__lt__(other) and
-                  self.label < other.label)
+        if other.__class__ is self.__class__:
+            result = (super().__lt__(other) and
+                      Text.compare(self.label, other.label) < 0)
+        else:
+            result = NotImplemented
         return result
 
     def __le__(self, other):
         """
         """
-        result = (super().__le__(other) and
-                  self.label <= other.label)
+        if other.__class__ is self.__class__:
+            result = (super().__le__(other) and
+                      Text.compare(self.label, other.label) <= 0)
+        else:
+            result = NotImplemented
         return result
 
     @property
@@ -95,6 +96,11 @@ class Index(Entity):
         """
         pass
 
+    def stringify(self):
+        """
+        """
+        return f"{super().stringify()}:{self.label}:{self.fanout}"
+
     class BTreeBranch(Tree):
         """
         """
@@ -111,13 +117,6 @@ class Index(Entity):
             self.keys_count = 0  # occupancy, number of keys currently stored
             self.kids = [None] * (fanout + 1)  # list of kids
             self.kid_ids = [0] * (fanout + 1)  # list of kid ids for i/o
-
-        def __repr__(self):
-            """
-            """
-            return f"{type(self).__name__}"
-
-        __str__ = __repr__
 
         def __hash__(self):
             """
@@ -400,13 +399,6 @@ class Index(Entity):
             self.prev_id = 0
             self.next = None
             self.next_id = 0
-
-        def __repr__(self):
-            """
-            """
-            return f"{type(self).__name__}"
-
-        __str__ = __repr__
 
         def __hash__(self):
             """

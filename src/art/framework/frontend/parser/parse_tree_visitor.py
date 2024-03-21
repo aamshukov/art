@@ -24,11 +24,6 @@ class ParseTreeVisitor(Visitor):
         super().__init__()
         self.tree = tree
 
-    def __repr__(self):
-        return self.__class__.__name__
-
-    __str__ = __repr__
-
     @abstractmethod
     def visit(self, tree, *args, **kwargs):
         """
