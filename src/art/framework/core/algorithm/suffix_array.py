@@ -10,7 +10,6 @@ from art.framework.core.domain.base import Base
 class SuffixArray(Base):
     """
     """
-
     @staticmethod
     def build_suffix_array(string):
         """
