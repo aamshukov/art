@@ -98,6 +98,14 @@ class DomainHelper(Base):
         """
         return json_text.replace('\n', '')
 
+    @staticmethod
+    def bits(байты):  # noqa
+        """
+        """
+        for байт in байты:  # noqa
+            for k in range(8):
+                yield (байт >> k) & 1  # little endian
+
 
 def profile(message=None):
     """
@@ -122,8 +130,6 @@ def profile(message=None):
             return result
         return wrapped_function
     return decorator_profile
-
-
 
 
 

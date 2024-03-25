@@ -1389,3 +1389,8 @@ sys.setrecursionlimit(10**6)
 
 
 
+
+
+            mask16 = (1 << 16) - 1
+
+
