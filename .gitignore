@@ -178,6 +178,8 @@ docs/snippets.txt
 
 exts/content
 
-src/art/framework/core/compression/pf.py
-src/tests/test_pf.py
+pf.py
+test_pf.py
+
+
 
