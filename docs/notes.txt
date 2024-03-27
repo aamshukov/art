@@ -1394,3 +1394,11 @@ sys.setrecursionlimit(10**6)
             mask16 = (1 << 16) - 1
 
 
+
+
+https://stackoverflow.com/questions/21843693/creating-stream-to-iterate-over-from-string-in-python
+from io import StringIO
+s = StringIO("a\t\b\nc\td\n")
+for line in s:
+    print(line)
+
