@@ -1402,3 +1402,34 @@ s = StringIO("a\t\b\nc\td\n")
 for line in s:
     print(line)
 
+
+
+
+    def struct_pack_template(self):
+        """
+        """
+        count = len(bytes(self.version, 'utf-8'))
+        return f'{count}s'
+
+
+
+D:\Tmp\Python.Samples\bigtree\node\basenode.py
+    def __check_parent_loop(self, new_parent: T) -> None:
+        """Check parent type
+
+        Args:
+            new_parent (Self): parent node
+        """
+        if new_parent is not None:
+            if new_parent is self:
+                raise LoopError("Error setting parent: Node cannot be parent of itself")
+            if any(
+                ancestor is self
+                for ancestor in new_parent.ancestors
+                if new_parent.ancestors
+            ):
+                raise LoopError(
+                    "Error setting parent: Node cannot be ancestor of itself"
+                )
+
+

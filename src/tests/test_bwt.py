@@ -44,6 +44,15 @@ class Test(unittest.TestCase):
         result = Bwt.decode(bwt)
         assert result == string
 
+    def test_bwt5_success(self):
+        string = '100101101100100000110101001111'  # noqa
+        bwt = Bwt.encode(string)
+        print()
+        print(''.join(bwt).replace('$', ''))
+        result = Bwt.decode(bwt)
+        print(result)
+        assert result == string
+
     def test_bwt_empty_success(self):
         string = ''
         bwt = Bwt.encode(string)
