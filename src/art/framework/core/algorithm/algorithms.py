@@ -119,3 +119,41 @@ class Algorithms(Base):
                 result.append((max_value_query(query[0], query[1]),
                                max_index_query(query[0], query[1])))
         return result
+
+    @staticmethod
+    def merge_intervals(intervals):
+        """
+        Based on leetcode.com/problems/merge-intervals/solutions/4995042/efficient-easy-in-place-o-1-space
+        Interval: [start : end]
+        start, end might be negative
+        """  # noqa
+        def normalize(intervals):  # noqa
+            """
+            normalize intervals - start <= end
+            """
+            for interval in intervals:
+                if interval[0] > interval[1]:
+                    interval[1], interval[0] = interval[0], interval[1]
+
+        def rearrange(intervals):  # noqa
+            """
+            sort by start
+            """
+            intervals.sort(key=lambda interval: interval[0])
+
+        if not intervals:
+            return intervals
+        n = len(intervals)
+        if n < 2:
+            return intervals
+        rearrange(intervals)
+        normalize(intervals)
+        k = 1  # start from the second interval
+        while k < n:
+            if intervals[k][0] <= intervals[k - 1][1]:  # start2 <= end1
+                intervals[k - 1][1] = max(intervals[k - 1][1], intervals[k][1])  # max of ends
+                intervals.pop(k)  # removed consumed interval
+                n -= 1
+            else:
+                k += 1
+        return intervals
