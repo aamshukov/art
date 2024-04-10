@@ -146,8 +146,8 @@ class Algorithms(Base):
         n = len(intervals)
         if n < 2:
             return intervals
-        rearrange(intervals)
         normalize(intervals)
+        rearrange(intervals)
         k = 1  # start from the second interval
         while k < n:
             if intervals[k][0] <= intervals[k - 1][1]:  # start2 <= end1

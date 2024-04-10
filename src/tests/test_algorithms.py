@@ -69,10 +69,36 @@ class Test(unittest.TestCase):
         now = datetime.now()
         print(f"End: {now}")
 
-    def test_merge_intervals_success(self):
+    def test_merge_intervals0_success(self):
         intervals = [[5, 5], [5, 5], [5, 5]]
         result = Algorithms.merge_intervals(intervals)
         assert result == [[5, 5]]
+
+    def test_merge_intervals1_success(self):
+        intervals = [[1, 3], [2, 6], [8, 10], [15, 18]]
+        result = Algorithms.merge_intervals(intervals)
+        assert result == [[1, 6], [8, 10], [15, 18]]
+
+    def test_merge_intervals2_success(self):
+        intervals = [[1, -3], [-2, -6], [-8, 10], [15, -18]]
+        result = Algorithms.merge_intervals(intervals)
+        assert result == [[-18, 15]]
+
+    def test_merge_intervals3_success(self):
+        intervals = [[1, 4], [4, 5]]
+        result = Algorithms.merge_intervals(intervals)
+        assert result == [[1, 5]]
+
+    def test_merge_intervals_random_success(self):
+        n = 1000
+        p = np.random.rand(n, n)  # your "matrix of probabilities"
+        adjacency = np.random.rand(*p.shape) <= p  # adjacency[ii, jj] is True with probability P[ii, jj]
+        nx_graph = nx.from_numpy_array(adjacency, nx.Graph)
+        tuples = list(nx_graph.edges)
+        intervals = [[t[0], t[1]] for t in tuples]
+        random.shuffle(intervals)
+        result = Algorithms.merge_intervals(intervals)
+        assert result == [[0, n - 1]]
 
 
 if __name__ == '__main__':
