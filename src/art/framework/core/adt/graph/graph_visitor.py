@@ -4,7 +4,7 @@
 #
 """ Depth First Search () DFS visitor """
 from abc import abstractmethod
-from art.framework.core.patterns.visitor import Visitor
+from art.framework.core.patterns.visitor.visitor import Visitor
 
 
 class GraphVisitor(Visitor):

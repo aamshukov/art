@@ -4,7 +4,7 @@
 #
 """ Configuration """
 from art.framework.core.domain.base import Base
-from art.framework.core.patterns.singleton import singleton
+from art.framework.core.patterns.singleton.singleton import singleton
 
 
 class Configurator(Base):

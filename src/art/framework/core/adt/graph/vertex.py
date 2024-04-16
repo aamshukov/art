@@ -7,9 +7,8 @@ from collections import namedtuple
 from art.framework.core.text.text import Text
 from art.framework.core.utils.flags import Flags
 from art.framework.core.utils.colors import Colors
-from art.framework.core.utils.helper import DomainHelper
 from art.framework.core.domain.entity import Entity
-from art.framework.core.patterns.visitable import Visitable
+from art.framework.core.patterns.visitor.visitable import Visitable
 
 
 class Vertex(Entity, Visitable):
