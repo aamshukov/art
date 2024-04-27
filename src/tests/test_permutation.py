@@ -67,3 +67,9 @@ class Test(unittest.TestCase):
         v = [1, 0, 1, 0, 0, 0]
         mv = Permutation.map_vector(v)
         print(mv)
+
+
+if __name__ == '__main__':
+    """
+    """
+    unittest.main()

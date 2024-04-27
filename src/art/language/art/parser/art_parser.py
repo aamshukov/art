@@ -13,6 +13,7 @@ from art.framework.frontend.parser.parse_result import ParseResult
 from art.language.art.ast.art_ast import ArtAst
 from art.language.art.parser.art_parse_tree_kind import ArtParseTreeKind
 from art.language.art.parser.art_syntax_kind import ArtSyntaxKind
+from art.framework.core.diagnostics.code import Code
 
 
 class ArtParser(RecursiveDescentParser):
@@ -65,7 +66,7 @@ class ArtParser(RecursiveDescentParser):
                     type_tree.add_kid(type_parameter.tree)
             else:
                 erroneous = self.syntax_error(type_tree,
-                                              Status.INVALID_TOKEN,
+                                              Code.INVALID_TOKEN,
                                               f'Expected IDENTIFIER and . or <, found '
                                               f'{self.lexer.token.kind.name}')
         array_type_rank_specifier_opt = self.parse_array_type_rank_specifier_opt()
@@ -1069,13 +1070,13 @@ class ArtParser(RecursiveDescentParser):
         else:
             if self.lexer.eos:
                 erroneous = self.syntax_error(primary_expression,
-                                              Status.INVALID_TOKEN,
+                                              Code.INVALID_TOKEN,
                                               f'Expression expected '
                                               f'{self.lexer.token.kind.name}',
                                               link=False)
             else:
                 erroneous = self.syntax_error(primary_expression,
-                                              Status.INVALID_TOKEN,
+                                              Code.INVALID_TOKEN,
                                               f'Expression expected, unexpected EOS '
                                               f'{self.lexer.token.kind.name}',
                                               link=False)
@@ -1649,7 +1650,7 @@ class ArtParser(RecursiveDescentParser):
             return self.consume_terminal(papa, tree_kind, link=link)
         else:
             return self.syntax_error(papa,
-                                     Status.INVALID_TOKEN,
+                                     Code.INVALID_TOKEN,
                                      f'Expected token {token_kind.name}, ',
                                      link=link)
 
@@ -1664,7 +1665,7 @@ class ArtParser(RecursiveDescentParser):
             return self.consume_terminal(papa, tree_kind, link=link)
         else:
             return self.syntax_error(papa,
-                                     Status.INVALID_TOKEN,
+                                     Code.INVALID_TOKEN,
                                      f'Expected one of {", ".join([v.name for v in token_kinds])}, ',
                                      link=link)
 
@@ -1701,7 +1702,7 @@ class ArtParser(RecursiveDescentParser):
         """  # noqa
         self.diagnostics.add(Status(f'{message}, at {self.lexer.get_content_position()}',
                                     'art parser',
-                                    error_code))
+                                    custom_code=error_code))
         tree = ArtAst.make_non_terminal_tree(ArtParseTreeKind.ERRONEOUS, self.grammar)
         if link and papa:
             papa.add_kid(tree)

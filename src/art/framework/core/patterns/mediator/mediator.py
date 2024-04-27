@@ -4,10 +4,11 @@
 #
 """ Mediator design pattern """
 from abc import abstractmethod
-from art.framework.core.domain.base import Base
+from art.framework.core.patterns.mediator.publisher import Publisher
+from art.framework.core.patterns.mediator.sender import Sender
 
 
-class Mediator(Base):
+class Mediator(Sender, Publisher):
     """
     """
     def __init__(self):

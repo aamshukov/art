@@ -4,6 +4,7 @@
 #
 import os
 import unittest
+
 from art.framework.core.utils.flags import Flags
 from art.framework.core.logging.logger import Logger
 from art.framework.core.utils.helper import DomainHelper

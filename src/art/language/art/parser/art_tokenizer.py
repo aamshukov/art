@@ -4,6 +4,8 @@
 """ Art tokenizer """
 from collections import deque
 from copy import deepcopy
+
+from art.framework.core.diagnostics.code import Code
 from art.framework.core.utils.flags import Flags
 from art.framework.core.diagnostics.status import Status
 from art.framework.core.utils.text import Text
@@ -360,7 +362,8 @@ class ArtTokenizer(Tokenizer):
             self.diagnostics.add(Status(f'Invalid numeric literal at '
                                         f'{self.content.get_location(self.content_position)}',
                                         f'tokenizer:{self.id}',
-                                        Status.INVALID_REAL_LITERAL if real else Status.INVALID_INT_LITERAL))
+                                        custom_code=Code.INVALID_REAL_LITERAL
+                                        if real else Code.INVALID_INT_LITERAL))
 
     def scan_string(self, quote):
         """
@@ -378,7 +381,7 @@ class ArtTokenizer(Tokenizer):
             self.diagnostics.add(Status(f'Unclosed string literal at '
                                         f'{self.content.get_location(self.content_position)}',
                                         f'tokenizer:{self.id}',
-                                        Status.INVALID_STRING_LITERAL))
+                                        custom_code=Code.INVALID_STRING_LITERAL))
 
     def scan_comments(self, single_line):
         """
@@ -456,12 +459,12 @@ class ArtTokenizer(Tokenizer):
                                                 f'{self.content.get_location(self.content_position)} does not match '
                                                 f'{chr(left_paren)} at {self.content.get_location(position)}',
                                                 f'tokenizer:{self.id}',
-                                                Status.INVALID_CLOSING_PAREN))
+                                                custom_code=Code.INVALID_CLOSING_PAREN))
             else:
                 self.diagnostics.add(Status(f'Unmatched {chr(codepoint)} at '
                                             f'{self.content.get_location(self.content_position)}',
                                             f'tokenizer:{self.id}',
-                                            Status.INVALID_CLOSING_PAREN))
+                                            custom_code=Code.INVALID_CLOSING_PAREN))
             if Text.right_parenthesis(codepoint):  # ')':
                 self.token.kind = TokenKind.RIGHT_PARENTHESIS
             elif Text.right_square_bracket(codepoint):  # ']'
@@ -651,7 +654,7 @@ class ArtTokenizer(Tokenizer):
             self.diagnostics.add(Status(f'Loose "\\" character at '
                                         f'{self.content.get_location(self.content_position)}',
                                         f'tokenizer:{self.id}',
-                                        Status.INVALID_ESCAPE))
+                                        custom_code=Code.INVALID_ESCAPE))
             self.advance()
         elif Text.apostrophe(codepoint):  # '''
             self.scan_string(codepoint)
@@ -663,7 +666,7 @@ class ArtTokenizer(Tokenizer):
             self.diagnostics.add(Status(f'Invalid character at '
                                         f'{self.content.get_location(self.content_position)}',
                                         f'tokenizer:{self.id}',
-                                        Status.INVALID_CHARACTER))
+                                        custom_code=Code.INVALID_CHARACTER))
             self.advance()
 
     def epilog(self):

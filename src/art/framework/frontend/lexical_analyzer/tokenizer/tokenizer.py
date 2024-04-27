@@ -5,6 +5,8 @@
 from copy import deepcopy
 from collections import deque
 from abc import abstractmethod
+
+from art.framework.core.diagnostics.code import Code
 from art.framework.core.domain.entity import Entity
 from art.framework.core.utils.flags import Flags
 from art.framework.core.diagnostics.status import Status
@@ -97,7 +99,7 @@ class Tokenizer(Entity):
                 self.diagnostics.add(Status(f'Invalid unicode escape sequence length at '
                                             f'{self.content.get_location(content_position)}',
                                             'tokenizer',
-                                            Status.INVALID_UNICODE_ESCAPE))
+                                            Code.INVALID_UNICODE_ESCAPE))
                 break
             codepoint = self.content.data[content_position]
             if Text.hexadecimal_digit(codepoint):
@@ -107,7 +109,7 @@ class Tokenizer(Entity):
                 self.diagnostics.add(Status(f'Invalid unicode escape sequence (digits) at '
                                             f'{self.content.get_location(content_position)}',
                                             'tokenizer',
-                                            Status.INVALID_UNICODE_ESCAPE))
+                                            Code.INVALID_UNICODE_ESCAPE))
                 result = 0
                 valid = False
                 break
@@ -154,12 +156,12 @@ class Tokenizer(Entity):
                             self.diagnostics.add(Status(f'Invalid unicode escape sequence, invalid low surrogate '
                                                         f'at {self.content.get_location(content_position)}',
                                                         'tokenizer',
-                                                        Status.INVALID_UNICODE_ESCAPE))
+                                                        Code.INVALID_UNICODE_ESCAPE))
                     else:
                         self.diagnostics.add(Status(f'Invalid unicode escape sequence, missing low surrogate '
                                                     f'at {self.content.get_location(content_position)}',
                                                     'tokenizer',
-                                                    Status.INVALID_UNICODE_ESCAPE))
+                                                    Code.INVALID_UNICODE_ESCAPE))
                 else:
                     if Text.ascii(codepoint) or not Text.low_surrogate(codepoint):
                         result = codepoint
@@ -167,7 +169,7 @@ class Tokenizer(Entity):
                         self.diagnostics.add(Status(f'Invalid unicode escape sequence, invalid high surrogate '
                                                     f'at {self.content.get_location(content_position)}',
                                                     'tokenizer',
-                                                    Status.INVALID_UNICODE_ESCAPE))
+                                                    Code.INVALID_UNICODE_ESCAPE))
             else:  # mode == U
                 result = codepoint
         return result, content_position - 1
@@ -206,7 +208,7 @@ class Tokenizer(Entity):
                 self.diagnostics.add(Status(f'Escape \\N(name) is not implemented, at '
                                             f'{self.content.get_location(self.content_position)}',
                                             'tokenizer',
-                                            Status.INVALID_LITERAL))
+                                            Code.INVALID_LITERAL))
             case 'x':
                 # \xh
                 # \xhh
@@ -215,7 +217,7 @@ class Tokenizer(Entity):
                 self.diagnostics.add(Status(f'Escape \\xhh is not implemented, at '
                                             f'{self.content.get_location(self.content_position)}',
                                             'tokenizer',
-                                            Status.INVALID_LITERAL))
+                                            Code.INVALID_LITERAL))
             case (0x00000030 |  # 0
                   0x00000031 |  # 1
                   0x00000032 |  # 2
@@ -238,7 +240,7 @@ class Tokenizer(Entity):
                 self.diagnostics.add(Status(f'Invalid escape literal at '
                                             f'{self.content.get_location(self.content_position)}',
                                             'tokenizer',
-                                            Status.INVALID_LITERAL))
+                                            Code.INVALID_LITERAL))
                 codepoint = Text.ERRONEOUS_CODEPOINT
         return codepoint, content_position
 

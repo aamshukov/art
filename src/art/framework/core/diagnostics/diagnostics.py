@@ -3,6 +3,7 @@
 # UI Lab Inc. Arthur Amshukov
 #
 """ Diagnostics """
+from art.framework.core.diagnostics.code import Code
 from art.framework.core.domain.base import Base
 from art.framework.core.diagnostics.status import Status
 
@@ -28,38 +29,38 @@ class Diagnostics(Base):
         """
         """
         return [status for status in self.statuses
-                if not (status.custom_code & Status.INFO_MASK) == Status.INFO_MASK and
-                not (status.custom_code & Status.WARNING_MASK) == Status.WARNING_MASK and
-                not (status.custom_code & Status.ERROR_MASK) == Status.ERROR_MASK and
-                not (status.custom_code & Status.FATAL_ERROR_MASK) == Status.FATAL_ERROR_MASK]
+                if not (status.custom_code & Code.INFORMATION_MASK) == Code.INFORMATION_MASK and
+                not (status.custom_code & Code.WARNING_MASK) == Code.WARNING_MASK and
+                not (status.custom_code & Code.ERROR_MASK) == Code.ERROR_MASK and
+                not (status.custom_code & Code.FATAL_ERROR_MASK) == Code.FATAL_ERROR_MASK]
 
     @property
     def infos(self):
         """
         """
         return [status for status in self.statuses
-                if (status.custom_code & Status.INFO_MASK) == Status.INFO_MASK]
+                if (status.custom_code & Code.INFORMATION_MASK) == Code.INFORMATION_MASK]
 
     @property
     def warnings(self):
         """
         """
         return [status for status in self.statuses
-                if (status.custom_code & Status.WARNING_MASK) == Status.WARNING_MASK]
+                if (status.custom_code & Code.WARNING_MASK) == Code.WARNING_MASK]
 
     @property
     def errors(self):
         """
         """
         return [status for status in self.statuses
-                if (status.custom_code & Status.ERROR_MASK) == Status.ERROR_MASK]
+                if (status.custom_code & Code.ERROR_MASK) == Code.ERROR_MASK]
 
     @property
     def fatal_errors(self):
         """
         """
         return [status for status in self.statuses
-                if (status.custom_code & Status.FATAL_ERROR_MASK) == Status.FATAL_ERROR_MASK]
+                if (status.custom_code & Code.FATAL_ERROR_MASK) == Code.FATAL_ERROR_MASK]
 
     @property
     def last_status(self):
@@ -68,7 +69,7 @@ class Diagnostics(Base):
         if self.statuses:
             return self.statuses[-1]
         else:
-            return Status(Diagnostics.__name__, Diagnostics.__name__)
+            return Status(messages=Diagnostics.__name__, contributor=Diagnostics.__name__)
 
     def add(self, status):
         """

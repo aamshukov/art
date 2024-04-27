@@ -40,7 +40,7 @@ class Configurator:
 #         self._db_user = None
 #         self._db_password = ''
 #         self._db_config = None
-#         self._log_level = logging.INFO
+#         self._log_level = logging.INFORMATION
 #         self._log_dir = None
 #
 #     @property
@@ -173,7 +173,7 @@ class Configurator:
 #     Configurator().db_table = select([db_table, db_table_cfg, Configurator().db_table])
 #     Configurator().db_user = select([db_user, db_user_cfg, Configurator().db_user])
 #     Configurator().db_password = select([db_password, db_password_cfg, Configurator().db_password]) or ''
-#     Configurator().log_level = select([log_level, log_level_cfg, Configurator().log_level]) or logging.INFO
+#     Configurator().log_level = select([log_level, log_level_cfg, Configurator().log_level]) or logging.INFORMATION
 #     Configurator().log_dir = select([log_dir, log_dir_cfg, Configurator().log_dir])
 #     Configurator().db_config = db_config
 #     if not Configurator().db_host:
