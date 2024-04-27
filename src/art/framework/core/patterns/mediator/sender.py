@@ -22,13 +22,31 @@ class Sender(Base):
         raise NotImplemented(self.send_request.__qualname__)
 
     @abstractmethod
+    def send_request_async(self, request, *args, **kwargs):
+        """
+        """
+        raise NotImplemented(self.send_request.__qualname__)
+
+    @abstractmethod
     def send_command(self, command, *args, **kwargs):
         """
         """
         raise NotImplemented(self.send_command.__qualname__)
 
     @abstractmethod
+    def send_command_async(self, command, *args, **kwargs):
+        """
+        """
+        raise NotImplemented(self.send_command.__qualname__)
+
+    @abstractmethod
     def send_query(self, query, *args, **kwargs):
+        """
+        """
+        raise NotImplemented(self.send_query.__qualname__)
+
+    @abstractmethod
+    def send_query_async(self, query, *args, **kwargs):
         """
         """
         raise NotImplemented(self.send_query.__qualname__)

@@ -20,3 +20,9 @@ class Publisher(Base):
         """
         """
         raise NotImplemented(self.publish.__qualname__)
+
+    @abstractmethod
+    def publish_async(self, notification, *args, **kwargs):
+        """
+        """
+        raise NotImplemented(self.publish.__qualname__)
