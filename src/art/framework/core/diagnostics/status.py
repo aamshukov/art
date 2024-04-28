@@ -14,7 +14,7 @@ class Status(Base):
     def __init__(self,
                  messages=None,
                  details=None,
-                 contributor=None,
+                 origin=None,
                  custom_code=Code.Success,         # application specific code
                  system_code=SystemCode.NoError,   # specific OS error, like WindowsError.ERROR
                  library_code=SystemCode.NoError,  # specific Python library code
@@ -25,7 +25,7 @@ class Status(Base):
         super().__init__()
         self.messages = messages
         self.details = details
-        self.contributor = contributor
+        self.origin = origin
         self.custom_code = custom_code
         self.system_code = system_code
         self.library_code = library_code

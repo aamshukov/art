@@ -3,13 +3,12 @@
 # UI Lab Inc. Arthur Amshukov
 #
 import unittest
-
 from art.framework.core.patterns.mediator.mediator import Mediator
 
 
 class Test(unittest.TestCase):
     def test_mediator(self):
-        # mediator = Mediator()
+        mediator = Mediator()
         assert True
 
 

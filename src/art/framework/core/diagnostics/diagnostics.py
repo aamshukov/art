@@ -69,7 +69,7 @@ class Diagnostics(Base):
         if self.statuses:
             return self.statuses[-1]
         else:
-            return Status(messages=Diagnostics.__name__, contributor=Diagnostics.__name__)
+            return Status(messages=Diagnostics.__name__, origin=Diagnostics.__name__)
 
     def add(self, status):
         """

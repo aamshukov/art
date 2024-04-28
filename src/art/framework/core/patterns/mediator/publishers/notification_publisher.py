@@ -2,12 +2,12 @@
 # -*- encoding: utf-8 -*-
 # UI Lab Inc. Arthur Amshukov
 #
-""" Mediator message handler interface """
+""" Mediator notification publisher interface """
 from abc import abstractmethod
 from art.framework.core.domain.base import Base
 
 
-class MessageHandler(Base):
+class NotificationPublisher(Base):
     """
     """
     def __init__(self):
@@ -16,7 +16,9 @@ class MessageHandler(Base):
         super().__init__()
 
     @abstractmethod
-    def handle(self, message):
+    def publish(self,
+                handlers,  # notification handlers
+                notification):
         """
         """
-        raise NotImplemented(self.handle.__qualname__)
+        raise NotImplemented(self.publish.__qualname__)

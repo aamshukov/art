@@ -16,37 +16,38 @@ class Sender(Base):
         super().__init__()
 
     @abstractmethod
-    def send_request(self, request, *args, **kwargs):
-        """
-        """
-        raise NotImplemented(self.send_request.__qualname__)
-
-    @abstractmethod
-    def send_request_async(self, request, *args, **kwargs):
-        """
-        """
-        raise NotImplemented(self.send_request.__qualname__)
-
-    @abstractmethod
-    def send_command(self, command, *args, **kwargs):
+    def send_command(self, command):
         """
         """
         raise NotImplemented(self.send_command.__qualname__)
 
     @abstractmethod
-    def send_command_async(self, command, *args, **kwargs):
+    def send_command_async(self, command):
         """
         """
         raise NotImplemented(self.send_command.__qualname__)
 
     @abstractmethod
-    def send_query(self, query, *args, **kwargs):
+    def send_query(self, query):
         """
         """
         raise NotImplemented(self.send_query.__qualname__)
 
     @abstractmethod
-    def send_query_async(self, query, *args, **kwargs):
+    def send_query_async(self, query):
         """
         """
         raise NotImplemented(self.send_query.__qualname__)
+
+    @abstractmethod
+    def send_request(self, request):
+        """
+        """
+        raise NotImplemented(self.send_request.__qualname__)
+
+    @abstractmethod
+    def send_request_async(self, request):
+        """
+        """
+        raise NotImplemented(self.send_request.__qualname__)
+

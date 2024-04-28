@@ -10,8 +10,10 @@ import json
 import os
 import pstats
 import struct
+import time
 from pstats import SortKey
 from art.framework.core.domain.base import Base
+from art.framework.core.logging.logger import Logger
 from art.framework.core.utils.platform import Platform
 
 
@@ -132,6 +134,26 @@ def profile(message=None):
     return decorator_profile
 
 
+def traceable(message=None):
+    """
+    @traceable("Initialization step")
+    def run_initialization_step():
+        pass
+    """
+    def decorator_traceable(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            Logger().debug("Entering {} ..."
+                           .format(func.__name__ if message is None else message))
+            start = time.time()
+            result = func(args, kwargs)
+            end = time.time()
+            Logger().debug("Completed {0} in {1} milliseconds."
+                           .format(func.__name__ if message is None else message,
+                                   int(round(end - start) * 1000)))
+            return result
+        return wrapper
+    return decorator_traceable
 
 
 
