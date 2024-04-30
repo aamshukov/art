@@ -20,10 +20,11 @@ class Test(unittest.TestCase):
         diagnostics.add(Status(messages='WARNING', custom_code=Code.Warning))
         diagnostics.add(Status(messages='ERROR', custom_code=Code.Error))
         diagnostics.add(Status(messages='FATAL_ERROR', custom_code=Code.FatalError))
+        diagnostics.add(Status(messages='ABORTED', custom_code=Code.Aborted))
         assert len(diagnostics.successes) == 1
         assert len(diagnostics.infos) == 1
         assert len(diagnostics.warnings) == 1
-        assert len(diagnostics.errors) == 1
+        assert len(diagnostics.errors) == 2
         assert len(diagnostics.fatal_errors) == 1
 
 

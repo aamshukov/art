@@ -227,14 +227,14 @@ def traceable(message=None):
 #                 Logger().debug("Entering {} ..."
 #                                .format(func.__name__ if message is None else message))
 #                 start = time.time()
-#                 result = func(args, kwargs)
+#                 results = func(args, kwargs)
 #                 end = time.time()
 #                 Logger().debug("Completed {0} in {1} milliseconds."
 #                                .format(func.__name__ if message is None else message,
 #                                        int(round(end - start) * 1000)))
 #             else:
-#                 result = func(args, kwargs)
-#             return result
+#                 results = func(args, kwargs)
+#             return results
 #         return wrapper
 #     return decorator_traceable
 #
@@ -266,12 +266,12 @@ def traceable(message=None):
 #
 #
 # def interpolate_path(path_to_interpolate):
-#     result = path_to_interpolate
-#     if result:
-#         result = result.replace('{', '').replace('}', '')
-#         result = os.path.expandvars(result)
-#         result = os.path.normpath(result)
-#     return result
+#     results = path_to_interpolate
+#     if results:
+#         results = results.replace('{', '').replace('}', '')
+#         results = os.path.expandvars(results)
+#         results = os.path.normpath(results)
+#     return results
 #
 #
 # def calculate_correlation_id():
@@ -279,8 +279,8 @@ def traceable(message=None):
 #
 #
 # def script_to_command(script):
-#     result = []
+#     results = []
 #     command = shlex.split(script, posix=False)
 #     for term in command:
-#         result.append(term.replace('"', ''))
-#     return result
+#         results.append(term.replace('"', ''))
+#     return results

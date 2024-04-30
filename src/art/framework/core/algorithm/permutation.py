@@ -89,7 +89,7 @@ class Permutation(Base):
             num = num - 1
         dis = list()  # discriminant
         run = list()  # current run
-        res = list()  # result
+        res = list()  # results
         ones = 0
         for k in range(num):
             if vec[k] == 1:

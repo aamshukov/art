@@ -4,10 +4,10 @@
 #
 """ Mediator request interceptor interface """
 from abc import abstractmethod
-from art.framework.core.patterns.mediator.messages.message import Message
+from art.framework.core.patterns.mediator.interceptors.interceptor import Interceptor
 
 
-class RequestInterceptor(Message):
+class RequestInterceptor(Interceptor):
     """
     """
     def __init__(self):
@@ -16,7 +16,7 @@ class RequestInterceptor(Message):
         super().__init__()
 
     @abstractmethod
-    def intercept(self, request):
+    def intercept(self, context):
         """
         """
         raise NotImplemented(self.intercept.__qualname__)

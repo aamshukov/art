@@ -161,7 +161,7 @@ class GraphAlgorithms(Base):
                 if vertex.color == Colors.WHITE:  # about to explore
                     vertex.color = Colors.GRAY
                 else:
-                    vertex.color = Colors.BLACK  # mark as processed, add to result
+                    vertex.color = Colors.BLACK  # mark as processed, add to results
                     result.insert(0, stack.pop())
                 for adjacence in vertex.adjacencies:
                     if adjacence.vertex.color == Colors.GRAY:

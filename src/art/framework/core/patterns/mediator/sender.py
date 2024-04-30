@@ -50,4 +50,3 @@ class Sender(Base):
         """
         """
         raise NotImplemented(self.send_request.__qualname__)
-

@@ -16,9 +16,7 @@ class NotificationPublisher(Base):
         super().__init__()
 
     @abstractmethod
-    def publish(self,
-                handlers,  # notification handlers
-                notification):
+    def publish(self, context, bindings):
         """
         """
         raise NotImplemented(self.publish.__qualname__)

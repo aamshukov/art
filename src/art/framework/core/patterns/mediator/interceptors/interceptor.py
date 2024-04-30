@@ -2,12 +2,12 @@
 # -*- encoding: utf-8 -*-
 # UI Lab Inc. Arthur Amshukov
 #
-""" Mediator query interceptor interface """
+""" Mediator command interceptor interface """
 from abc import abstractmethod
-from art.framework.core.patterns.mediator.interceptors.interceptor import Interceptor
+from art.framework.core.domain.base import Base
 
 
-class QueryInterceptor(Interceptor):
+class Interceptor(Base):
     """
     """
     def __init__(self):

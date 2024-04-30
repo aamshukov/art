@@ -9,7 +9,9 @@ from art.framework.core.patterns.mediator.messages.message import Message
 class Command(Message):
     """
     """
-    def __init__(self):
+    def __init__(self,
+                 correlation_id,
+                 version='1.0'):
         """
         """
-        super().__init__()
+        super().__init__(correlation_id, version)

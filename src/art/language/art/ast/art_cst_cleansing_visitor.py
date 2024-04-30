@@ -35,12 +35,12 @@
 #     def make_tree(self, cst, papa=None):
 #         """
 #         """
-#         result = None
+#         results = None
 #         if self.accepted_non_terminal(cst.kind) or self.accepted_terminal(cst.kind):
-#             result = ParseTreeFactory.clone(cst)
-#         if papa and result:
-#             papa.add_kid(result)
-#         return result
+#             results = ParseTreeFactory.clone(cst)
+#         if papa and results:
+#             papa.add_kid(results)
+#         return results
 #
 #     def visit(self, cst, *args, **kwargs):
 #         """

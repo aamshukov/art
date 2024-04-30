@@ -2,12 +2,12 @@
 # -*- encoding: utf-8 -*-
 # UI Lab Inc. Arthur Amshukov
 #
-""" Mediator notification (event) handler interface """
+""" Mediator command handler interface """
 from abc import abstractmethod
-from art.framework.core.patterns.mediator.handlers.handler import Handler
+from art.framework.core.domain.base import Base
 
 
-class NotificationHandler(Handler):
+class Handler(Base):
     """
     """
     def __init__(self):
@@ -18,5 +18,5 @@ class NotificationHandler(Handler):
     @abstractmethod
     def handle(self, context):
         """
-        """
+        """  # noqa
         raise NotImplemented(self.handle.__qualname__)

@@ -471,7 +471,7 @@ class Index(Entity):
             result = Index.TreeHeaderSize
             result += fanout * Index.KeySize
             result += fanout * Index.ValueSize
-            # result += (fanout + 1) * Index.PtrSize
+            # results += (fanout + 1) * Index.PtrSize
             return result
 
         @staticmethod

@@ -1433,3 +1433,15 @@ D:\Tmp\Python.Samples\bigtree\node\basenode.py
                 )
 
 
+
+
+
+assert type(command) is command, f"Invalid argument type {command}, Command is expected."
+
+
+
+        handlers = {k: v for k, v in self.notification_handlers.items() if k == type(notification)}
+        return self.notification_publisher.publish(handlers, notification)
+
+
+

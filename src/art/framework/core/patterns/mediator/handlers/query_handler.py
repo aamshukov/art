@@ -4,10 +4,10 @@
 #
 """ Mediator query handler interface """
 from abc import abstractmethod
-from art.framework.core.domain.base import Base
+from art.framework.core.patterns.mediator.handlers.handler import Handler
 
 
-class QueryHandler(Base):
+class QueryHandler(Handler):
     """
     """
     def __init__(self):
@@ -16,7 +16,7 @@ class QueryHandler(Base):
         super().__init__()
 
     @abstractmethod
-    def handle(self, query):
+    def handle(self, context):
         """
         """
         raise NotImplemented(self.handle.__qualname__)

@@ -22,6 +22,7 @@ class Code(Flag):
     Warning     = 3 | WARNING_MASK      # noqa
     Error       = 0 | ERROR_MASK        # noqa  failure, recoverable error
     FatalError  = 0 | FATAL_ERROR_MASK  # noqa  failure, non-recoverable error
+    Aborted     = 1 | ERROR_MASK        # noqa  request aborted
 
     INVALID_LITERAL         = 128 | ERROR_MASK      # noqa
     INVALID_INT_LITERAL     = 129 | ERROR_MASK      # noqa

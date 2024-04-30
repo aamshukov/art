@@ -2,19 +2,23 @@
 # -*- encoding: utf-8 -*-
 # UI Lab Inc. Arthur Amshukov
 #
-""" Mediator message interface """
-from art.framework.core.domain.entity import Entity
+""" Mediator context """
+from art.framework.core.domain.value import Value
 
 
-class Message(Entity):
+class Context(Value):
     """
     """
     def __init__(self,
-                 correlation_id,
+                 request=None,
+                 response=None,
                  version='1.0'):
         """
         """
-        super().__init__(correlation_id, version)
+        super().__init__(version=version)
+        self.request = request
+        self.response = response
+        self.results = list()  # aggregated list of Result(s)
 
     def __hash__(self):
         """

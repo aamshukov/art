@@ -4,10 +4,10 @@
 #
 """ Mediator command interceptor interface """
 from abc import abstractmethod
-from art.framework.core.patterns.mediator.messages.message import Message
+from art.framework.core.patterns.mediator.interceptors.interceptor import Interceptor
 
 
-class CommandInterceptor(Message):
+class CommandInterceptor(Interceptor):
     """
     """
     def __init__(self):
@@ -16,7 +16,7 @@ class CommandInterceptor(Message):
         super().__init__()
 
     @abstractmethod
-    def intercept(self, command):
+    def intercept(self, context):
         """
         """
         raise NotImplemented(self.intercept.__qualname__)
