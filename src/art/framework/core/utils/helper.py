@@ -12,8 +12,8 @@ import pstats
 import struct
 import time
 from pstats import SortKey
+from unicodedata import normalize
 from art.framework.core.domain.base import Base
-from art.framework.core.logging.logger import Logger
 from art.framework.core.utils.platform import Platform
 
 
@@ -108,6 +108,14 @@ class DomainHelper(Base):
             for k in range(8):
                 yield (байт >> k) & 1  # little endian
 
+    @staticmethod
+    def strings_equal(lhs, rhs, case_insensitive=False):
+        nfc = functools.partial(normalize, 'NFC')  # NFKC
+        if case_insensitive:
+            return nfc(lhs).casefold() == nfc(rhs).casefold()
+        else:
+            return nfc(lhs) == nfc(rhs)
+
 
 def profile(message=None):
     """
@@ -134,7 +142,7 @@ def profile(message=None):
     return decorator_profile
 
 
-def traceable(message=None):
+def traceable(logger, message=None):
     """
     @traceable("Initialization step")
     def run_initialization_step():
@@ -143,14 +151,12 @@ def traceable(message=None):
     def decorator_traceable(func):
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
-            Logger().debug("Entering {} ..."
-                           .format(func.__name__ if message is None else message))
+            logger.info("Entering {} ...".format(func.__name__ if message is None else message))
             start = time.time()
             result = func(args, kwargs)
             end = time.time()
-            Logger().debug("Completed {0} in {1} milliseconds."
-                           .format(func.__name__ if message is None else message,
-                                   int(round(end - start) * 1000)))
+            logger.info("Completed {0} in {1} milliseconds.".format(func.__name__ if message is None else message,
+                                                                    int(round(end - start) * 1000)))
             return result
         return wrapper
     return decorator_traceable
@@ -192,7 +198,7 @@ def traceable(message=None):
 #
 # from unicodedata import normalize
 # from logger import Logger
-# from configurator import Configurator
+# from configurator import Configuration
 #
 # PROCESS_JOIN_TIMEOUT = 5
 # PROCESS_EXEC_TIMEOUT = 20
@@ -206,12 +212,6 @@ def traceable(message=None):
 #     'TaskContext', 'id db_host db_port db_name db_table db_user db_password user_id group_id platform scripts')
 #
 #
-# def strings_equal(lhs, rhs, case_insensitive=False):
-#     nfc = functools.partial(normalize, 'NFC')  # NFKC
-#     if case_insensitive:
-#         return nfc(lhs).casefold() == nfc(rhs).casefold()
-#     else:
-#         return nfc(lhs) == nfc(rhs)
 #
 #
 # def traceable(message=None):
@@ -223,7 +223,7 @@ def traceable(message=None):
 #     def decorator_traceable(func):
 #         @functools.wraps(func)
 #         def wrapper(*args, **kwargs):
-#             if Configurator().log_level == logging.DEBUG:
+#             if Configuration().log_level == logging.DEBUG:
 #                 Logger().debug("Entering {} ..."
 #                                .format(func.__name__ if message is None else message))
 #                 start = time.time()

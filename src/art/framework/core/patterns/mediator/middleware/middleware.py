@@ -25,3 +25,10 @@ class Middleware(Base):
         Result<TResponse> Middleware.Handle<TRequest, TResponse>(request...)
         """  # noqa
         raise NotImplemented(self.handle.__qualname__)
+
+    @abstractmethod
+    async def handle_async(self, context):
+        """
+        Result<TResponse> Middleware.Handle<TRequest, TResponse>(request...)
+        """  # noqa
+        raise NotImplemented(self.handle_async.__qualname__)

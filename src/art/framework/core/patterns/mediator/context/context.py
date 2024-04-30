@@ -10,6 +10,8 @@ class Context(Value):
     """
     """
     def __init__(self,
+                 configuration,
+                 logger,
                  request=None,
                  response=None,
                  version='1.0'):
@@ -18,6 +20,8 @@ class Context(Value):
         super().__init__(version=version)
         self.request = request
         self.response = response
+        self.configuration = configuration
+        self.logger = logger
         self.results = list()  # aggregated list of Result(s)
 
     def __hash__(self):

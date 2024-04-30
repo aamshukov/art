@@ -20,3 +20,9 @@ class CommandInterceptor(Interceptor):
         """
         """
         raise NotImplemented(self.intercept.__qualname__)
+
+    @abstractmethod
+    async def handle_async(self, context):
+        """
+        """  # noqa
+        raise NotImplemented(self.handle_async.__qualname__)

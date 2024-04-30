@@ -21,3 +21,9 @@ class SequentialNotificationPublisher(NotificationPublisher):
         """
         """
         MediatorDomainHelper.send(context, bindings)
+
+    @traceable("Mediator sequential publisher: publish")
+    async def publish_async (self, context, bindings):
+        """
+        """
+        pass

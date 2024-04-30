@@ -3,6 +3,9 @@
 # UI Lab Inc. Arthur Amshukov
 #
 import unittest
+
+from art.framework.core.configuration.configuration import Configuration
+from art.framework.core.logging.logger import Logger
 from art.framework.core.patterns.mediator.mediator import Mediator
 from art.framework.core.patterns.mediator.messages.command import Command
 
@@ -13,7 +16,9 @@ class Test(unittest.TestCase):
         assert type(command) is Command
 
     def test_mediator(self):
-        mediator = Mediator()
+        configuration = Configuration()
+        logger = Logger()
+        mediator = Mediator(configuration, logger)
         assert True
 
 

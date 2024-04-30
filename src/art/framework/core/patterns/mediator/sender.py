@@ -22,10 +22,10 @@ class Sender(Base):
         raise NotImplemented(self.send_command.__qualname__)
 
     @abstractmethod
-    def send_command_async(self, command):
+    async def send_command_async(self, command):
         """
         """
-        raise NotImplemented(self.send_command.__qualname__)
+        raise NotImplemented(self.send_command_async.__qualname__)
 
     @abstractmethod
     def send_query(self, query):
@@ -34,10 +34,10 @@ class Sender(Base):
         raise NotImplemented(self.send_query.__qualname__)
 
     @abstractmethod
-    def send_query_async(self, query):
+    async def send_query_async(self, query):
         """
         """
-        raise NotImplemented(self.send_query.__qualname__)
+        raise NotImplemented(self.send_query_async.__qualname__)
 
     @abstractmethod
     def send_request(self, request):
@@ -46,7 +46,7 @@ class Sender(Base):
         raise NotImplemented(self.send_request.__qualname__)
 
     @abstractmethod
-    def send_request_async(self, request):
+    async def send_request_async(self, request):
         """
         """
-        raise NotImplemented(self.send_request.__qualname__)
+        raise NotImplemented(self.send_request_async.__qualname__)

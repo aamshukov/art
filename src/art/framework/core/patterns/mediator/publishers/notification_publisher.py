@@ -20,3 +20,9 @@ class NotificationPublisher(Base):
         """
         """
         raise NotImplemented(self.publish.__qualname__)
+
+    @abstractmethod
+    async def publish_async (self, context, bindings):
+        """
+        """
+        raise NotImplemented(self.publish_async .__qualname__)
