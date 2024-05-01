@@ -21,25 +21,71 @@ from art.framework.core.patterns.mediator.middleware.interceptors.notification_i
 from art.framework.core.patterns.mediator.middleware.interceptors.query_interceptor import QueryInterceptor
 from art.framework.core.patterns.mediator.middleware.interceptors.request_interceptor import RequestInterceptor
 from art.framework.core.patterns.mediator.middleware.middleware_pipeline import MiddlewarePipeline
+from art.framework.core.patterns.mediator.publishers.sequential_notification_publisher import \
+    SequentialNotificationPublisher
 from art.framework.core.result.result import Result
 
 
-class TestCommand(Command):
+class TestCommand1(Command):
+    def __init__(self,):
+        super().__init__(correlation_id='1')
+
     def name(self):  # noqa
         return __class__.__qualname__
 
 
-class TestNotification(Notification):
+class TestCommand2(Command):
+    def __init__(self,):
+        super().__init__(correlation_id='2')
+
     def name(self):  # noqa
         return __class__.__qualname__
 
 
-class TestQuery(Query):
+class TestNotification1(Notification):
+    def __init__(self,):
+        super().__init__(correlation_id='3')
+
     def name(self):  # noqa
         return __class__.__qualname__
 
 
-class TestRequest(Request):
+class TestNotification2(Notification):
+    def __init__(self,):
+        super().__init__(correlation_id='4')
+
+    def name(self):  # noqa
+        return __class__.__qualname__
+
+
+class TestQuery1(Query):
+    def __init__(self,):
+        super().__init__(correlation_id='5')
+
+    def name(self):  # noqa
+        return __class__.__qualname__
+
+
+class TestQuery2(Query):
+    def __init__(self,):
+        super().__init__(correlation_id='6')
+
+    def name(self):  # noqa
+        return __class__.__qualname__
+
+
+class TestRequest1(Request):
+    def __init__(self,):
+        super().__init__(correlation_id='7')
+
+    def name(self):  # noqa
+        return __class__.__qualname__
+
+
+class TestRequest2(Request):
+    def __init__(self,):
+        super().__init__(correlation_id='8')
+
     def name(self):  # noqa
         return __class__.__qualname__
 
@@ -142,22 +188,47 @@ class TestRequestInterceptor(RequestInterceptor):
 
 class Test(unittest.TestCase):
     @staticmethod
-    def build_pipeline():
+    def build_command_pipeline():
         pipeline = MiddlewarePipeline()
         return pipeline
 
-    def test_mediator(self):
+    @staticmethod
+    def build_notification_pipeline():
+        pipeline = MiddlewarePipeline()
+        return pipeline
+
+    @staticmethod
+    def build_query_pipeline():
+        pipeline = MiddlewarePipeline()
+        return pipeline
+
+    @staticmethod
+    def build_request_pipeline():
+        pipeline = MiddlewarePipeline()
+        return pipeline
+
+    @staticmethod
+    def build_mediator():
         configuration = Configuration()
         logger = Logger()
+        command_pipeline = Test.build_command_pipeline()
+        notification_pipeline = Test.build_notification_pipeline()
+        query_pipeline = Test.build_query_pipeline()
+        request_pipeline = Test.build_request_pipeline()
+        notification_publisher = SequentialNotificationPublisher()
+        mediator = Mediator(configuration,
+                            logger,
+                            command_pipeline,
+                            notification_pipeline,
+                            query_pipeline,
+                            request_pipeline,
+                            notification_publisher)
+        return mediator
 
-        commands_registry = None,
-        notifications_registry = None,
-        queries_registry = None,
-        requests_registry = None,
-        notification_publisher = None
-
-        mediator = Mediator(configuration, logger)
-        assert True
+    def test_mediator(self):
+        mediator = Test.build_mediator()
+        result = mediator.send_command(TestCommand1())
+        assert result.success()
 
 
 if __name__ == '__main__':
