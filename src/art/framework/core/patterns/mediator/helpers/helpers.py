@@ -21,60 +21,38 @@ class MediatorDomainHelper(Base):
     def send(context, bindings):
         """
         """
-        aborted = False
         # propagate down
         for binding in bindings:
-            for interceptor in binding.middleware.interceptors:
-                result = interceptor.handle(context)
-                context.results.append(result)
-                if result.status.custom_code == Code.Aborted:
-                    aborted = True
-                    break
-            if not aborted:
-                result = binding.middleware.handle(context)
-                context.results.append(result)
-                if result.status.custom_code == Code.Aborted:
-                    aborted = True
-                    break
-        # propagate up (bubble up)
-        if not aborted:
+            result = binding.middleware.handle(context)
+            if result.status.custom_code == Code.Aborted:
+                break
+        else:
+            # propagate up (bubble up)
             for binding in reversed(bindings):
                 result = binding.middleware.handle(context)
-                context.results.append(result)
                 if result.status.custom_code == Code.Aborted:
                     break
         if all(result.status.custom_code == Code.Success for result in context.results):
             return Result(Status(), context)
         else:
-            return Result(Status(custom_code=Code.Information), data=context)
+            return Result(Status(custom_code=Code.Attention), data=context)
 
     @staticmethod
     async def send_async(context, bindings):
         """
         """
-        aborted = False
         # propagate down
         for binding in bindings:
-            for interceptor in binding.middleware.interceptors:
-                result = await interceptor.handle(context)
-                context.results.append(result)
-                if result.status.custom_code == Code.Aborted:
-                    aborted = True
-                    break
-            if not aborted:
-                result = await binding.middleware.handle(context)
-                context.results.append(result)
-                if result.status.custom_code == Code.Aborted:
-                    aborted = True
-                    break
-        # propagate up (bubble up)
-        if not aborted:
+            result = await binding.middleware.handle_async(context)
+            if result.status.custom_code == Code.Aborted:
+                break
+        else:
+            # propagate up (bubble up)
             for binding in reversed(bindings):
-                result = await binding.middleware.handle(context)
-                context.results.append(result)
+                result = await binding.middleware.handle_async(context)
                 if result.status.custom_code == Code.Aborted:
                     break
         if all(result.status.custom_code == Code.Success for result in context.results):
             return Result(Status(), context)
         else:
-            return Result(Status(custom_code=Code.Information), data=context)
+            return Result(Status(custom_code=Code.Attention), data=context)

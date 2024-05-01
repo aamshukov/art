@@ -20,10 +20,10 @@ class SequentialNotificationPublisher(NotificationPublisher):
     def publish(self, context, bindings):
         """
         """
-        MediatorDomainHelper.send(context, bindings)
+        return MediatorDomainHelper.send(context, bindings)
 
     @traceable("Mediator sequential publisher: publish")
     async def publish_async (self, context, bindings):
         """
         """
-        pass
+        return await MediatorDomainHelper.send_async(context, bindings)

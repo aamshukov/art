@@ -2,8 +2,8 @@
 # -*- encoding: utf-8 -*-
 # UI Lab Inc. Arthur Amshukov
 #
-""" Mediator middleware interface """
-from abc import abstractmethod
+""" Mediator middleware """
+from art.framework.core.diagnostics.code import Code
 from art.framework.core.domain.base import Base
 
 
@@ -19,16 +19,30 @@ class Middleware(Base):
         self.handler = handler
         self.interceptors = interceptors if interceptors is not None else list()
 
-    @abstractmethod
     def handle(self, context):
         """
         Result<TResponse> Middleware.Handle<TRequest, TResponse>(request...)
         """  # noqa
-        raise NotImplemented(self.handle.__qualname__)
+        for interceptor in self.interceptors:
+            result = interceptor.handle(context)
+            context.results.append(result)
+            if result.status.custom_code == Code.Aborted:
+                break
+        else:
+            result = self.handler.handle(context)
+            context.results.append(result)
+        return result
 
-    @abstractmethod
     async def handle_async(self, context):
         """
         Result<TResponse> Middleware.Handle<TRequest, TResponse>(request...)
         """  # noqa
-        raise NotImplemented(self.handle_async.__qualname__)
+        for interceptor in self.interceptors:
+            result = await interceptor.handle_async(context)
+            context.results.append(result)
+            if result.status.custom_code == Code.Aborted:
+                break
+        else:
+            result = await self.handler.handle_async(context)
+            context.results.append(result)
+        return result

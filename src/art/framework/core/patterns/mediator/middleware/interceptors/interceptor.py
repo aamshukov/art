@@ -2,12 +2,12 @@
 # -*- encoding: utf-8 -*-
 # UI Lab Inc. Arthur Amshukov
 #
-""" Mediator notification interceptor interface """
+""" Mediator command interceptor interface """
 from abc import abstractmethod
-from art.framework.core.patterns.mediator.interceptors.interceptor import Interceptor
+from art.framework.core.domain.base import Base
 
 
-class NotificationInterceptor(Interceptor):
+class Interceptor(Base):
     """
     """
     def __init__(self):
@@ -22,7 +22,7 @@ class NotificationInterceptor(Interceptor):
         raise NotImplemented(self.intercept.__qualname__)
 
     @abstractmethod
-    async def handle_async(self, context):
+    async def intercept_async(self, context):
         """
         """  # noqa
-        raise NotImplemented(self.handle_async.__qualname__)
+        raise NotImplemented(self.intercept_async.__qualname__)

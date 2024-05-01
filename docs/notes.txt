@@ -1436,7 +1436,7 @@ D:\Tmp\Python.Samples\bigtree\node\basenode.py
 
 
 
-assert type(command) is command, f"Invalid argument type {command}, Command is expected."
+assert type(command) is Command, f"Invalid argument type {command}, Command is expected."
 
 
 

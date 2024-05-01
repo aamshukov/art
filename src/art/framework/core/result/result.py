@@ -11,7 +11,7 @@ class Result(Base):
     """
     """
 
-    def __init__(self, status, data=None):
+    def __init__(self, status=None, data=None):
         """
         """
         super().__init__()

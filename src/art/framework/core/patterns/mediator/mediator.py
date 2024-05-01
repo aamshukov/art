@@ -5,13 +5,13 @@
 """ Mediator """
 from art.framework.core.patterns.mediator.context.context import Context
 from art.framework.core.patterns.mediator.helpers.helpers import MediatorDomainHelper
+from art.framework.core.patterns.mediator.messages.command import Command
+from art.framework.core.patterns.mediator.messages.notification import Notification
+from art.framework.core.patterns.mediator.messages.query import Query
+from art.framework.core.patterns.mediator.messages.request import Request
 from art.framework.core.patterns.mediator.publisher import Publisher
 from art.framework.core.patterns.mediator.sender import Sender
 from art.framework.core.utils.helper import traceable
-from art.framework.core.patterns.mediator.messages import command as msg_command
-from art.framework.core.patterns.mediator.messages import query as msg_query
-from art.framework.core.patterns.mediator.messages import request as msg_request
-from art.framework.core.patterns.mediator.messages import notification as msg_notification
 
 
 class Mediator(Sender, Publisher):
@@ -40,7 +40,7 @@ class Mediator(Sender, Publisher):
     def send_command(self, command):
         """
         """
-        assert type(command) is msg_command, f"Invalid argument type {command}, Command is expected."
+        assert type(command) is Command, f"Invalid argument type {command}, Command is expected."
         bindings = self.commands_registry.get_bindings(command)
         assert any(bindings), f"Middleware for {command} is not found."
         context = Context(request=command, configuration=self.configuration, logger=self.logger)
@@ -50,7 +50,7 @@ class Mediator(Sender, Publisher):
     async def send_command_async(self, command):  # noqa
         """
         """
-        assert type(command) is msg_command, f"Invalid argument type {command}, Command is expected."
+        assert type(command) is Command, f"Invalid argument type {command}, Command is expected."
         bindings = self.commands_registry.get_bindings(command)
         assert any(bindings), f"Middleware for {command} is not found."
         context = Context(request=command, configuration=self.configuration, logger=self.logger)
@@ -60,7 +60,7 @@ class Mediator(Sender, Publisher):
     def send_query(self, query):  # noqa
         """
         """
-        assert type(query) is msg_query, f"Invalid argument type {query}, Query is expected."
+        assert type(query) is Query, f"Invalid argument type {query}, Query is expected."
         bindings = self.queries_registry.get_bindings(query)
         assert any(bindings), f"Middleware for {query} is not found."
         context = Context(request=query, configuration=self.configuration, logger=self.logger)
@@ -70,7 +70,7 @@ class Mediator(Sender, Publisher):
     async def send_query_async(self, query):  # noqa
         """
         """
-        assert type(query) is msg_query, f"Invalid argument type {query}, Query is expected."
+        assert type(query) is Query, f"Invalid argument type {query}, Query is expected."
         bindings = self.queries_registry.get_bindings(query)
         assert any(bindings), f"Middleware for {query} is not found."
         context = Context(request=query, configuration=self.configuration, logger=self.logger)
@@ -80,7 +80,7 @@ class Mediator(Sender, Publisher):
     def send_request(self, request):  # noqa
         """
         """
-        assert type(request) is msg_request, f"Invalid argument type {request}, Request is expected."
+        assert type(request) is Request, f"Invalid argument type {request}, Request is expected."
         bindings = self.requests_registry.get_bindings(request)
         assert any(bindings), f"Middleware for {request} is not found."
         context = Context(request=request, configuration=self.configuration, logger=self.logger)
@@ -90,7 +90,7 @@ class Mediator(Sender, Publisher):
     async def send_request_async(self, request):  # noqa
         """
         """
-        assert type(request) is msg_request, f"Invalid argument type {request}, Request is expected."
+        assert type(request) is Request, f"Invalid argument type {request}, Request is expected."
         bindings = self.requests_registry.get_bindings(request)
         assert any(bindings), f"Middleware for {request} is not found."
         context = Context(request=request, configuration=self.configuration, logger=self.logger)
@@ -101,7 +101,7 @@ class Mediator(Sender, Publisher):
         """
         """
         assert self.notification_publisher, "Notification publisher is not provided."
-        assert type(notification) is msg_notification, f"Invalid argument type {notification}, Request is expected."
+        assert type(notification) is Notification, f"Invalid argument type {notification}, Request is expected."
         bindings = self.notifications_registry.get_bindings(notification)
         assert any(bindings), f"Middleware for {notification} is not found."
         context = Context(request=notification, configuration=self.configuration, logger=self.logger)
@@ -111,7 +111,7 @@ class Mediator(Sender, Publisher):
         """
         """
         assert self.notification_publisher, "Notification publisher is not provided."
-        assert type(notification) is msg_notification, f"Invalid argument type {notification}, Request is expected."
+        assert type(notification) is Notification, f"Invalid argument type {notification}, Request is expected."
         bindings = self.notifications_registry.get_bindings(notification)
         assert any(bindings), f"Middleware for {notification} is not found."
         context = Context(request=notification, configuration=self.configuration, logger=self.logger)
