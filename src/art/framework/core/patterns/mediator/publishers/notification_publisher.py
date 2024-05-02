@@ -10,10 +10,12 @@ from art.framework.core.domain.base import Base
 class NotificationPublisher(Base):
     """
     """
-    def __init__(self):
+    def __init__(self, configuration, logger):
         """
         """
         super().__init__()
+        self.configuration = configuration
+        self.logger = logger
 
     @abstractmethod
     def publish(self, context, bindings):

@@ -42,17 +42,17 @@ class Mediator(Sender, Publisher):
         assert isinstance(command, Command), f"Invalid argument type {command}, Command is expected."
         bindings = self.command_pipeline.get_bindings(command)
         assert any(bindings), f"Middleware for {command} is not found."
-        context = Context(request=command, configuration=self.configuration, logger=self.logger)
+        context = Context(request=command)
         return MediatorDomainHelper.send(context, bindings)
 
-    @MediatorDomainHelper.traceable()
+    @MediatorDomainHelper.traceable_async()
     async def send_command_async(self, command):  # noqa
         """
         """
         assert isinstance(command, Command), f"Invalid argument type {command}, Command is expected."
         bindings = self.command_pipeline.get_bindings(command)
         assert any(bindings), f"Middleware for {command} is not found."
-        context = Context(request=command, configuration=self.configuration, logger=self.logger)
+        context = Context(request=command)
         return await MediatorDomainHelper.send_async(context, bindings)
 
     @MediatorDomainHelper.traceable()
@@ -62,17 +62,17 @@ class Mediator(Sender, Publisher):
         assert isinstance(query, Query), f"Invalid argument type {query}, Query is expected."
         bindings = self.query_pipeline.get_bindings(query)
         assert any(bindings), f"Middleware for {query} is not found."
-        context = Context(request=query, configuration=self.configuration, logger=self.logger)
+        context = Context(request=query)
         return MediatorDomainHelper.send(context, bindings)
 
-    @MediatorDomainHelper.traceable()
+    @MediatorDomainHelper.traceable_async()
     async def send_query_async(self, query):  # noqa
         """
         """
         assert isinstance(query, Query), f"Invalid argument type {query}, Query is expected."
         bindings = self.query_pipeline.get_bindings(query)
         assert any(bindings), f"Middleware for {query} is not found."
-        context = Context(request=query, configuration=self.configuration, logger=self.logger)
+        context = Context(request=query)
         return await MediatorDomainHelper.send_async(context, bindings)
 
     @MediatorDomainHelper.traceable()
@@ -82,18 +82,18 @@ class Mediator(Sender, Publisher):
         assert isinstance(request, Request), f"Invalid argument type {request}, Request is expected."
         bindings = self.request_pipeline.get_bindings(request)
         assert any(bindings), f"Middleware for {request} is not found."
-        context = Context(request=request, configuration=self.configuration, logger=self.logger)
-        return MediatorDomainHelper.send(context, bindings)
+        context = Context(request=request)
+        return MediatorDomainHelper.send_propagated(context, bindings)
 
-    @MediatorDomainHelper.traceable()
+    @MediatorDomainHelper.traceable_async()
     async def send_request_async(self, request):  # noqa
         """
         """
         assert isinstance(request, Request), f"Invalid argument type {request}, Request is expected."
         bindings = self.request_pipeline.get_bindings(request)
         assert any(bindings), f"Middleware for {request} is not found."
-        context = Context(request=request, configuration=self.configuration, logger=self.logger)
-        return await MediatorDomainHelper.send_async(context, bindings)
+        context = Context(request=request)
+        return await MediatorDomainHelper.send_propagated_async(context, bindings)
 
     @MediatorDomainHelper.traceable()
     def publish(self, notification):  # noqa
@@ -103,10 +103,10 @@ class Mediator(Sender, Publisher):
         assert isinstance(notification, Notification), f"Invalid argument type {notification}, Request is expected."
         bindings = self.notification_pipeline.get_bindings(notification)
         assert any(bindings), f"Middleware for {notification} is not found."
-        context = Context(request=notification, configuration=self.configuration, logger=self.logger)
+        context = Context(request=notification)
         return self.notification_publisher.publish(context, bindings)
 
-    @MediatorDomainHelper.traceable()
+    @MediatorDomainHelper.traceable_async()
     async def publish_async(self, notification):  # noqa
         """
         """
@@ -114,5 +114,5 @@ class Mediator(Sender, Publisher):
         assert isinstance(notification, Notification), f"Invalid argument type {notification}, Request is expected."
         bindings = self.notification_pipeline.get_bindings(notification)
         assert any(bindings), f"Middleware for {notification} is not found."
-        context = Context(request=notification, configuration=self.configuration, logger=self.logger)
+        context = Context(request=notification)
         return await self.notification_publisher.publish_async(context, bindings)

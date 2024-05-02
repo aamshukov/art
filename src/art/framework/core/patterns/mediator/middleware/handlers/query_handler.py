@@ -10,10 +10,10 @@ from art.framework.core.patterns.mediator.middleware.handlers.handler import Han
 class QueryHandler(Handler):
     """
     """
-    def __init__(self):
+    def __init__(self, configuration, logger):
         """
         """
-        super().__init__()
+        super().__init__(configuration, logger)
 
     @abstractmethod
     def handle(self, context, next_handler=None):

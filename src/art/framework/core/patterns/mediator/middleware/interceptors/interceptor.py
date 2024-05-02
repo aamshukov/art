@@ -2,7 +2,7 @@
 # -*- encoding: utf-8 -*-
 # UI Lab Inc. Arthur Amshukov
 #
-""" Mediator command interceptor interface """
+""" Mediator interceptor interface """
 from abc import abstractmethod
 from art.framework.core.domain.base import Base
 
@@ -10,10 +10,12 @@ from art.framework.core.domain.base import Base
 class Interceptor(Base):
     """
     """
-    def __init__(self):
+    def __init__(self, configuration, logger):
         """
         """
         super().__init__()
+        self.configuration = configuration
+        self.logger = logger
 
     @abstractmethod
     def intercept(self, context):

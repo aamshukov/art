@@ -10,8 +10,8 @@ class MiddlewareBinding(Base):
     """
     """
     def __init__(self,
-                 message, # message type (command, notification, query, request, etc.)
-                 middleware):
+                 message,      # message type (Command, Notification, Query, Request, etc.)
+                 middleware):  # middleware with handler and interceptors types
         """
         """
         super().__init__()

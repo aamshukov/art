@@ -8,6 +8,7 @@ from art.framework.core.patterns.mediator.messages.command import Command
 from art.framework.core.patterns.mediator.messages.notification import Notification
 from art.framework.core.patterns.mediator.messages.query import Query
 from art.framework.core.patterns.mediator.messages.request import Request
+from art.framework.core.patterns.mediator.middleware.middleware_binding import MiddlewareBinding
 
 
 class MiddlewarePipeline(Base):
@@ -24,43 +25,41 @@ class MiddlewarePipeline(Base):
         """
         """
         bindings = list()
-        message_type = type(message)
         for binding in self.pipeline:
-            if type(binding.message) is message_type:
+            if binding.message is type(message):
                 bindings.append(binding)
         return bindings
 
-    def register_command(self, binding):
+    def register_command(self, command, middleware):
         """
         """
-        assert type(binding.message) is Command, f"Invalid argument type {binding.message}, Command is expected."
-        self.register_binding(binding)
+        assert issubclass(command, Command), f"Invalid argument type {command}, Command is expected."
+        self.register_binding(MiddlewareBinding(command, middleware))
 
-    def register_notification(self, binding):
+    def register_notification(self, notification, middleware):
         """
         """
-        assert type(binding.message) is Notification,\
-            f"Invalid argument type {binding.message}, Notification is expected."
-        self.pipeline.append(binding)
+        assert issubclass(notification, Notification),\
+            f"Invalid argument type {notification}, Notification is expected."
+        self.pipeline.append(MiddlewareBinding(notification, middleware))
 
-    def register_query(self, binding):
+    def register_query(self, query, middleware):
         """
         """
-        assert type(binding.message) is Query, f"Invalid argument type {binding.message}, Query is expected."
-        self.register_binding(binding)
+        assert issubclass(query, Query), f"Invalid argument type {query}, Query is expected."
+        self.register_binding(MiddlewareBinding(query, middleware))
 
-    def register_request(self, binding):
+    def register_request(self, request, middleware):
         """
         """
-        assert type(binding.message) is Request, f"Invalid argument type {binding.message}, Request is expected."
-        self.register_binding(binding)
+        assert issubclass(request, Request), f"Invalid argument type {request}, Request is expected."
+        self.register_binding(MiddlewareBinding(request, middleware))
 
     def register_binding(self, new_binding):
         """
         """
-        message_type = type(new_binding.message)
         for binding in self.pipeline:
-            if type(binding.message) is message_type:
+            if binding.message is new_binding.message:
                 break
         else:
             self.pipeline.append(new_binding)
