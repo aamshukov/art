@@ -314,40 +314,40 @@ class Test(unittest.IsolatedAsyncioTestCase):
     @staticmethod
     def build_command_pipeline(configuration, logger):
         pipeline = MiddlewarePipeline()
-        middleware = Middleware(configuration, logger, TestCommand11Handler, [TestCommand11Interceptor, TestCommand12Interceptor])  # noqa
+        middleware = Middleware("Test command 1-1", configuration, logger, TestCommand11Handler, [TestCommand11Interceptor, TestCommand12Interceptor])  # noqa
         pipeline.register_command(TestCommand1, middleware)
-        middleware = Middleware(configuration, logger, TestCommand12Handler, [TestCommand11Interceptor, TestCommand12Interceptor])  # noqa
+        middleware = Middleware("Test command 1-2", configuration, logger, TestCommand12Handler, [TestCommand11Interceptor, TestCommand12Interceptor])  # noqa
         pipeline.register_command(TestCommand1, middleware)
-        middleware = Middleware(configuration, logger, TestCommand21Handler, [TestCommand21Interceptor, TestCommand22Interceptor])  # noqa
+        middleware = Middleware("Test command 2-1", configuration, logger, TestCommand21Handler, [TestCommand21Interceptor, TestCommand22Interceptor])  # noqa
         pipeline.register_command(TestCommand2, middleware)
-        middleware = Middleware(configuration, logger, TestCommand21Handler, [TestCommand21Interceptor, TestCommand22Interceptor])  # noqa
+        middleware = Middleware("Test command 2-2", configuration, logger, TestCommand21Handler, [TestCommand21Interceptor, TestCommand22Interceptor])  # noqa
         pipeline.register_command(TestCommand2, middleware)
         return pipeline
 
     @staticmethod
     def build_notification_pipeline(configuration, logger):
         pipeline = MiddlewarePipeline()
-        middleware = Middleware(configuration, logger, TestNotificationHandler, [TestNotificationInterceptor])
+        middleware = Middleware("Test notification", configuration, logger, TestNotificationHandler, [TestNotificationInterceptor])
         pipeline.register_notification(TestNotification, middleware)
         return pipeline
 
     @staticmethod
     def build_query_pipeline(configuration, logger):
         pipeline = MiddlewarePipeline()
-        middleware = Middleware(configuration, logger, TestQueryHandler, [TestQueryInterceptor])
+        middleware = Middleware("Test query", configuration, logger, TestQueryHandler, [TestQueryInterceptor])
         pipeline.register_query(TestQuery, middleware)
         return pipeline
 
     @staticmethod
     def build_request_pipeline(configuration, logger):
         pipeline = MiddlewarePipeline()
-        middleware = Middleware(configuration, logger, TestRequest1Handler, [TestRequest1Interceptor, TestRequest1Interceptor])  # noqa
+        middleware = Middleware("Test request 1", configuration, logger, TestRequest1Handler, [TestRequest1Interceptor, TestRequest1Interceptor])  # noqa
         pipeline.register_request(TestRequest1, middleware)
-        middleware = Middleware(configuration, logger, TestRequest1Handler, [TestRequest1Interceptor, TestRequest1Interceptor])  # noqa
+        middleware = Middleware("Test request 1", configuration, logger, TestRequest1Handler, [TestRequest1Interceptor, TestRequest1Interceptor])  # noqa
         pipeline.register_request(TestRequest1, middleware)
-        middleware = Middleware(configuration, logger, TestRequest2Handler, [TestRequest2Interceptor, TestRequest2Interceptor])  # noqa
+        middleware = Middleware("Test request 2", configuration, logger, TestRequest2Handler, [TestRequest2Interceptor, TestRequest2Interceptor])  # noqa
         pipeline.register_request(TestRequest2, middleware)
-        middleware = Middleware(configuration, logger, TestRequest2Handler, [TestRequest2Interceptor, TestRequest2Interceptor])  # noqa
+        middleware = Middleware("Test request 2", configuration, logger, TestRequest2Handler, [TestRequest2Interceptor, TestRequest2Interceptor])  # noqa
         pipeline.register_request(TestRequest2, middleware)
         return pipeline
 

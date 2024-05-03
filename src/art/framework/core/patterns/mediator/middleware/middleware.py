@@ -3,6 +3,8 @@
 # UI Lab Inc. Arthur Amshukov
 #
 """ Mediator middleware """
+import os
+
 from art.framework.core.diagnostics.code import Code
 from art.framework.core.domain.base import Base
 from art.framework.core.patterns.mediator.helpers.helpers import MediatorDomainHelper
@@ -12,6 +14,7 @@ class Middleware(Base):
     """
     """
     def __init__(self,
+                 name,
                  configuration,
                  logger,
                  handler,             # handler type associated with middleware
@@ -19,6 +22,7 @@ class Middleware(Base):
         """
         """
         super().__init__()
+        self.name = name
         self.configuration = configuration
         self.logger = logger
         self.handler = handler
@@ -29,6 +33,7 @@ class Middleware(Base):
         """
         Result<TResponse> Middleware.Handle<TRequest, TResponse>(request...)
         """  # noqa
+        self.logger.info(f"Mediator: middleware {self.name}.{os.linesep}")
         for interceptor in self.interceptors:
             result = interceptor(self.configuration, self.logger).intercept(context)
             context.results.append(result)
@@ -44,6 +49,7 @@ class Middleware(Base):
         """
         Result<TResponse> Middleware.Handle<TRequest, TResponse>(request...)
         """  # noqa
+        self.logger.info(f"Mediator: middleware {self.name}.{os.linesep}")
         for interceptor in self.interceptors:
             result = await interceptor(self.configuration, self.logger).intercept_async(context)
             context.results.append(result)

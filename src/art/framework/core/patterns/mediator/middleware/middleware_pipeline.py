@@ -58,8 +58,9 @@ class MiddlewarePipeline(Base):
     def register_binding(self, new_binding):
         """
         """
-        for binding in self.pipeline:
-            if binding.message is new_binding.message:
-                break
-        else:
-            self.pipeline.append(new_binding)
+        self.pipeline.append(new_binding)
+        # for binding in self.pipeline:
+        #     if binding.message is new_binding.message:
+        #         break
+        # else:
+        #     self.pipeline.append(new_binding)
