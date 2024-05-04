@@ -4,6 +4,7 @@
 #
 """ Mediator message interface """
 from art.framework.core.domain.entity import Entity
+from art.framework.core.utils.time import Time
 
 
 class Message(Entity):
@@ -15,6 +16,7 @@ class Message(Entity):
         """
         """
         super().__init__(correlation_id, version)
+        self.timestamp = Time.timestamp()
 
     def __hash__(self):
         """
