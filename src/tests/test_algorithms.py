@@ -128,6 +128,12 @@ class Test(unittest.TestCase):
         plog2 = int(math.log2(50))
         assert alog2 == plog2
 
+    def test_integer_log2_loop(self):
+        for k in range(1, 10000):
+            alog2 = Algorithms.integer_log2(k)
+            plog2 = int(math.log2(k))
+            assert alog2 == plog2
+
 
 if __name__ == '__main__':
     """
