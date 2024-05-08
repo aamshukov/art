@@ -106,7 +106,7 @@ class Test(unittest.TestCase):
         assert Algorithms.max_pow2_less(2) == 1
         assert Algorithms.max_pow2_less(10) == 8
         assert Algorithms.max_pow2_less(16) == 8
-        assert Algorithms.max_pow2_less(17) == 8
+        assert Algorithms.max_pow2_less(17) == 16
 
     def test_integer_log2(self):
         alog2 = Algorithms.integer_log2(1)
