@@ -4,6 +4,7 @@
 #
 import unittest
 import random
+import math
 from datetime import datetime
 import networkx as nx
 import numpy as np
@@ -99,6 +100,33 @@ class Test(unittest.TestCase):
         random.shuffle(intervals)
         result = Algorithms.merge_intervals(intervals)
         assert result == [[0, n - 1]]
+
+    def test_max_pow2_less(self):
+        assert Algorithms.max_pow2_less(1) == 0
+        assert Algorithms.max_pow2_less(2) == 1
+        assert Algorithms.max_pow2_less(10) == 8
+        assert Algorithms.max_pow2_less(16) == 8
+        assert Algorithms.max_pow2_less(17) == 8
+
+    def test_integer_log2(self):
+        alog2 = Algorithms.integer_log2(1)
+        plog2 = int(math.log2(1))
+        assert alog2 == plog2
+        alog2 = Algorithms.integer_log2(2)
+        plog2 = int(math.log2(2))
+        assert alog2 == plog2
+        alog2 = Algorithms.integer_log2(3)
+        plog2 = int(math.log2(3))
+        assert alog2 == plog2
+        alog2 = Algorithms.integer_log2(4)
+        plog2 = int(math.log2(4))
+        assert alog2 == plog2
+        alog2 = Algorithms.integer_log2(5)
+        plog2 = int(math.log2(5))
+        assert alog2 == plog2
+        alog2 = Algorithms.integer_log2(50)
+        plog2 = int(math.log2(50))
+        assert alog2 == plog2
 
 
 if __name__ == '__main__':

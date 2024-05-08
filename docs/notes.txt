@@ -1445,3 +1445,23 @@ assert type(command) is Command, f"Invalid argument type {command}, Command is e
 
 
 
+
+
+
+    @staticmethod
+    def integer_log2(n):
+        """
+        """
+        n = int(n)
+        return 1 if (n < 2) else 1 + Algorithms.integer_log2(n / 2)
+
+
+    def test_integer_log2(self):
+        alog2 = Algorithms.integer_log2(4)
+        plog2 = int(math.ceil(math.log2(4)))
+        assert alog2 == plog2
+
+
+
+
+

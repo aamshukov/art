@@ -157,3 +157,43 @@ class Algorithms(Base):
             else:
                 k += 1
         return intervals
+
+    @staticmethod
+    def calculate_alignment_up(value, alignment):
+        """
+        """
+        # align value 'value' to boundary 'alignment' which should be power of 2
+        return int((value + (alignment - 1)) & ~(alignment - 1))  # up
+
+    @staticmethod
+    def calculate_alignment_down(value, alignment):
+        """
+        """
+        # align value 'value' to boundary 'alignment' which should be power of 2
+        return int(value & ~(alignment - 1))  # down
+
+    @staticmethod
+    def max_pow2_less(n):
+        """
+        """
+        result = 0
+        for k in reversed(range(0, n)):
+            if (k & (k - 1)) == 0:
+                result = k
+                break
+        return result
+
+    @staticmethod
+    def integer_log2(n):
+        """
+        https://www.boost.org/doc/libs/1_58_0/boost/integer/integer_log2.hpp
+        """  # noqa
+        mxpo2ls = Algorithms.max_pow2_less(n)
+        result = 0
+        while n != 1:
+            t = n >> mxpo2ls
+            if t:
+                result += mxpo2ls
+                n = t
+            mxpo2ls //= 2
+        return result

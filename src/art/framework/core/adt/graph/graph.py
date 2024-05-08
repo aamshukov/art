@@ -63,6 +63,8 @@ class Graph(Entity):
         return result
 
     def matrix(self, value_type=float):
+        """
+        """
         size = len(self.vertices)
         result = np.zeros((size, size), dtype=value_type)
         for edge in self.edges.values():
