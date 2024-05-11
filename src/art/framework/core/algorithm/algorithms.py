@@ -188,7 +188,7 @@ class Algorithms(Base):
         """
         https://www.boost.org/doc/libs/1_58_0/boost/integer/integer_log2.hpp
         """  # noqa
-        mxpo2ls = Algorithms.max_pow2_less(n)
+        mxpo2ls = Algorithms.max_pow2_less(n)  # noqa
         result = 0
         while n != 1:
             t = n >> mxpo2ls

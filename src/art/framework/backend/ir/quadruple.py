@@ -2,6 +2,7 @@
 # UI Lab Inc. Arthur Amshukov
 #
 """ Quadruple """
+from art.framework.backend.ir.operation_code import OperationCode
 from art.framework.core.domain.entity import Entity
 from art.framework.core.patterns.visitor.visitable import Visitable
 
@@ -11,7 +12,7 @@ class Quadruple(Entity, Visitable):
     """
     def __init__(self,
                  id,
-                 operation=None,  # operation code, OperationCode
+                 operation=OperationCode.Noop,  # operation code, OperationCode
                  argument1=None,
                  argument2=None,
                  result=None,

@@ -153,20 +153,30 @@ class BitSet(Base):
         Finds first non zero bit.
         """
         result = -1
-        chunk = position // BitSet.CHUNK_SIZE
-        for k in range(chunk, self.capacity):
-            if self.bits[k] != 0:
-                n = self.bits[k]
-                result = k * BitSet.CHUNK_SIZE + Algorithms.integer_log2(n - (n & (n - 1))) - 1  # -1 -> zero based
-                assert result < self.size, f'Out of index: {self.find_first.__qualname__}.'
-                break
+        if self.size > 0 and position < (self.size - 1):
+            chunk_index = position // BitSet.CHUNK_SIZE
+            for k in range(chunk_index, self.capacity):
+                if self.bits[k] != 0:
+                    n = self.bits[k]
+                    result = k * BitSet.CHUNK_SIZE + Algorithms.integer_log2(n - (n & (n - 1))) - 1  # -1 -> zero based
+                    assert result < self.size, f'Out of index: {self.find_first.__qualname__}.'
+                    break
         return result
 
-    def find_next(self, position):
+    def find_next(self, position=0):
         """
         Finds next non zero bit.
         """
-        result = 0
+        result = -1
+        if self.size > 0 and position < (self.size - 1):
+            chunk_index = position // BitSet.CHUNK_SIZE
+            bit_index = position % BitSet.CHUNK_SIZE
+            chunk = self.bits[chunk_index]
+            n = chunk >> bit_index
+            if n:
+                result = position + Algorithms.integer_log2(n - (n & (n - 1))) - 1  # -1 -> zero based
+            else:
+                result = self.find_first(position + BitSet.CHUNK_SIZE)  # mimic position + 1
         return result
 
     def stringify(self):
