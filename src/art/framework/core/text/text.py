@@ -3,6 +3,7 @@
 # UI Lab Inc. Arthur Amshukov
 #
 """ String extensions """
+import os
 import sys
 import ctypes
 import functools
@@ -529,7 +530,7 @@ class Text(Base):
         print(f"Listing  {category}  category  - .")
         ranges = Text.list_category(category)
         # print(ranges)
-        result = "    return\n"
+        result = f"    return{os.linesep}"
         for r in ranges:
             def convert(num):
                 res = "{0:#0{1}x}".format(num, 6)
@@ -542,7 +543,7 @@ class Text(Base):
             start = convert(r[0])
             end = convert(r[len(r)-1])
             # print("{}, {}".format(start, end))
-            result += "           in_range(codepoint, {}, {}) ||\n".format(start, end)
+            result += f"           in_range(codepoint, {start}, {end}) ||{os.linesep}"
         result += ";"
         print(result)
 

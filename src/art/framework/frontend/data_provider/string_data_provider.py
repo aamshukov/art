@@ -3,7 +3,7 @@
 # UI Lab Inc. Arthur Amshukov
 #
 """ String data provider """
-from art.framework.core.utils.text import Text
+from art.framework.core.text.text import Text
 from art.framework.frontend.data_provider.data_provider import DataProvider
 
 

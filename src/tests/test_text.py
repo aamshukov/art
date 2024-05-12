@@ -3,7 +3,7 @@
 # UI Lab Inc. Arthur Amshukov
 #
 import unittest
-from art.framework.core.utils.text import Text
+from art.framework.core.text.text import Text
 
 
 class Test(unittest.TestCase):

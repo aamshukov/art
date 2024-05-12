@@ -8,7 +8,7 @@ from copy import deepcopy
 from art.framework.core.diagnostics.code import Code
 from art.framework.core.utils.flags import Flags
 from art.framework.core.diagnostics.status import Status
-from art.framework.core.utils.text import Text
+from art.framework.core.text.text import Text
 from art.framework.frontend.lexical_analyzer.tokenizer.token_kind import TokenKind
 from art.framework.frontend.lexical_analyzer.tokenizer.tokenizer import Tokenizer
 

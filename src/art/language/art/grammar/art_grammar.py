@@ -3,7 +3,7 @@
 #
 """ Art Context Free Grammar """
 from art.framework.core.diagnostics.diagnostics import Diagnostics
-from art.framework.core.utils.text import Text
+from art.framework.core.text.text import Text
 from art.framework.frontend.content.content import Content
 from art.framework.frontend.grammar.grammar import Grammar
 from art.framework.frontend.grammar.grammar_rule import GrammarRule

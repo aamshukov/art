@@ -3,9 +3,10 @@
 #
 """  B-Tree based Index implementation """
 import math
+import os
 import struct
 from collections import namedtuple
-from art.framework.core.utils.text import Text
+from art.framework.core.text.text import Text
 from art.framework.core.adt.tree.tree import Tree
 from art.framework.core.domain.entity import Entity
 
@@ -769,4 +770,4 @@ class Index(Entity):
                 lines.append(f"+- {indent} Branch({node.keys})")
                 for k in range(len(node.values)):
                     nodes.append((node.values[k], level + 1))
-        return "\n".join(lines)
+        return f'{os.linesep}'.join(lines)

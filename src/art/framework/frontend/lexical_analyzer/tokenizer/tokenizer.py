@@ -10,7 +10,7 @@ from art.framework.core.domain.entity import Entity
 from art.framework.core.utils.flags import Flags
 from art.framework.core.diagnostics.status import Status
 from art.framework.core.utils.helper import DomainHelper
-from art.framework.core.utils.text import Text
+from art.framework.core.text.text import Text
 from art.framework.frontend.lexical_analyzer.tokenizer.token_factory import TokenFactory
 
 

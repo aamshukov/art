@@ -98,7 +98,7 @@ class DomainHelper(Base):
     def flatten_json(json_text):
         """
         """
-        return json_text.replace('\n', '')
+        return json_text.replace(f'{os.linesep}', '')
 
     @staticmethod
     def bits(байты):  # noqa

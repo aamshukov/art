@@ -3,6 +3,7 @@
 # UI Lab Inc. Arthur Amshukov
 #
 """ Suffix Array """
+import os
 from enum import Enum
 from art.framework.core.domain.base import Base
 
@@ -80,7 +81,7 @@ class SuffixArray(Base):
             part1 = ''.join(str(e.value) for e in classification)
             part2 = ''.join('^' if is_left_most_s_char(k, classification)
                             else ' ' for k in range(len(classification)))
-            return f"\n{part1}\n{part2}"
+            return f"{os.linesep}{part1}{os.linesep}{part2}"
 
         def is_left_most_s_char(index, classification):
             """
@@ -198,7 +199,7 @@ class SuffixArray(Base):
             part2 = ''
             if position is not None:
                 part2 = ' '.join('^^' if e == position else '  ' for e in range(len(suffixes)))
-            return f"\n{part1}\n{part2}"
+            return f"{os.linesep}{part1}{os.linesep}{part2}"
 
         def place_lms_suffixes(string,
                                classification,

@@ -2,8 +2,9 @@
 # UI Lab Inc. Arthur Amshukov
 #
 """ FSA """
+import os
 from art.framework.core.utils.flags import Flags
-from art.framework.core.utils.text import Text
+from art.framework.core.text.text import Text
 from art.framework.core.adt.graph.graph import Graph
 
 
@@ -116,7 +117,7 @@ class Fsa(Graph):
             return f'"{_state.label}_{_state.id}_{_state.token}"'
 
         indent = '    '
-        linesep = '\n'
+        linesep = os.linesep
         with open(path, 'wt') as stream:
             stream.write(f"digraph FSA{linesep}")
             stream.write(f"{{{linesep}")

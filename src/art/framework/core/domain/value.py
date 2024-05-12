@@ -4,7 +4,7 @@
 #
 """ Value type """
 from abc import abstractmethod
-from art.framework.core.utils.text import Text
+from art.framework.core.text.text import Text
 from art.framework.core.domain.equatable import Equatable
 
 

@@ -3,7 +3,7 @@
 # UI Lab Inc. Arthur Amshukov
 #
 import unittest
-from art.framework.core.utils.text import Text
+from art.framework.core.text.text import Text
 from art.framework.core.diagnostics.diagnostics import Diagnostics
 from art.framework.frontend.content.content import Content
 from art.framework.frontend.data_provider.string_data_provider import StringDataProvider

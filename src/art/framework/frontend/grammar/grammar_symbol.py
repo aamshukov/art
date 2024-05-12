@@ -2,8 +2,8 @@
 # UI Lab Inc. Arthur Amshukov
 #
 """ Grammar symbol """
+import os
 from art.framework.core.text.text import Text
-from art.framework.core.utils.helper import DomainHelper
 from art.framework.core.domain.entity import Entity
 from art.framework.core.utils.flags import Flags
 from art.framework.frontend.grammar.grammar_symbol_kind import GrammarSymbolKind
@@ -105,10 +105,10 @@ class GrammarSymbol(Entity):
                  f"({self.type.name}, " \
                  f"{'NULLABLE' if self.nullable else 'NON-NULLABLE'}) "
         if full:
-            result = f"\n{result}\n"
-            result = f"{result} FIRST: [{GrammarSymbol.sets_to_string(self.first)}]\n"
-            result = f"{result} FOLLOW:[{GrammarSymbol.sets_to_string(self.follow)}]\n"
-            result = f"{result} LA:    [{GrammarSymbol.sets_to_string(self.la)}]\n"
+            result = f"{os.linesep}{result}{os.linesep}"
+            result = f"{result} FIRST: [{GrammarSymbol.sets_to_string(self.first)}]{os.linesep}"
+            result = f"{result} FOLLOW:[{GrammarSymbol.sets_to_string(self.follow)}]{os.linesep}"
+            result = f"{result} LA:    [{GrammarSymbol.sets_to_string(self.la)}]{os.linesep}"
         return result
 
     @staticmethod

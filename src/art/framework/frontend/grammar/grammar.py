@@ -2,6 +2,7 @@
 # UI Lab Inc. Arthur Amshukov
 #
 """ Context Free Grammar """
+import os
 from abc import abstractmethod
 from functools import lru_cache
 from art.framework.core.domain.base import Base
@@ -55,8 +56,8 @@ class Grammar(Base):
         for rule in self.rules:
             if lhs != rule.lhs:
                 lhs = rule.lhs
-                result += '\n'
-            result += f'{rule.decorate()}\n'
+                result += os.linesep
+            result += f'{rule.decorate()}{os.linesep}'
         return result
 
     def decorate_pool(self):
@@ -64,5 +65,5 @@ class Grammar(Base):
         """
         result = ""
         for symbol in self.pool.values():
-            result = f'{result}{symbol.decorate(full=True)}\n'
+            result = f'{result}{symbol.decorate(full=True)}{os.linesep}'
         return result
