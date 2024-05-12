@@ -1465,3 +1465,14 @@ assert type(command) is Command, f"Invalid argument type {command}, Command is e
 
 
 
+
+
+def classname(obj):
+    cls = type(obj)
+    module = cls.__module__
+    name = cls.__qualname__
+    if module is not None and module != "__builtin__":
+        name = module + "." + name
+    return name
+
+
