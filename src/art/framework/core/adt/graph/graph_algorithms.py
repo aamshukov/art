@@ -10,6 +10,7 @@ from art.framework.core.utils.flags import Flags
 from art.framework.core.utils.colors import Colors
 from art.framework.core.domain.base import Base
 from art.framework.core.adt.union_find.disjoint_set import DisjointSet
+from art.framework.core.utils.helper import DomainHelper
 from art.framework.core.utils.platform import Platform
 from art.framework.core.adt.graph.vertex import Vertex
 
@@ -70,7 +71,7 @@ class GraphAlgorithms(Base):
                 continue
             if action:
                 action(vertex)
-            vertex.flags = Flags.modify_flags(vertex.flags, Flags.VISITED, Flags.CLEAR)
+            vertex.flags = DomainHelper.modify_flags(vertex.flags, Flags.VISITED, Flags.CLEAR)
             yield vertex
             for adjacence in vertex.adjacencies:
                 if (adjacence.vertex.flags & Flags.VISITED) != Flags.VISITED:
@@ -86,7 +87,7 @@ class GraphAlgorithms(Base):
             vertex = stack.pop()
             if (vertex.flags & Flags.VISITED) == Flags.VISITED:
                 continue
-            vertex.flags = Flags.modify_flags(vertex.flags, Flags.VISITED, Flags.CLEAR)
+            vertex.flags = DomainHelper.modify_flags(vertex.flags, Flags.VISITED, Flags.CLEAR)
             for adjacence in vertex.adjacencies:
                 if (adjacence.vertex.flags & Flags.VISITED) != Flags.VISITED:
                     stack.append(adjacence.vertex)  # push
@@ -102,7 +103,7 @@ class GraphAlgorithms(Base):
             vertex = queue.pop(0)  # deque
             if (vertex.flags & Flags.VISITED) == Flags.VISITED:
                 continue
-            vertex.flags = Flags.modify_flags(vertex.flags, Flags.VISITED, Flags.CLEAR)
+            vertex.flags = DomainHelper.modify_flags(vertex.flags, Flags.VISITED, Flags.CLEAR)
             yield vertex
             for adjacence in vertex.adjacencies:
                 if (adjacence.vertex.flags & Flags.VISITED) != Flags.VISITED:

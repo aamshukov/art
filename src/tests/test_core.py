@@ -25,8 +25,9 @@ class Test(unittest.TestCase):
         assert flags & Flags.VISITED == Flags.VISITED
         assert flags & Flags.LEAF == Flags.LEAF
         assert flags & Flags.INVALID == Flags.INVALID
-        flags = Flags.modify_flags(flags,
-                                   Flags.GENUINE | Flags.SYNTHETIC, Flags.PROCESSED | Flags.VISITED | Flags.INVALID)
+        flags = DomainHelper.modify_flags(flags,
+                                          Flags.GENUINE | Flags.SYNTHETIC,
+                                          Flags.PROCESSED | Flags.VISITED | Flags.INVALID)
         assert flags & Flags.DIRTY == Flags.DIRTY
         assert flags & Flags.GENUINE == Flags.GENUINE
         assert flags & Flags.SYNTHETIC == Flags.SYNTHETIC

@@ -163,7 +163,7 @@ class Algorithms(Base):
         """
         """
         # align value 'value' to boundary 'alignment' which should be power of 2
-        return int((value + (alignment - 1)) & ~(alignment - 1))  # up
+        return (value + (alignment - 1)) & ~(alignment - 1)  # up
 
     @staticmethod
     def calculate_alignment_down(value, alignment):

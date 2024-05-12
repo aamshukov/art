@@ -49,9 +49,9 @@ class BitSet(Base):
         """
         """
         super().__init__()
-        self.size = int(size)  # how many bits
-        self.capacity = (0 if size == 0 else size // BitSet.CHUNK_SIZE) + 1  # how many chunks
-        self.capacity = int(Algorithms.calculate_alignment_up(self.capacity * BitSet.BYTE_SIZE, 8) / BitSet.BYTE_SIZE)
+        self.size = size  # how many bits
+        self.capacity = size // BitSet.CHUNK_SIZE + 1  # how many chunks
+        self.capacity = Algorithms.calculate_alignment_up(self.capacity * BitSet.BYTE_SIZE, 8) // BitSet.BYTE_SIZE
         self.bits = bytearray(self.capacity)  # bit array - sequence of chunks of bytes
 
     def __getitem__(self, position):

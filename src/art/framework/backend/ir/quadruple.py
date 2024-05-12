@@ -3,6 +3,7 @@
 #
 """ Quadruple """
 from art.framework.backend.ir.operation_code import OperationCode
+from art.framework.backend.ir.quadruple_flags import QuadrupleFlags
 from art.framework.core.domain.entity import Entity
 from art.framework.core.patterns.visitor.visitable import Visitable
 
@@ -12,10 +13,11 @@ class Quadruple(Entity, Visitable):
     """
     def __init__(self,
                  id,
-                 operation=OperationCode.Noop,  # operation code, OperationCode
+                 operation=OperationCode.UNKNOWN,  # operation code, OperationCode
                  argument1=None,
                  argument2=None,
                  result=None,
+                 flags=QuadrupleFlags.CLEAR,
                  version='1.0'):
         """
         """
@@ -24,6 +26,7 @@ class Quadruple(Entity, Visitable):
         self.argument1 = argument1
         self.argument2 = argument2
         self.result = result
+        self.flags = flags
 
     def __hash__(self):
         """
@@ -70,7 +73,13 @@ class Quadruple(Entity, Visitable):
     def stringify(self):
         """
         """
-        return f"{super().stringify()}:{self.operation}:{self.argument1}:{self.argument2}:{self.result}"
+        return f"{type(self).__name__}:" \
+               f"{self.id}:" \
+               f"{self.operation.name}:" \
+               f"{self.argument1}:" \
+               f"{self.argument2}:" \
+               f"{self.result}:" \
+               f"Flags({self.flags.name})"
 
     def accept(self, visitor, *args, **kwargs):
         """

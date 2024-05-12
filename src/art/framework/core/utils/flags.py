@@ -27,7 +27,3 @@ class Flags(Flag):
     INVALID = auto()
     ROOT_IN_AST = auto()  # aka ANTLR, expr : expr (’+’^ mexpr)* EOF!  \  mutually
     NOT_IN_AST = auto()   # aka ANTLR, expr : expr (’+’^ mexpr)* EOF!  /  exclusive
-
-    @staticmethod
-    def modify_flags(flags, add, remove):
-        return (flags & ~remove) | add

@@ -14,7 +14,6 @@ import time
 from pstats import SortKey
 from unicodedata import normalize
 from art.framework.core.domain.base import Base
-from art.framework.core.logging.logger import Logger
 from art.framework.core.utils.platform import Platform
 
 
@@ -111,11 +110,19 @@ class DomainHelper(Base):
 
     @staticmethod
     def strings_equal(lhs, rhs, case_insensitive=False):
+        """
+        """
         nfc = functools.partial(normalize, 'NFC')  # NFKC
         if case_insensitive:
             return nfc(lhs).casefold() == nfc(rhs).casefold()
         else:
             return nfc(lhs) == nfc(rhs)
+
+    @staticmethod
+    def modify_flags(flags, add, remove):
+        """
+        """
+        return (flags & ~remove) | add
 
 
 def profile(message=None):

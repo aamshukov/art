@@ -33,5 +33,7 @@ class Code(Base):
     def stringify(self):
         """
         """
-        result = f'{os.linesep}'.join([instruction.stringify() for instruction in self.instructions])
+        result = f"{os.linesep}" \
+                 f"{f'{os.linesep}'.join([instruction.stringify() for instruction in self.instructions])}" \
+                 f"{os.linesep}"
         return result

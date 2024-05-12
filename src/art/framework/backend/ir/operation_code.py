@@ -8,11 +8,18 @@ from enum import IntEnum, auto
 class OperationCode(IntEnum):
     """
     """
-    Unknown = 0
-    Noop = auto()  # no-operation
+    UNKNOWN = 0
     # HIR - high-level intermediate representation (IR), usually AST/CST forest
-    HirSize = auto()
+    HIR_NOOP = auto()  # no-operation
+    HIR_SIZE = auto()
     # MIR - mid-level intermediate representation (IR)
-    MirSize = auto()
+    MIR_NOOP = auto()  # no-operation
+    MIR_IF_TRUE = auto()
+    MIR_IF_FALSE = auto()
+    MIR_GOTO = auto()
+    MIR_LABEL = auto()
+    MIR_RETURN = auto()
+    MIR_SIZE = auto()
     # LIR - low-level intermediate representation (IR)
-    LirSize = auto()
+    LIR_NOOP = auto()  # no-operation
+    LIR_SIZE = auto()

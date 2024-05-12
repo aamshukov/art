@@ -5,11 +5,11 @@
 from copy import deepcopy
 from collections import deque
 from abc import abstractmethod
-
 from art.framework.core.diagnostics.code import Code
 from art.framework.core.domain.entity import Entity
 from art.framework.core.utils.flags import Flags
 from art.framework.core.diagnostics.status import Status
+from art.framework.core.utils.helper import DomainHelper
 from art.framework.core.utils.text import Text
 from art.framework.frontend.lexical_analyzer.tokenizer.token_factory import TokenFactory
 
@@ -313,7 +313,7 @@ class Tokenizer(Entity):
         self.token.literal = ''.join(chr(codepoint) for codepoint in
                                      self.content.data[self.token.offset: self.token.offset + self.token.length])
         self.token.source = self.content.source
-        self.token.flags = Flags.modify_flags(self.token.flags, Flags.PROCESSED, Flags.CLEAR)
+        self.token.flags = DomainHelper.modify_flags(self.token.flags, Flags.PROCESSED, Flags.CLEAR)
 
     @abstractmethod
     def next_lexeme_impl(self):
