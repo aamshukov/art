@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 # UI Lab Inc. Arthur Amshukov
 #
-""" Code """
+""" Basic block """
 from art.framework.backend.ir.code import Code
 from art.framework.backend.ir.dominator_vertex import DominatorVertex
 

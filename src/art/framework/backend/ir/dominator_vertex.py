@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 # UI Lab Inc. Arthur Amshukov
 #
-""" Code """
+""" Dominator vertex """
 from art.framework.core.adt.bitset.bitset import BitSet
 from art.framework.core.adt.graph.vertex import Vertex
 
