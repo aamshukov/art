@@ -26,6 +26,8 @@ class Token(Value):
         self.literal = ''  # string or char literal (if unicode - always decoded), numeric value, etc.
         self.source = source  # lexical analyser which recognizes this lexeme, could be from different files
         self.flags = Flags.CLEAR | Flags.GENUINE
+        self.leading_trivia = list()
+        self.trailing_trivia = list()
 
     def __hash__(self):
         """
