@@ -35,3 +35,19 @@ class Scope(Tree):
         self.level = level  # depth
         self.symbols = dict()  # name:symbol
         self.types = dict()  # synthetic (inferred or collected) types
+
+    def get_type(self, type):  # noqa
+        """
+        """
+        result = None
+        for value in self.types.values():
+            if type.equivalent(value):
+                result = value
+                break
+        return result
+
+    def add_type(self, type):
+        """
+        """
+        if type.id not in self.types:
+            self.types[type.id] = type
