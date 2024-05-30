@@ -2,72 +2,60 @@
 # -*- encoding: utf-8 -*-
 # UI Lab Inc. Arthur Amshukov
 #
-""" Art struct/record type """
-from abc import abstractmethod
+""" Art array type """
+from collections import namedtuple
 from art.framework.core.utils.flags import Flags
-from art.framework.frontend.type.type_kind import TypeKind
 from art.language.art.type.art_type import ArtType
+from art.language.art.type.art_type_kind import ArtTypeKind
 
 
 class ArtArrayType(ArtType):
     """
     """
+    ArrayBound = namedtuple('ArrayBound', 'lower_bound upper_bound')
+
     def __init__(self,
-                 id=0,
-                 name='',
-                 kind=TypeKind.UNKNOWN_TYPE,
+                 id,
+                 label,
+                 kind,
+                 bounds,  # list of ArrayBound
+                 underlying_type,
+                 checked=True,
+                 row_based=True,
                  value=None,
                  attributes=None,
                  flags=Flags.CLEAR,
                  version='1.0'):
         """
         """
-        super().__init__(id, name, kind, value, attributes, flags, version)
+        assert bounds, "Bounds must be greater than zero: scalar(0), vector/1D-array(1), matrix/2D-array(2), etc."
+        super().__init__(id=id,
+                         label=label,
+                         kind=kind | ArtTypeKind.ARRAY_MASK,
+                         cardinality=len(bounds),
+                         value=value,
+                         attributes=attributes,
+                         flags=flags,
+                         version=version)
+        self.bounds = bounds  # list of dimensions: ArrayBound(lower_bound=0, upper_bound)
+        self.underlying_type = underlying_type
+        self.checked = checked
+        self.row_based = row_based
 
-    def __hash__(self):
-        """
-        """
-        return hash((super().__hash__(), self.__class__))
-
-    def __eq__(self, other):
-        """
-        """
-        if other.__class__ is self.__class__:
-            result = super().__eq__(other)
-        else:
-            result = NotImplemented
-        return result
-
-    def __lt__(self, other):
-        """
-        """
-        if other.__class__ is self.__class__:
-            result = super().__lt__(other)
-        else:
-            result = NotImplemented
-        return result
-
-    def __le__(self, other):
-        """
-        """
-        if other.__class__ is self.__class__:
-            result = super().__le__(other)
-        else:
-            result = NotImplemented
-        return result
-
-    @abstractmethod
     def equivalent(self, other):
         """
         """
-        raise NotImplemented(self.equivalent.__qualname__)
-
-    def validate(self):
-        """
-        """
-        return True
+        return (ArtTypeKind.array(other.kind) and
+                self.bounds == other.bounds and
+                self.underlying_type.equivalent(other) and
+                self.checked == other.checked and
+                self.row_based == other.row_based and
+                super().equivalent(other))
 
     def stringify(self):
         """
         """
-        return f"{super().stringify()}"
+        return f"{super().stringify()}:" \
+               f"{self.underlying_type.label}:" \
+               f"{str(self.bounds).strip('[]')}:" \
+               f"{self.checked}"

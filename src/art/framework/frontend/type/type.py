@@ -4,44 +4,46 @@
 #
 """ Type """
 from abc import abstractmethod
-from art.framework.core.text.text import Text
-from art.framework.core.domain.entity import Entity
+from art.framework.core.adt.tree.tree import Tree
 from art.framework.core.utils.flags import Flags
-from art.framework.frontend.type.type_kind import TypeKind
 
 
-class Type(Entity):
+class Type(Tree):
     """
     """
     def __init__(self,
-                 id=0,
-                 name='',
-                 kind=TypeKind.UNKNOWN_TYPE,
+                 id,
+                 label,
+                 kind,
+                 cardinality=0,
                  value=None,
                  attributes=None,  # narrow down attributes, like REAL_TYPE:(modifier:const,parameter)
                  flags=Flags.CLEAR,
                  version='1.0'):
         """
         """
-        super().__init__(id, value, attributes, flags, version)
-        self.name = name
+        super().__init__(id=id,
+                         label=label,
+                         value=value,
+                         attributes=attributes,
+                         flags=flags,
+                         version=version)
         self.kind = kind
-        self.size = 0  # size in bits, abstract width, like C type hierarchy
-        self.platform_size = 0  # size in bits, platform specific width
+        self.cardinality = cardinality  # scalar (0), vector/1D-array(1), matrix/2D-array(2), etc.
         self.alignment = 0  # alignment in memory, 0 no aligned, power of 2 - aligned
-        self.cardinality = 0  # scalar (0), vector/1D-array(1), matrix/2D-array(2), etc.
+        self.abstract_size = 0  # size in bits, abstract width, like C type hierarchy
+        self.platform_size = 0  # size in bits, platform specific width
 
     def __hash__(self):
         """
         """
-        return hash((super().__hash__(), self.__class__, self.name))
+        return hash((super().__hash__(), self.__class__, self.kind, self.cardinality))
 
     def __eq__(self, other):
         """
         """
         if other.__class__ is self.__class__:
-            result = (super().__eq__(other) and
-                      Text.equal(self.name, other.name))
+            result = super().__eq__(other) and self.kind == other.kind and self.cardinality == other.cardinality
         else:
             result = NotImplemented
         return result
@@ -50,8 +52,7 @@ class Type(Entity):
         """
         """
         if other.__class__ is self.__class__:
-            result = (super().__lt__(other) and
-                      Text.compare(self.name, other.name) < 0)
+            result = super().__lt__(other)
         else:
             result = NotImplemented
         return result
@@ -60,8 +61,7 @@ class Type(Entity):
         """
         """
         if other.__class__ is self.__class__:
-            result = (super().__le__(other) and
-                      Text.compare(self.name, other.name) <= 0)
+            result = super().__le__(other)
         else:
             result = NotImplemented
         return result
@@ -80,4 +80,4 @@ class Type(Entity):
     def stringify(self):
         """
         """
-        return f"{super().stringify()}:{self.name}"
+        return f"{super().stringify()}:{self.kind}:{self.cardinality}"

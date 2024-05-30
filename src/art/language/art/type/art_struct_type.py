@@ -5,7 +5,7 @@
 """ Art struct/record type """
 from abc import abstractmethod
 from art.framework.core.utils.flags import Flags
-from art.framework.frontend.type.type_kind import TypeKind
+from art.language.art.type.art_type_kind import ArtTypeKind
 from art.language.art.type.art_type import ArtType
 
 
@@ -15,7 +15,7 @@ class ArtStructType(ArtType):
     def __init__(self,
                  id=0,
                  name='',
-                 kind=TypeKind.UNKNOWN_TYPE,
+                 kind=ArtTypeKind.UNKNOWN_TYPE,
                  value=None,
                  attributes=None,
                  flags=Flags.CLEAR,

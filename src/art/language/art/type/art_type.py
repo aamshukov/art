@@ -3,71 +3,54 @@
 # UI Lab Inc. Arthur Amshukov
 #
 """ Art type """
-from abc import abstractmethod
+from art.framework.core.text.text import Text
 from art.framework.core.utils.flags import Flags
 from art.framework.frontend.type.type import Type
-from art.framework.frontend.type.type_kind import TypeKind
 
 
 class ArtType(Type):
     """
-    """
+    integer
+    real
+    string
+    boolean
+
+    struct <T <K, S = record <T <K, J>, U, integer=5, real=1> >, U, integer, real=1>
+            T <K, S = record <T <K, J>, U, integer=5, real=1> >  U  integer  real
+               K  S = record <T <K, J>, U, integer=5, real=1>
+                      record <T <K, J>, U, integer    real
+                              T <K, J>  U
+                                 K  J
+    """  # noqa
     def __init__(self,
-                 id=0,
-                 name='',
-                 kind=TypeKind.UNKNOWN_TYPE,
+                 id,
+                 label,
+                 kind,
+                 cardinality=0,
                  value=None,
                  attributes=None,
                  flags=Flags.CLEAR,
                  version='1.0'):
         """
         """
-        super().__init__(id, name, kind, value, attributes, flags, version)
+        super().__init__(id=id,
+                         label=label,
+                         kind=kind,
+                         cardinality=cardinality,
+                         value=value,
+                         attributes=attributes,
+                         flags=flags,
+                         version=version)
 
-    def __hash__(self):
+    def equal(self, other):
         """
         """
-        return hash((super().__hash__(), self.__class__))
+        return self == other
 
-    def __eq__(self, other):
-        """
-        """
-        if other.__class__ is self.__class__:
-            result = super().__eq__(other)
-        else:
-            result = NotImplemented
-        return result
-
-    def __lt__(self, other):
-        """
-        """
-        if other.__class__ is self.__class__:
-            result = super().__lt__(other)
-        else:
-            result = NotImplemented
-        return result
-
-    def __le__(self, other):
-        """
-        """
-        if other.__class__ is self.__class__:
-            result = super().__le__(other)
-        else:
-            result = NotImplemented
-        return result
-
-    @abstractmethod
     def equivalent(self, other):
         """
         """
-        raise NotImplemented(self.equivalent.__qualname__)
-
-    def validate(self):
-        """
-        """
-        return True
-
-    def stringify(self):
-        """
-        """
-        return f"{super().stringify()}"
+        return (self.id == other.id and
+                self.kind == other.kind and
+                self.cardinality == other.cardinality and
+                Text.equal(self.label, other.label))

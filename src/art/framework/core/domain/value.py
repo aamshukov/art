@@ -4,19 +4,19 @@
 #
 """ Value type """
 from abc import abstractmethod
-from art.framework.core.text.text import Text
 from art.framework.core.domain.equatable import Equatable
+from art.framework.core.domain.versional import Versional
+from art.framework.core.text.text import Text
 
 
-class Value(Equatable):
+class Value(Equatable, Versional):
     """
     """
     def __init__(self, value=None, version='1.0'):
         """
         """
-        super().__init__()
+        super().__init__(version=version)
         self.value = value
-        self.version = version.strip()
 
     @abstractmethod
     def __hash__(self):

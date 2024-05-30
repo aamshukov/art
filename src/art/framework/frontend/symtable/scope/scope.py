@@ -34,4 +34,4 @@ class Scope(Tree):
         self.kind = ScopeKind.UNKNOWN_SCOPE
         self.level = level  # depth
         self.symbols = dict()  # name:symbol
-        self.types = dict()  # synthetic (inferred) types
+        self.types = dict()  # synthetic (inferred or collected) types
