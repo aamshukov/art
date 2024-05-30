@@ -9,13 +9,15 @@ from enum import Flag
 class ArtTypeKind(Flag):
     """
     """
-    BUILTIN_MASK   = 0x0100_0000_0000_0000_0000_0000_0000_0000  # noqa
+    BUILTIN_MASK   = 0x1000_0000_0000_0000_0000_0000_0000_0000  # noqa
     SCALAR_MASK    = 0x0000_0001_0000_0000_0000_0000_0000_0000  # noqa
     ARRAY_MASK     = 0x0000_0010_0000_0000_0000_0000_0000_0000  # noqa
     COMPOSITE_MASK = 0x0000_0100_0000_0000_0000_0000_0000_0000  # noqa  struct, record, tuple, enum, etc.
     SUBTYPE_MASK   = 0x0000_1000_0000_0000_0000_0000_0000_0000  # noqa  sub-type, slice, span, range, etc.
     CALLABLE_MASK  = 0x0001_0000_0000_0000_0000_0000_0000_0000  # noqa  fn, proc, lambda, slosure,
                                                                 # anonymous function/procedure, etc.
+    GENERIC_MASK   = 0x0010_0000_0000_0000_0000_0000_0000_0000  # noqa
+
     UNKNOWN_TYPE             = 0                    # noqa
 
     INTEGER_TYPE             =  1 | BUILTIN_MASK    # noqa  int, integer
@@ -40,7 +42,8 @@ class ArtTypeKind(Flag):
     LAMBDA_TYPE              = 17 | CALLABLE_MASK   # noqa  lambda
     CLOSURE_TYPE             = 18 | CALLABLE_MASK   # noqa  closure
 
-    TYPE_PARAMETER           = 19                   # noqa
+    TYPE_PARAMETER           = 19 | GENERIC_MASK    # noqa
+    TYPE_ARGUMENT            = 20 | GENERIC_MASK    # noqa
 
     @staticmethod
     def builtin(kind):
@@ -77,3 +80,9 @@ class ArtTypeKind(Flag):
         """
         """
         return (kind & ArtTypeKind.CALLABLE_MASK) == ArtTypeKind.CALLABLE_MASK
+
+    @staticmethod
+    def generic(kind):
+        """
+        """
+        return (kind & ArtTypeKind.GENERIC_MASK) == ArtTypeKind.GENERIC_MASK

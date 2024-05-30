@@ -2,13 +2,13 @@
 # -*- encoding: utf-8 -*-
 # UI Lab Inc. Arthur Amshukov
 #
-""" Art type parameter """
+""" Art type argument """
 from art.framework.core.utils.flags import Flags
 from art.language.art.type.art_type import ArtType
 from art.language.art.type.art_type_kind import ArtTypeKind
 
 
-class ArtTypeParameter(ArtType):
+class ArtTypeArgument(ArtType):
     """
     """
     def __init__(self,
@@ -22,7 +22,7 @@ class ArtTypeParameter(ArtType):
         """
         super().__init__(id=id,
                          label=label,
-                         kind=ArtTypeKind.TYPE_PARAMETER,
+                         kind=ArtTypeKind.TYPE_ARGUMENT,
                          cardinality=0,
                          value=value,
                          attributes=attributes,
