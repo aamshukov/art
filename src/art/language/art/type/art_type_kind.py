@@ -40,6 +40,8 @@ class ArtTypeKind(Flag):
     LAMBDA_TYPE              = 17 | CALLABLE_MASK   # noqa  lambda
     CLOSURE_TYPE             = 18 | CALLABLE_MASK   # noqa  closure
 
+    TYPE_PARAMETER           = 19                   # noqa
+
     @staticmethod
     def builtin(kind):
         """
