@@ -4,6 +4,7 @@
 #
 import unittest
 from art.language.art.type.art_scalar_type import ArtScalarType
+from art.language.art.type.art_type import ArtType
 from art.language.art.type.art_type_kind import ArtTypeKind
 
 

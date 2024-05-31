@@ -40,7 +40,7 @@ class ArtArrayType(ArtType):
                          flags=flags,
                          version=version)
         self.bounds = bounds  # list of dimensions: ArrayBound(lower_bound=0, upper_bound)
-        self.underlying_type = underlying_type
+        self.underlying_type = underlying_type  # underlying element type
         self.checked = checked
         self.row_based = row_based
 

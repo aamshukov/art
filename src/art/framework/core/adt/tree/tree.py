@@ -87,12 +87,12 @@ class Tree(Entity, Visitable):
         """
         return True
 
+    def accept(self, visitor, *args, **kwargs):
+        """
+        """
+        visitor.visit(*args, **kwargs)
+
     def stringify(self):
         """
         """
         return f"{super().stringify()}:{self.label}"
-
-    def accept(self, visitor, *args, **kwargs):
-        """
-        """
-        raise NotImplemented(self.accept.__qualname__)

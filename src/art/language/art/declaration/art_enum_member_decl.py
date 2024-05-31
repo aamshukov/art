@@ -2,38 +2,32 @@
 # -*- encoding: utf-8 -*-
 # UI Lab Inc. Arthur Amshukov
 #
-""" Art function/procedure type """
-from abc import abstractmethod
-from art.framework.core.utils.flags import Flags
-from art.language.art.type.art_type_kind import ArtTypeKind
-from art.language.art.type.art_callable_type import ArtCallableType
+""" Art enum member declaration """
+from art.framework.core.domain.value import Value
 
 
-class ArtFunctionType(ArtCallableType):
+class ArtEnumMemberDecl(Value):
     """
     """
     def __init__(self,
-                 id=0,
-                 name='',
-                 kind=ArtTypeKind.UNKNOWN_TYPE,
-                 value=None,
-                 attributes=None,
-                 flags=Flags.CLEAR,
+                 label,
+                 value,
                  version='1.0'):
         """
         """
-        super().__init__(id, name, kind, value, attributes, flags, version)
+        super().__init__(value=value, version=version)
+        self.label = label
 
     def __hash__(self):
         """
         """
-        return hash((super().__hash__(), self.__class__))
+        return hash((super().__hash__(), self.__class__, self.label))
 
     def __eq__(self, other):
         """
         """
         if other.__class__ is self.__class__:
-            result = super().__eq__(other)
+            result = (super().__eq__(other) and self.label == other.label)
         else:
             result = NotImplemented
         return result
@@ -56,12 +50,6 @@ class ArtFunctionType(ArtCallableType):
             result = NotImplemented
         return result
 
-    @abstractmethod
-    def equivalent(self, other):
-        """
-        """
-        raise NotImplemented(self.equivalent.__qualname__)
-
     def validate(self):
         """
         """
@@ -70,4 +58,4 @@ class ArtFunctionType(ArtCallableType):
     def stringify(self):
         """
         """
-        return f"{super().stringify()}"
+        return f"{super().stringify()}:{self.label}"

@@ -52,6 +52,12 @@ class ArtTypeKind(Flag):
         return (kind & ArtTypeKind.BUILTIN_MASK) == ArtTypeKind.BUILTIN_MASK
 
     @staticmethod
+    def integer(kind):
+        """
+        """
+        return (kind & ArtTypeKind.INTEGER_TYPE) == ArtTypeKind.INTEGER_TYPE
+
+    @staticmethod
     def scalar(kind):
         """
         """

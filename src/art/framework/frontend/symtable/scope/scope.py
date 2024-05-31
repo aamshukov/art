@@ -51,3 +51,8 @@ class Scope(Tree):
         """
         if type.id not in self.types:
             self.types[type.id] = type
+
+    def next_type_uid(self):
+        """
+        """
+        return len(self.types) + 1
