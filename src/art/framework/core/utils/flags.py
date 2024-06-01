@@ -19,6 +19,7 @@ class Flags(Flag):
     GENUINE = auto()
     SYNTHETIC = auto()  # additional (artificial) tokens which are inserted
                         # into the tokenizer stream, syntactic sugar - desugaring ...
+                        # also, might be relevant for synthetic names (anonymous functions, closures, etc.)
     CONTEXTUAL = auto()  # noqa contextual, recognized in specific contexts,
                          # noqa similar to C# get/set, async/await ...
     LEAF = auto()

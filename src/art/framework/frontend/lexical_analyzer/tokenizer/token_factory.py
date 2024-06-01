@@ -21,13 +21,13 @@ class TokenFactory(Base):
 
     @staticmethod
     def create(kind,
-               source='',
-               value=0,
+               location=None,
+               value=None,
                version='1.0'):
         """
         """
         return Token(kind,
-                     source,
+                     location,
                      value,
                      version)
 

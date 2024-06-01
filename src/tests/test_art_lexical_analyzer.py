@@ -5,6 +5,7 @@
 import unittest
 from art.framework.core.diagnostics.diagnostics import Diagnostics
 from art.framework.core.text.text import Text
+from art.framework.frontend.content.location import Location
 from art.framework.frontend.data_provider.string_data_provider import StringDataProvider
 from art.framework.frontend.content.content import Content
 from art.framework.frontend.statistics.statistics import Statistics
@@ -22,8 +23,7 @@ class Test(unittest.TestCase):
     @staticmethod
     def assert_token(lx, tk, kind, prev_kind, offset, length, literal, tokens_count):
         assert tk.kind == kind
-        assert tk.offset == offset
-        assert tk.length == length
+        assert tk.location == Location(offset, length, '')
         assert Text.equal(tk.literal, literal)
         assert lx.prev_token.kind == prev_kind
 

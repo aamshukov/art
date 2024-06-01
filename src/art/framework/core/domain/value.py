@@ -66,4 +66,7 @@ class Value(Equatable, Versional):
     def stringify(self):
         """
         """
-        return f"{super().stringify()}:{self.value}:{self.version}"
+        if self.value is not None:
+            return f"{super().stringify()}:{self.value}:{self.version}"
+        else:
+            return f"{super().stringify()}:{self.version}"

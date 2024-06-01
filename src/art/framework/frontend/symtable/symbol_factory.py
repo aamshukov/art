@@ -23,7 +23,7 @@ class SymbolFactory(Base):
         super().__init__()
 
     @staticmethod
-    def get_next_id():
+    def get_next_uid():
         """
         """
         SymbolFactory.id_generator += 1
@@ -37,7 +37,7 @@ class SymbolFactory(Base):
                version='1.0'):
         """
         """
-        return Symbol(SymbolFactory.get_next_id(),
+        return Symbol(SymbolFactory.get_next_uid(),
                       label,
                       value,
                       attributes,

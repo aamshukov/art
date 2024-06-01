@@ -3,7 +3,6 @@
 #
 """ IR (Intermediate Representation) symbol """
 from art.framework.core.text.text import Text
-from art.framework.core.utils.helper import DomainHelper
 from art.framework.core.domain.entity import Entity
 from art.framework.core.utils.flags import Flags
 from art.framework.frontend.symtable.symbol_kind import SymbolKind
@@ -27,9 +26,10 @@ class Symbol(Entity):
         super().__init__(id, value, attributes, flags, version)
         self.label = label
         self.grammar_symbol = None  # CFG (Context Free Grammar) parsed symbol
-        self.token = None  # link with content
+        self.tokens = list()  # link with content, tokens - as partial structs, multiple locations
         self.kind = SymbolKind.UNKNOWN
-        self.type = None  # ?? type
+        # self.type = None  # ?? type
+        self.decl = None  # ?? decl
         self.machine_type = None  # ?? mapped type to machine specific representation
         self.offset = 0  # ?? run time offset
         self.size = 0  # ?? runtime size in bytes, might be aligned

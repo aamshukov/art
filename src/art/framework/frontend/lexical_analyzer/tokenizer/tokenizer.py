@@ -11,6 +11,7 @@ from art.framework.core.utils.flags import Flags
 from art.framework.core.diagnostics.status import Status
 from art.framework.core.utils.helper import DomainHelper
 from art.framework.core.text.text import Text
+from art.framework.frontend.content.location import Location
 from art.framework.frontend.lexical_analyzer.tokenizer.token_factory import TokenFactory
 
 
@@ -308,11 +309,12 @@ class Tokenizer(Entity):
         """
         if self.content_position > self.end_content:
             self.content_position = self.end_content
-        self.token.offset = self.lexeme_position - self.start_content
-        self.token.length = self.content_position - self.lexeme_position
+        self.token.location = Location(self.lexeme_position - self.start_content,
+                                       self.content_position - self.lexeme_position,
+                                       self.content.source)
         self.token.literal = ''.join(chr(codepoint) for codepoint in
-                                     self.content.data[self.token.offset: self.token.offset + self.token.length])
-        self.token.source = self.content.source
+                                     self.content.data[self.token.location.offset:
+                                                       self.token.location.offset + self.token.location.length])
         self.token.flags = DomainHelper.modify_flags(self.token.flags, Flags.PROCESSED, Flags.CLEAR)
 
     @abstractmethod
