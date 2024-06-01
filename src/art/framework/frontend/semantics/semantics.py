@@ -2,11 +2,11 @@
 # -*- encoding: utf-8 -*-
 # UI Lab Inc. Arthur Amshukov
 #
-""" Symbol table """
+""" Semantic analyzer """
 from art.framework.core.domain.base import Base
 
 
-class SymbolTable(Base):
+class Semantics(Base):
     """
     """
     def __init__(self,
@@ -15,7 +15,10 @@ class SymbolTable(Base):
         """
         """
         super().__init__()
-        self.scopes = None  # root of scope tree, might represent 'global' scope
-        self.scope = None   # current scope, level
         self.statistics = statistics
         self.diagnostics = diagnostics
+
+    def analyze_enum_decl(self, decl):
+        """
+        """
+        pass

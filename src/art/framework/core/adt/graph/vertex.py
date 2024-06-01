@@ -3,7 +3,6 @@
 #
 """ Vertex """
 from collections import namedtuple
-
 from art.framework.core.text.text import Text
 from art.framework.core.utils.flags import Flags
 from art.framework.core.utils.colors import Colors
@@ -87,12 +86,12 @@ class Vertex(Entity, Visitable):
         """
         return True
 
-    def stringify(self):
-        """
-        """
-        return f"{super().stringify()}:{self.label}"
-
     def accept(self, visitor, *args, **kwargs):
         """
         """
         visitor.visit(self, *args, **kwargs)
+
+    def stringify(self):
+        """
+        """
+        return f"{super().stringify()}:{self.label}"

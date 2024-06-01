@@ -45,16 +45,6 @@ class Decl(Tree):
             result = NotImplemented
         return result
 
-    def __lt__(self, other):
-        """
-        """
-        raise NotImplemented(self.__lt__.__qualname__)
-
-    def __le__(self, other):
-        """
-        """
-        raise NotImplemented(self.__le__.__qualname__)
-
     def stringify(self):
         """
         """

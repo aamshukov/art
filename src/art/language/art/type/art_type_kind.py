@@ -58,6 +58,24 @@ class ArtTypeKind(Flag):
         return (kind & ArtTypeKind.INTEGER_TYPE) == ArtTypeKind.INTEGER_TYPE
 
     @staticmethod
+    def real(kind):
+        """
+        """
+        return (kind & ArtTypeKind.REAL_TYPE) == ArtTypeKind.REAL_TYPE
+
+    @staticmethod
+    def string(kind):
+        """
+        """
+        return (kind & ArtTypeKind.STRING_TYPE) == ArtTypeKind.STRING_TYPE
+
+    @staticmethod
+    def boolean(kind):
+        """
+        """
+        return (kind & ArtTypeKind.BOOLEAN_TYPE) == ArtTypeKind.BOOLEAN_TYPE
+
+    @staticmethod
     def scalar(kind):
         """
         """

@@ -44,26 +44,6 @@ class Tree(Entity, Visitable):
             result = NotImplemented
         return result
 
-    def __lt__(self, other):
-        """
-        """
-        if other.__class__ is self.__class__:
-            result = (super().__lt__(other) and
-                      Text.compare(self.label, other.label) < 0)
-        else:
-            result = NotImplemented
-        return result
-
-    def __le__(self, other):
-        """
-        """
-        if other.__class__ is self.__class__:
-            result = (super().__le__(other) and
-                      Text.compare(self.label, other.label) <= 0)
-        else:
-            result = NotImplemented
-        return result
-
     def insert_kid(self, kid, index=0):
         """
         """

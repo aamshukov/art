@@ -26,7 +26,7 @@ class Symbol(Entity):
         super().__init__(id, value, attributes, flags, version)
         self.label = label
         self.grammar_symbol = None  # CFG (Context Free Grammar) parsed symbol
-        self.tokens = list()  # link with content, tokens - as partial structs, multiple locations
+        self.tokens = list()  # link with content, multiple tokens/locations as there are might be partial structs, etc.
         self.kind = SymbolKind.UNKNOWN
         # self.type = None  # ?? type
         self.decl = None  # ?? decl

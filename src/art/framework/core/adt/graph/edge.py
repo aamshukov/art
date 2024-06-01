@@ -3,7 +3,6 @@
 # UI Lab Inc. Arthur Amshukov
 #
 """ Edge """
-from art.framework.core.utils.helper import DomainHelper
 from art.framework.core.utils.flags import Flags
 from art.framework.core.domain.entity import Entity
 

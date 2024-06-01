@@ -3,7 +3,6 @@
 # UI Lab Inc. Arthur Amshukov
 #
 """ Entity type """
-from abc import abstractmethod
 from art.framework.core.utils.flags import Flags
 from art.framework.core.domain.value import Value
 
@@ -24,13 +23,11 @@ class Entity(Value):
         self.attributes = attributes if attributes else dict()
         self.flags = flags
 
-    @abstractmethod
     def __hash__(self):
         """
         """
         return hash((super().__hash__(), self.__class__, self.id))
 
-    @abstractmethod
     def __eq__(self, other):
         """
         """
@@ -40,7 +37,6 @@ class Entity(Value):
             result = NotImplemented
         return result
 
-    @abstractmethod
     def __lt__(self, other):
         """
         """
@@ -50,7 +46,6 @@ class Entity(Value):
             result = NotImplemented
         return result
 
-    @abstractmethod
     def __le__(self, other):
         """
         """
@@ -60,11 +55,10 @@ class Entity(Value):
             result = NotImplemented
         return result
 
-    @abstractmethod
     def validate(self):
         """
         """
-        raise NotImplemented(self.validate.__qualname__)
+        return self.id is not None
 
     def stringify(self):
         """

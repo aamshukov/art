@@ -18,13 +18,11 @@ class Value(Equatable, Versional):
         super().__init__(version=version)
         self.value = value
 
-    @abstractmethod
     def __hash__(self):
         """
         """
         return hash((self.__class__, self.value, self.version))
 
-    @abstractmethod
     def __eq__(self, other):
         """
         """
@@ -35,7 +33,6 @@ class Value(Equatable, Versional):
             result = NotImplemented
         return result
 
-    @abstractmethod
     def __lt__(self, other):
         """
         """
@@ -46,7 +43,6 @@ class Value(Equatable, Versional):
             result = NotImplemented
         return result
 
-    @abstractmethod
     def __le__(self, other):
         """
         """
