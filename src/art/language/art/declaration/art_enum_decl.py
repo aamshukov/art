@@ -51,4 +51,4 @@ class ArtEnumDecl(ArtDecl):
     def stringify(self):
         """
         """
-        return f"{super().stringify()}:{self.members}"
+        return f"{self.members}:{super().stringify()}"

@@ -43,16 +43,6 @@ class TypeLayout(Value):
             result = NotImplemented
         return result
 
-    def __lt__(self, other):
-        """
-        """
-        raise NotImplemented(self.__lt__.__qualname__)
-
-    def __le__(self, other):
-        """
-        """
-        raise NotImplemented(self.__le__.__qualname__)
-
     def validate(self):
         """
         """
@@ -61,4 +51,4 @@ class TypeLayout(Value):
     def stringify(self):
         """
         """
-        return f"{super().stringify()}:{self.alignment}:{self.abstract_size}:{self.platform_size}"
+        return f"{self.alignment}:{self.abstract_size}:{self.platform_size}:{super().stringify()}"

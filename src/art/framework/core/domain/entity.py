@@ -63,4 +63,4 @@ class Entity(Value):
     def stringify(self):
         """
         """
-        return f"{super().stringify()}:{self.id}"
+        return f"{self.id}:{super().stringify()}"

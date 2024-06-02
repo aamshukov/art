@@ -29,7 +29,7 @@ class Test(unittest.TestCase):
         assert Text.equal(token2.label, TokenKind.BOOLEAN_KW.name)
         st1 = str(token1)
         print(st1)
-        assert st1 == "Token:1.0:CASE_KW         : '', 'Location:0:0:', Flags.CLEAR|GENUINE"
+        assert st1 == "CASE_KW         : '', 'Location:0:0:', Flags.CLEAR|GENUINE:1.0:Token"
 
 
 if __name__ == '__main__':

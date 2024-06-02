@@ -57,7 +57,7 @@ class ArtArrayType(ArtType):
     def stringify(self):
         """
         """
-        return f"{super().stringify()}:" \
-               f"{self.underlying_type.label}:" \
+        return f"{self.underlying_type.label}:" \
                f"{str(self.bounds).strip('[]')}:" \
-               f"{self.checked}"
+               f"{self.checked}:" \
+               f"{super().stringify()}"

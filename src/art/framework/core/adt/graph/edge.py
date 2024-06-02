@@ -63,10 +63,10 @@ class Edge(Entity):
     def validate(self):
         """
         """
-        return True
+        raise NotImplemented(self.validate.__qualname__)
 
     def stringify(self):
         """
         """
-        return f"{super().stringify()}:{self.endpoints}:{self.value}"
+        return f"{self.endpoints}:{self.value}:{super().stringify()}"
 

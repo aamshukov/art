@@ -3,8 +3,8 @@
 # UI Lab Inc. Arthur Amshukov
 #
 """ Art type """
-from art.framework.core.text.text import Text
 from art.framework.core.utils.flags import Flags
+from art.framework.core.utils.name import Name
 from art.framework.frontend.type.type import Type
 
 
@@ -55,4 +55,4 @@ class ArtType(Type):
         return (self.id == other.id and
                 self.kind == other.kind and
                 self.cardinality == other.cardinality and
-                Text.equal(self.label, other.label))
+                Name.equal(self.label, other.label))

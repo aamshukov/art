@@ -65,7 +65,7 @@ class Tree(Entity, Visitable):
     def validate(self):
         """
         """
-        return True
+        raise NotImplemented(self.validate.__qualname__)
 
     def accept(self, visitor, *args, **kwargs):
         """
@@ -75,4 +75,4 @@ class Tree(Entity, Visitable):
     def stringify(self):
         """
         """
-        return f"{super().stringify()}:{self.label}"
+        return f"{self.label}:{super().stringify()}"

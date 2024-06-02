@@ -2,16 +2,37 @@
 # -*- encoding: utf-8 -*-
 # UI Lab Inc. Arthur Amshukov
 #
-import os
 import unittest
-from art.framework.core.adt.graph.vertex import Vertex
+from art.framework.core.domain.entity import Entity
+from art.framework.core.utils.flags import Flags
+
+
+class EntityTest(Entity):
+    """
+    """
+    def __init__(self,
+                 id,
+                 label,
+                 value=None,
+                 attributes=None,
+                 flags=Flags.CLEAR,
+                 version='1.0'):
+        """
+        """
+        super().__init__(id, value, attributes, flags, version)
+        self.label = label
+
+    def stringify(self):
+        """
+        """
+        return f"{self.label}:{super().stringify()}"
 
 
 class Test(unittest.TestCase):
     def test_repr_str_success(self):
-        vertex = Vertex(1, "odin")
-        repr1 = repr(vertex)
-        str1 = str(vertex)
+        et = EntityTest(1, "odin")
+        repr1 = repr(et)
+        str1 = str(et)
         assert repr1 == str1
 
 

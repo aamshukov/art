@@ -78,4 +78,4 @@ class Symbol(Entity):
     def stringify(self):
         """
         """
-        return f"{super().stringify()}:{self.label}"
+        return f"{self.label}:{super().stringify()}"

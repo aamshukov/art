@@ -100,7 +100,7 @@ class Index(Entity):
     def stringify(self):
         """
         """
-        return f"{super().stringify()}:{self.label}:{self.fanout}"
+        return f"{self.label}:{self.fanout}:{super().stringify()}"
 
     class BTreeBranch(Tree):
         """

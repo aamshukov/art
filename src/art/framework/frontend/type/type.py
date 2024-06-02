@@ -64,4 +64,4 @@ class Type(Tree):
     def stringify(self):
         """
         """
-        return f"{super().stringify()}:{self.kind}:{self.cardinality}:{self.layout}"
+        return f"{self.kind}:{self.cardinality}:{self.layout}:{super().stringify()}"

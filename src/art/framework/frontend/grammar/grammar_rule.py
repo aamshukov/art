@@ -82,7 +82,7 @@ class GrammarRule(Entity):
     def stringify(self):
         """
         """
-        return f"{super().stringify()}:{self.name}:{self.decorate()}"
+        return f"{self.name}:{self.decorate()}:{super().stringify()}"
 
     def decorate(self):
         """

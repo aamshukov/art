@@ -95,7 +95,7 @@ class GrammarSymbol(Entity):
     def stringify(self):
         """
         """
-        return f"{super().stringify()}:{self.name}:{self.type}:{self.token}"
+        return f"{self.name}:{self.type}:{self.token}:{super().stringify()}"
 
     def decorate(self, full=False):
         """

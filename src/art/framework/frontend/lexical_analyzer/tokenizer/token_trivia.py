@@ -63,4 +63,4 @@ class TokenTrivia(Value):
     def stringify(self):
         """
         """
-        return f"{super().stringify()}:{self.token}"
+        return f"{self.token}:{super().stringify()}"

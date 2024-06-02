@@ -3,6 +3,7 @@
 # UI Lab Inc. Arthur Amshukov
 #
 """ Declaration name """
+from art.framework.core.text.text import Text
 from art.framework.core.utils.flags import Flags
 from art.framework.core.domain.value import Value
 
@@ -66,3 +67,9 @@ class Name(Value):
         """
         """
         return f"{super().stringify()}:{self.flags}"
+
+    @staticmethod
+    def equal(lhs, rhs):
+        """
+        """
+        return Text.equal(lhs.name, rhs.name)

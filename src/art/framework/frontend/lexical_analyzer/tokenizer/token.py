@@ -75,7 +75,8 @@ class Token(Value):
     def stringify(self):
         """
         """
-        return f"{super().stringify()}:{self.kind.name.ljust(16)}: '{self.literal}', '{self.location}', {self.flags}"
+        return f"{self.kind.name.ljust(16)}: " \
+               f"'{self.literal}', '{self.location}', {self.flags}:{super().stringify()}"
 
     def accept(self, token):
         """

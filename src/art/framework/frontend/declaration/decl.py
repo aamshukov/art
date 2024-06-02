@@ -48,4 +48,4 @@ class Decl(Tree):
     def stringify(self):
         """
         """
-        return f"{super().stringify()}:{self.kind}"
+        return f"{self.kind}:{super().stringify()}"

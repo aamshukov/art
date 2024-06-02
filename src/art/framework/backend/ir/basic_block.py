@@ -25,4 +25,4 @@ class BasicBlock(DominatorVertex):
     def stringify(self):
         """
         """
-        return f"{super().stringify()}:{self.code}"
+        return f"{self.code}:{super().stringify()}"
