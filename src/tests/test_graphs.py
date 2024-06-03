@@ -1529,6 +1529,85 @@ class Test(unittest.TestCase):
         now = datetime.now()
         print(f"End: {now}")
 
+    def test_get_topological_order_dfs_colored_A_cycled(self):
+        graph = Graph(digraph=True)
+        va = Vertex(0,  'A', 'A', color=Colors.WHITE)
+        graph.add_vertex(va)
+        topological_order, cycles = GraphAlgorithms.get_topological_order_dfs_colored_cycles(graph)
+        topological_order_result = [v.value for v in topological_order]
+        print(f"Topological order: {topological_order_result}")
+        assert len(topological_order_result) == len(graph.vertices)
+        assert topological_order_result == ['A']
+        assert cycles == []
+
+    def test_get_topological_order_dfs_colored_AA_cycled(self):
+        graph = Graph(digraph=True)
+        va = Vertex(0,  'A', 'A', color=Colors.WHITE)
+        graph.add_vertex(va)
+        graph.add_edge(va, va, 'A->A')
+        topological_order, cycles = GraphAlgorithms.get_topological_order_dfs_colored_cycles(graph)
+        topological_order_result = [v.value for v in topological_order]
+        print(f"Topological order: {topological_order_result}")
+        assert len(topological_order_result) == len(graph.vertices)
+        assert topological_order_result == ['A']
+        assert cycles == [(va, va)]
+
+    def test_get_topological_order_dfs_colored_ABA_cycled(self):
+        graph = Graph(digraph=True)
+        va = Vertex(0,  'A', 'A', color=Colors.WHITE)
+        vb = Vertex(1,  'B', 'B', color=Colors.WHITE)
+        graph.add_vertex(va)
+        graph.add_vertex(vb)
+        graph.add_edge(va, vb, 'A->B')
+        graph.add_edge(vb, va, 'B->A')
+        topological_order, cycles = GraphAlgorithms.get_topological_order_dfs_colored_cycles(graph)
+        topological_order_result = [v.value for v in topological_order]
+        print(f"Topological order: {topological_order_result}")
+        assert len(topological_order_result) == len(graph.vertices)
+        assert topological_order_result == ['A', 'B']
+        assert cycles == [(va, vb)]
+
+    def test_get_topological_order_dfs_colored_ABCA_cycled(self):
+        graph = Graph(digraph=True)
+        va = Vertex(0,  'A', 'A', color=Colors.WHITE)
+        vb = Vertex(1,  'B', 'B', color=Colors.WHITE)
+        vc = Vertex(2,  'C', 'C', color=Colors.WHITE)
+        graph.add_vertex(va)
+        graph.add_vertex(vb)
+        graph.add_vertex(vc)
+        graph.add_edge(va, vb, 'A->B')
+        graph.add_edge(va, vc, 'A->C')
+        graph.add_edge(vb, va, 'B->A')
+        graph.add_edge(vc, va, 'C->A')
+        topological_order, cycles = GraphAlgorithms.get_topological_order_dfs_colored_cycles(graph)
+        topological_order_result = [v.value for v in topological_order]
+        print(f"Topological order: {topological_order_result}")
+        assert len(topological_order_result) == len(graph.vertices)
+        assert topological_order_result == ['A', 'B', 'C']
+        assert cycles == [(va, vb), (va, vc)]
+
+    def test_get_topological_order_dfs_colored_ABCDA_cycled(self):
+        graph = Graph(digraph=True)
+        va = Vertex(0,  'A', 'A', color=Colors.WHITE)
+        vb = Vertex(1,  'B', 'B', color=Colors.WHITE)
+        vc = Vertex(2,  'C', 'C', color=Colors.WHITE)
+        vd = Vertex(3,  'D', 'D', color=Colors.WHITE)
+        graph.add_vertex(va)
+        graph.add_vertex(vb)
+        graph.add_vertex(vc)
+        graph.add_vertex(vd)
+        graph.add_edge(va, va, 'A->A')
+        graph.add_edge(va, vb, 'A->B')
+        graph.add_edge(vb, vc, 'B->C')
+        graph.add_edge(vc, vd, 'C->D')
+        graph.add_edge(vd, vd, 'D->D')
+        topological_order, cycles = GraphAlgorithms.get_topological_order_dfs_colored_cycles(graph)
+        topological_order_result = [v.value for v in topological_order]
+        print(f"Topological order: {topological_order_result}")
+        assert len(topological_order_result) == len(graph.vertices)
+        assert topological_order_result == ['A', 'B', 'C', 'D']
+        assert cycles == [(va, va), (vd, vd)]
+
     def test_get_topological_order_kahn(self):
         graph = Test.get_topological_order_dfs_colored_graph()
         topological_order_gen = GraphAlgorithms.get_topological_order_kahn(graph)

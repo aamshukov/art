@@ -35,6 +35,7 @@ class Scope(Tree):
         self.level = level  # depth
         self.symbols = dict()  # name:symbol
         self.types = dict()  # synthetic (inferred or collected) types
+        self.decls = list()
 
     def get_type(self, type):  # noqa
         """
@@ -56,3 +57,8 @@ class Scope(Tree):
         """
         """
         return len(self.types) + 1
+
+    def next_decl_uid(self):
+        """
+        """
+        return len(self.decls) + 1

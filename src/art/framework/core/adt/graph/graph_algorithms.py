@@ -143,7 +143,7 @@ class GraphAlgorithms(Base):
         https://www.geeksforgeeks.org/detect-cycle-direct-graph-using-colors/?ref=rp
         Colors:
             WHITE: Vertex is not processed yet. Initially, all vertices are WHITE.
-            GRAY: Vertex is being processed (DFS for this vertex has started, but not finished
+            GRAY: Vertex is being processed - DFS for this vertex has started, but not finished
                   which means that all descendants (in DFS tree) of this vertex are not processed yet
                   or this vertex is in the function call stack.
             BLACK: Vertex and all its descendants are processed.
@@ -217,6 +217,36 @@ class GraphAlgorithms(Base):
                 in_degree[adjacence.vertex] -= 1
                 if in_degree[adjacence.vertex] == 0:
                     stack.append(adjacence.vertex)  # push
+
+    @staticmethod
+    def get_topological_order_dfs_colored_cycles(graph):
+        """
+        Similar to get_topological_order_dfs_colored but also collects cycles.
+        """
+        assert graph.digraph, "Invalid graph type, must be directed graph."
+        result = list()
+        cycles = list()
+        stack = deque()
+        for vertex in graph.vertices.values():
+            if vertex.color != Colors.WHITE:  # is being processed or processed
+                continue
+            stack.append(vertex)  # push
+            while stack:
+                vertex = stack[-1]  # peek
+                if vertex.color == Colors.WHITE:  # about to explore
+                    vertex.color = Colors.GRAY
+                else:
+                    vertex.color = Colors.BLACK  # mark as processed, add to results
+                    result.insert(0, stack.pop())
+                for adjacence in vertex.adjacencies:
+                    if adjacence.vertex.color == Colors.GRAY:
+                        if vertex.color != Colors.BLACK:
+                            cycles.append((adjacence.vertex, vertex))
+                    else:
+                        if adjacence.vertex.color == Colors.WHITE:
+                            stack.append(adjacence.vertex)  # push
+        cycles = sorted(cycles, key=lambda el: (el[0].id, el[1].id))
+        return result, cycles
 
     @staticmethod
     def calculate_tree_traverses(tree, preorder_action=None, postorder_action=None, *args, **kwargs):
