@@ -2106,6 +2106,188 @@ class Test(unittest.TestCase):
         now = datetime.now()
         print(f"End: {now}")
 
+    def test_nx_graphs(self):
+        from networkx.readwrite import json_graph
+        path = r"d:\tmp\art.graphs.viz"
+        prefix = "Nx--"
+        count = 1
+        n_s = 3
+        n_e = 3
+        n2_s = 3  # n^2
+        n2_e = 3
+        m_s = 3
+        m_e = 3
+        r_s = 0
+        r_e = 3
+        h_s = 0
+        h_e = 3
+        m1_s = 3
+        m1_e = 3
+        m2_s = 3
+        m2_e = 3
+        p = 3  # prime number
+        seed = None
+        for k in range(count):
+            graph = nx.balanced_tree(r=random.randint(r_s, r_e), h=random.randint(h_s, h_e))
+            data = json_graph.adjacency_data(graph)
+            GraphAlgorithms.serialize_graph_data(data, os.path.join(path, f"{prefix}balanced_tree.{k}.txt"))
+            graph = nx.barbell_graph(m1=random.randint(m1_s, m1_e), m2=random.randint(m2_s, m2_e))
+            data = json_graph.adjacency_data(graph)
+            GraphAlgorithms.serialize_graph_data(data, os.path.join(path, f"{prefix}barbell_graph.{k}.txt"))
+            graph = nx.binomial_tree(n=random.randint(n_s, n_e))
+            data = json_graph.adjacency_data(graph)
+            GraphAlgorithms.serialize_graph_data(data, os.path.join(path, f"{prefix}binomial_tree.{k}.txt"))
+            graph = nx.complete_graph(n=random.randint(n_s, n_e))
+            data = json_graph.adjacency_data(graph)
+            GraphAlgorithms.serialize_graph_data(data, os.path.join(path, f"{prefix}complete_graph.{k}.txt"))
+            graph = nx.circular_ladder_graph(n=random.randint(n_s, n_e))
+            data = json_graph.adjacency_data(graph)
+            GraphAlgorithms.serialize_graph_data(data, os.path.join(path, f"{prefix}circular_ladder_graph.{k}.txt"))
+            graph = nx.circular_ladder_graph(n=random.randint(n_s, n_e))
+            data = json_graph.adjacency_data(graph)
+            GraphAlgorithms.serialize_graph_data(data, os.path.join(path, f"{prefix}circular_ladder_graph.{k}.txt"))
+            graph = nx.circulant_graph(n=random.randint(n_s, n_e), offsets=[1])
+            data = json_graph.adjacency_data(graph)
+            GraphAlgorithms.serialize_graph_data(data, os.path.join(path, f"{prefix}circulant_graph.{k}.txt"))
+            graph = nx.cycle_graph(n=random.randint(n_s, n_e))
+            data = json_graph.adjacency_data(graph)
+            GraphAlgorithms.serialize_graph_data(data, os.path.join(path, f"{prefix}cycle_graph.{k}.txt"))
+            graph = nx.dorogovtsev_goltsev_mendes_graph(n=random.randint(n_s, n_e))
+            data = json_graph.adjacency_data(graph)
+            GraphAlgorithms.serialize_graph_data(data,
+                                                 os.path.join(path,
+                                                              f"{prefix}dorogovtsev_goltsev_mendes_graph.{k}.txt"))
+            graph = nx.empty_graph(n=random.randint(n_s, n_e))
+            data = json_graph.adjacency_data(graph)
+            GraphAlgorithms.serialize_graph_data(data, os.path.join(path, f"{prefix}empty_graph.{k}.txt"))
+            graph = nx.full_rary_tree(r=random.randint(r_s, r_e), n=random.randint(n_s, n_e))
+            data = json_graph.adjacency_data(graph)
+            GraphAlgorithms.serialize_graph_data(data, os.path.join(path, f"{prefix}full_rary_tree.{k}.txt"))
+            # graph = nx.kneser_graph(n=random.randint(n_s + 1, n_e), k=random.randint(n_s, n_e - 1))  # up to n - 1
+            # data = json_graph.adjacency_data(graph)
+            # GraphAlgorithms.serialize_graph_data(data, os.path.join(path, f"{prefix}kneser_graph.{k}.txt"))
+            graph = nx.ladder_graph(n=random.randint(n_s, n_e))
+            data = json_graph.adjacency_data(graph)
+            GraphAlgorithms.serialize_graph_data(data, os.path.join(path, f"{prefix}ladder_graph.{k}.txt"))
+            graph = nx.lollipop_graph(n=random.randint(n_s, n_e), m=random.randint(m_s, m_e))
+            data = json_graph.adjacency_data(graph)
+            GraphAlgorithms.serialize_graph_data(data, os.path.join(path, f"{prefix}lollipop_graph.{k}.txt"))
+            graph = nx.null_graph()
+            data = json_graph.adjacency_data(graph)
+            GraphAlgorithms.serialize_graph_data(data, os.path.join(path, f"{prefix}null_graph.{k}.txt"))
+            graph = nx.path_graph(n=random.randint(n_s, n_e))
+            data = json_graph.adjacency_data(graph)
+            GraphAlgorithms.serialize_graph_data(data, os.path.join(path, f"{prefix}path_graph.{k}.txt"))
+            graph = nx.star_graph(n=random.randint(n_s, n_e))
+            data = json_graph.adjacency_data(graph)
+            GraphAlgorithms.serialize_graph_data(data, os.path.join(path, f"{prefix}star_graph.{k}.txt"))
+            graph = nx.tadpole_graph(n=random.randint(n_s, n_e), m=random.randint(m_s, m_e))
+            data = json_graph.adjacency_data(graph)
+            GraphAlgorithms.serialize_graph_data(data, os.path.join(path, f"{prefix}tadpole_graph.{k}.txt"))
+            graph = nx.trivial_graph()
+            data = json_graph.adjacency_data(graph)
+            GraphAlgorithms.serialize_graph_data(data, os.path.join(path, f"{prefix}trivial_graph.{k}.txt"))
+            graph = nx.turan_graph(n=random.randint(n_s, n_e),
+                                   r=random.randint(n_s, n_e))  # Must be less than or equal to n.
+            data = json_graph.adjacency_data(graph)
+            GraphAlgorithms.serialize_graph_data(data, os.path.join(path, f"{prefix}turan_graph.{k}.txt"))
+            graph = nx.wheel_graph(n=random.randint(n_s, n_e))
+            data = json_graph.adjacency_data(graph)
+            GraphAlgorithms.serialize_graph_data(data, os.path.join(path, f"{prefix}wheel_graph.{k}.txt"))
+            graph = nx.margulis_gabber_galil_graph(n=random.randint(n_s, n_e))
+            data = json_graph.adjacency_data(graph)
+            GraphAlgorithms.serialize_graph_data(data, os.path.join(path, f"{prefix}margulis_gabber_galil_graph.{k}.txt"))
+            graph = nx.chordal_cycle_graph(p=p)
+            data = json_graph.adjacency_data(graph)
+            GraphAlgorithms.serialize_graph_data(data, os.path.join(path, f"{prefix}chordal_cycle_graph.{k}.txt"))
+            graph = nx.paley_graph(p=p)
+            data = json_graph.adjacency_data(graph)
+            GraphAlgorithms.serialize_graph_data(data, os.path.join(path, f"{prefix}paley_graph.{k}.txt"))
+            graph = nx.grid_2d_graph(n=random.randint(n_s, n_e), m=random.randint(m_s, m_e))
+            data = json_graph.adjacency_data(graph)
+            GraphAlgorithms.serialize_graph_data(data, os.path.join(path, f"{prefix}grid_2d_graph.{k}.txt"))
+            graph = nx.grid_graph(dim=(random.randint(n_s, n_e), random.randint(n_s, n_e), random.randint(n_s, n_e)))
+            data = json_graph.adjacency_data(graph)
+            GraphAlgorithms.serialize_graph_data(data, os.path.join(path, f"{prefix}grid_graph.{k}.txt"))
+            graph = nx.hexagonal_lattice_graph(n=random.randint(n_s, n_e) * 2,
+                                               m=random.randint(m_s, m_e) * 2,
+                                               periodic=True,
+                                               with_positions=False)
+            data = json_graph.adjacency_data(graph)
+            GraphAlgorithms.serialize_graph_data(data,
+                                                 os.path.join(path, f"{prefix}hexagonal_lattice_graph.periodic.{k}.txt"))
+            graph = nx.hexagonal_lattice_graph(n=random.randint(n_s, n_e),
+                                               m=random.randint(m_s, m_e),
+                                               periodic=False,
+                                               with_positions=False)
+            data = json_graph.adjacency_data(graph)
+            GraphAlgorithms.serialize_graph_data(data, os.path.join(path, f"{prefix}hexagonal_lattice_graph.{k}.txt"))
+            graph = nx.hypercube_graph(n=random.randint(n2_s, n2_e))
+            data = json_graph.adjacency_data(graph)
+            GraphAlgorithms.serialize_graph_data(data, os.path.join(path, f"{prefix}hypercube_graph.{k}.txt"))
+            graph = nx.triangular_lattice_graph(n=random.randint(n_s, n_e) * 2,
+                                                m=random.randint(m_s, m_e) * 2,
+                                                periodic=True,
+                                                with_positions=False)
+            data = json_graph.adjacency_data(graph)
+            GraphAlgorithms.serialize_graph_data(data,
+                                                 os.path.join(path,
+                                                              f"{prefix}triangular_lattice_graph.periodic.{k}.txt"))
+            graph = nx.triangular_lattice_graph(n=random.randint(n_s, n_e),
+                                                m=random.randint(m_s, m_e),
+                                                periodic=False,
+                                                with_positions=False)
+            data = json_graph.adjacency_data(graph)
+            GraphAlgorithms.serialize_graph_data(data, os.path.join(path, f"{prefix}triangular_lattice_graph.{k}.txt"))
+            graph = nx.bull_graph()
+            data = json_graph.adjacency_data(graph)
+            GraphAlgorithms.serialize_graph_data(data, os.path.join(path, f"{prefix}bull_graph.{k}.txt"))
+            graph = nx.chvatal_graph()
+            data = json_graph.adjacency_data(graph)
+            GraphAlgorithms.serialize_graph_data(data, os.path.join(path, f"{prefix}chvatal_graph.{k}.txt"))
+            graph = nx.cubical_graph()
+            data = json_graph.adjacency_data(graph)
+            GraphAlgorithms.serialize_graph_data(data, os.path.join(path, f"{prefix}cubical_graph.{k}.txt"))
+            graph = nx.desargues_graph()
+            data = json_graph.adjacency_data(graph)
+            GraphAlgorithms.serialize_graph_data(data, os.path.join(path, f"{prefix}desargues_graph.{k}.txt"))
+            graph = nx.diamond_graph()
+            data = json_graph.adjacency_data(graph)
+            GraphAlgorithms.serialize_graph_data(data, os.path.join(path, f"{prefix}diamond_graph.{k}.txt"))
+            graph = nx.dodecahedral_graph()
+            data = json_graph.adjacency_data(graph)
+            GraphAlgorithms.serialize_graph_data(data, os.path.join(path, f"{prefix}dodecahedral_graph.{k}.txt"))
+            graph = nx.frucht_graph()
+            data = json_graph.adjacency_data(graph)
+            GraphAlgorithms.serialize_graph_data(data, os.path.join(path, f"{prefix}frucht_graph.{k}.txt"))
+            graph = nx.heawood_graph()
+            data = json_graph.adjacency_data(graph)
+            GraphAlgorithms.serialize_graph_data(data, os.path.join(path, f"{prefix}heawood_graph.{k}.txt"))
+            graph = nx.hoffman_singleton_graph()
+            data = json_graph.adjacency_data(graph)
+            GraphAlgorithms.serialize_graph_data(data, os.path.join(path, f"{prefix}hoffman_singleton_graph.{k}.txt"))
+            graph = nx.house_graph()
+            data = json_graph.adjacency_data(graph)
+            GraphAlgorithms.serialize_graph_data(data, os.path.join(path, f"{prefix}house_graph.{k}.txt"))
+            graph = nx.house_x_graph()
+            data = json_graph.adjacency_data(graph)
+            GraphAlgorithms.serialize_graph_data(data, os.path.join(path, f"{prefix}house_x_graph.{k}.txt"))
+            graph = nx.icosahedral_graph()
+            data = json_graph.adjacency_data(graph)
+            GraphAlgorithms.serialize_graph_data(data, os.path.join(path, f"{prefix}icosahedral_graph.{k}.txt"))
+            graph = nx.krackhardt_kite_graph()
+            data = json_graph.adjacency_data(graph)
+            GraphAlgorithms.serialize_graph_data(data, os.path.join(path, f"{prefix}krackhardt_kite_graph.{k}.txt"))
+            graph = nx.moebius_kantor_graph()
+            data = json_graph.adjacency_data(graph)
+            GraphAlgorithms.serialize_graph_data(data, os.path.join(path, f"{prefix}moebius_kantor_graph.{k}.txt"))
+
+
+
+            graph = nx.complete_graph(n=random.randint(n_s, n_e))
+            data = json_graph.adjacency_data(graph)
+            GraphAlgorithms.serialize_graph_data(data, os.path.join(path, f"{prefix}complete_graph.{k}.txt"))
+
 
 if __name__ == '__main__':
     """

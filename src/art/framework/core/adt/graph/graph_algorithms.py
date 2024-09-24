@@ -402,3 +402,33 @@ class GraphAlgorithms(Base):
                 yield edge
             if djs.count == 1:  # all vertices have been unified
                 break
+
+    @staticmethod
+    def generate_graph(graph_type, n, m=0, digraph=False, seed=None):
+        """
+        """
+        import networkx as nx
+        match graph_type:
+            case "complete_graph":
+                return nx.complete_graph(n)
+            case _:
+                raise NotImplemented( GraphAlgorithms.generate_random_graph.__qualname__)
+
+    @staticmethod
+    def generate_graph_data(graph_type, n, m=0, digraph=False, seed=None):
+        """
+        """
+        from networkx.readwrite import json_graph
+        graph = GraphAlgorithms.generate_graph(graph_type, n, m, digraph, seed)
+        data = json_graph.adjacency_data(graph)
+        return data
+
+    @staticmethod
+    def serialize_graph_data(data, path):
+        """
+        """
+        content = str(data)
+        content = content.replace("'", '"').replace("False", "\"False\"").replace("True", "\"True\"")
+        with open(path, 'w') as file:
+            file.write(content)
+            file.flush()
