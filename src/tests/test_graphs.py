@@ -2137,7 +2137,7 @@ class Test(unittest.TestCase):
             graph = nx.binomial_tree(n=random.randint(n_s, n_e))
             data = json_graph.adjacency_data(graph)
             GraphAlgorithms.serialize_graph_data(data, os.path.join(path, f"{prefix}binomial_tree.{k}.txt"))
-            graph = nx.complete_graph(n=random.randint(n_s, n_e))
+            graph = nx.complete_graph(n=1000)
             data = json_graph.adjacency_data(graph)
             GraphAlgorithms.serialize_graph_data(data, os.path.join(path, f"{prefix}complete_graph.{k}.txt"))
             graph = nx.circular_ladder_graph(n=random.randint(n_s, n_e))
@@ -2196,7 +2196,8 @@ class Test(unittest.TestCase):
             GraphAlgorithms.serialize_graph_data(data, os.path.join(path, f"{prefix}wheel_graph.{k}.txt"))
             graph = nx.margulis_gabber_galil_graph(n=random.randint(n_s, n_e))
             data = json_graph.adjacency_data(graph)
-            GraphAlgorithms.serialize_graph_data(data, os.path.join(path, f"{prefix}margulis_gabber_galil_graph.{k}.txt"))
+            GraphAlgorithms.serialize_graph_data(data, os.path.join(path,
+                                                                    f"{prefix}margulis_gabber_galil_graph.{k}.txt"))
             graph = nx.chordal_cycle_graph(p=p)
             data = json_graph.adjacency_data(graph)
             GraphAlgorithms.serialize_graph_data(data, os.path.join(path, f"{prefix}chordal_cycle_graph.{k}.txt"))
@@ -2284,9 +2285,9 @@ class Test(unittest.TestCase):
 
 
 
-            graph = nx.complete_graph(n=random.randint(n_s, n_e))
-            data = json_graph.adjacency_data(graph)
-            GraphAlgorithms.serialize_graph_data(data, os.path.join(path, f"{prefix}complete_graph.{k}.txt"))
+            # graph = nx.complete_graph(n=random.randint(n_s, n_e))
+            # data = json_graph.adjacency_data(graph)
+            # GraphAlgorithms.serialize_graph_data(data, os.path.join(path, f"{prefix}complete_graph.{k}.txt"))
 
 
 if __name__ == '__main__':

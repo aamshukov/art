@@ -429,6 +429,9 @@ class GraphAlgorithms(Base):
         """
         content = str(data)
         content = content.replace("'", '"').replace("False", "\"False\"").replace("True", "\"True\"")
+        start_graph_index = content.find("\"graph\"")
+        end_graph_index = content.find("]", start_graph_index)
+        content = content[:start_graph_index] + "\"graph\": []" + content[end_graph_index + 1:]
         with open(path, 'w') as file:
             file.write(content)
             file.flush()
