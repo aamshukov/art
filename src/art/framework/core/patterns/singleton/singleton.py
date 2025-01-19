@@ -30,7 +30,7 @@ def singleton(класс):  # noqa
 
     class Instance:
         """
-        Instance.
+        Instance
         """
         def __init__(self):
             """

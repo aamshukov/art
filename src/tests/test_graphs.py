@@ -18,7 +18,6 @@ from art.framework.core.adt.union_find.disjoint_set import DisjointSet
 from art.framework.core.adt.graph.vertex import Vertex
 from art.framework.core.adt.graph.graph import Graph
 from art.framework.core.adt.tree.tree import Tree
-from art.framework.core.algorithm.algorithms import Algorithms
 from art.framework.core.adt.graph.graph_algorithms import GraphAlgorithms
 from art.framework.core.adt.graph.graph_visitor import GraphVisitor
 
@@ -73,7 +72,8 @@ class Test(unittest.TestCase):
     def generate_random_graph(n=3, digraph=False):
         p = np.random.rand(n, n)  # your "matrix of probabilities"
         adjacency = np.random.rand(*p.shape) <= p  # adjacency[ii, jj] is True with probability P[ii, jj]
-        nx_graph = nx.from_numpy_array(adjacency, nx.DiGraph if digraph else nx.Graph)
+        nx_graph = nx.from_numpy_array(adjacency, digraph)
+        # nx_graph = nx.from_numpy_array(adjacency, nx.DiGraph if digraph else nx.Graph)
         result = Graph(digraph=digraph)
         vertices = dict()
         for vertex in nx_graph.nodes:
@@ -102,7 +102,8 @@ class Test(unittest.TestCase):
     def generate_random_array_queries(n=3):
         p = np.random.rand(n, n)  # your "matrix of probabilities"
         adjacency = np.random.rand(*p.shape) <= p  # adjacency[ii, jj] is True with probability P[ii, jj]
-        nx_graph = nx.from_numpy_array(adjacency, nx.Graph)
+        nx_graph = nx.from_numpy_array(adjacency, False)
+        # nx_graph = nx.from_numpy_array(adjacency, nx.Graph)
         array = list(nx_graph.nodes)
         queries = list(nx_graph.edges)
         random.shuffle(array)
@@ -112,7 +113,8 @@ class Test(unittest.TestCase):
     def generate_random_queries(n=3):
         p = np.random.rand(n, n)
         adjacency = np.random.rand(*p.shape) <= p
-        result = nx.from_numpy_array(adjacency, nx.MultiGraph)
+        result = nx.from_numpy_array(adjacency, True)
+        # result = nx.from_numpy_array(adjacency, nx.MultiGraph)
         return list(result)
 
     def test_disjoint_set_success(self):  # union find
@@ -2111,22 +2113,21 @@ class Test(unittest.TestCase):
         path = r"d:\tmp\art.graphs.viz"
         prefix = "Nx--"
         count = 1
-        n_s = 3
-        n_e = 3
-        n2_s = 3  # n^2
-        n2_e = 3
-        m_s = 3
-        m_e = 3
+        n_s = 7
+        n_e = 7
+        n2_s = 5  # n^2
+        n2_e = 7
+        m_s = 5
+        m_e = 5
         r_s = 0
-        r_e = 3
+        r_e = 5
         h_s = 0
-        h_e = 3
-        m1_s = 3
-        m1_e = 3
-        m2_s = 3
-        m2_e = 3
-        p = 3  # prime number
-        seed = None
+        h_e = 5
+        m1_s = 5
+        m1_e = 5
+        m2_s = 5
+        m2_e = 5
+        p = 5  # prime number
         for k in range(count):
             graph = nx.balanced_tree(r=random.randint(r_s, r_e), h=random.randint(h_s, h_e))
             data = json_graph.adjacency_data(graph)
@@ -2282,12 +2283,6 @@ class Test(unittest.TestCase):
             graph = nx.moebius_kantor_graph()
             data = json_graph.adjacency_data(graph)
             GraphAlgorithms.serialize_graph_data(data, os.path.join(path, f"{prefix}moebius_kantor_graph.{k}.txt"))
-
-
-
-            # graph = nx.complete_graph(n=random.randint(n_s, n_e))
-            # data = json_graph.adjacency_data(graph)
-            # GraphAlgorithms.serialize_graph_data(data, os.path.join(path, f"{prefix}complete_graph.{k}.txt"))
 
 
 if __name__ == '__main__':

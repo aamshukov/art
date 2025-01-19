@@ -77,6 +77,8 @@ class Test(unittest.TestCase):
         return rf'd:\tmp\art\{filename}.png'
 
     def test_pm_expression_empty_success(self):
+        import tempfile
+        tempfile.tempdir = r'd:\tmp'
         program = """
         """
         parser = Test.get_parser(program)

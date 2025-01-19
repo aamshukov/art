@@ -197,3 +197,15 @@ class Algorithms(Base):
                 n = t
             mxpo2ls //= 2
         return result
+
+    @staticmethod
+    def delta_encoding(array):
+        """
+        """
+        deltas = [0] * len(array)
+        prev = 0
+        for k in range(len(array)):
+            current = array[k]
+            deltas[k] = current - prev
+            prev = current
+        return deltas

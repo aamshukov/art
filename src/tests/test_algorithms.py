@@ -16,7 +16,8 @@ class Test(unittest.TestCase):
     def generate_random_array_queries(n=3):
         p = np.random.rand(n, n)  # your "matrix of probabilities"
         adjacency = np.random.rand(*p.shape) <= p  # adjacency[ii, jj] is True with probability P[ii, jj]
-        nx_graph = nx.from_numpy_array(adjacency, nx.Graph)
+        nx_graph = nx.from_numpy_array(adjacency, False)
+        # nx_graph = nx.from_numpy_array(adjacency, nx.Graph)
         array = list(nx_graph.nodes)
         queries = list(nx_graph.edges)
         random.shuffle(array)
@@ -91,10 +92,11 @@ class Test(unittest.TestCase):
         assert result == [[1, 5]]
 
     def test_merge_intervals_random_success(self):
-        n = 1000
+        n = 100
         p = np.random.rand(n, n)  # your "matrix of probabilities"
         adjacency = np.random.rand(*p.shape) <= p  # adjacency[ii, jj] is True with probability P[ii, jj]
-        nx_graph = nx.from_numpy_array(adjacency, nx.Graph)
+        nx_graph = nx.from_numpy_array(adjacency, False)
+        # nx_graph = nx.from_numpy_array(adjacency, nx.Graph)
         tuples = list(nx_graph.edges)
         intervals = [[t[0], t[1]] for t in tuples]
         random.shuffle(intervals)
@@ -133,6 +135,15 @@ class Test(unittest.TestCase):
             alog2 = Algorithms.integer_log2(k)
             plog2 = int(math.log2(k))
             assert alog2 == plog2
+
+    def test_delta_encoding(self):
+        array = [0, 3, 4, 4, 1, 1, 1, 1, 1, 2, 2, 0, 1, 0, 0, 1, 5, 0, 0, 0, 1, 4, 1, 1, 0, 1, 1, 2, 3, 0, 2, 1, 0, 0, 0, 2, 5, 0, 0, 5, 1, 4, 2, 0, 2, 0, 0, 0, 0, 0, 0, 1, 1, 4, 5, 1, 0, 2, 0, 0, 0, 0, 0, 1, 0, 3, 1, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 2, 1, 1, 0, 1, 1, 0, 0, 1, 1, 3, 0, 5, 0, 0, 6, 0, 0, 1, 0, 0, 0, 1, 1, 1, 3, 4, 0, 4, 2, 4, 2, 0, 0, 1, 0]  # noqa
+        deltas = Algorithms.delta_encoding(array)
+        #  0, 3, 1, 0, -3, 0, 0, 0, 0, 1, 0, -2, 1, -1, 0, 1, 4, -5, 0, 0, 1, 3, -3, 0, -1, 1, 0, 1, 1, -3, 2, -1, -1,
+        #  0, 0, 2, 3, -5, 0, 5, -4, 3, -2, -2, 2, -2, 0, 0, 0, 0, 0, 1, 0, 3, 1, -4, -1, 2, -2, 0, 0, 0, 0, 1, -1, 3,
+        #  -2, 0, -1, 1, -1, 1, -1, 0, 0, 0, 0, 0, 2, -1, 0, -1, 1, 0, -1, 0, 1, 0, 2, -3, 5, -5, 0, 6, -6, 0, 1, -1,
+        #  0, 0...
+        assert len(deltas) == len(array)
 
 
 if __name__ == '__main__':

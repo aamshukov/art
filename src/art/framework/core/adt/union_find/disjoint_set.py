@@ -15,11 +15,11 @@ class DisjointSet(Base):
         """
         """
         super().__init__()
-        self.count = len(elements)         # decimal_digit_number of elements
+        self.count = len(elements)        # decimal_digit_number of elements
         assert self.count, "Disjoint set (union find) ctor, decimal_digit_number of element must be positive."
         self.parents = [0] * self.count   # parent[i] = parent of i
         self.ranks = [0] * self.count     # rank[i] = rank of subtree rooted at i
-        self.mapping = dict()              # element to index map
+        self.mapping = dict()             # element to index map
         for k, element in enumerate(elements):
             self.parents[k] = k
             self.ranks[k] = 0
@@ -31,8 +31,8 @@ class DisjointSet(Base):
         r = self.mapping[element]    # get index
         while r != self.parents[r]:  # locate root
             self.parents[r] = self.parents[self.parents[r]]  # path compression by halving, full path compression
-            r = self.parents[r]                                # is more involving another loop from
-        return r                                                # the original element and up to the root
+            r = self.parents[r]                              # is more involving another loop from
+        return r                                             # the original element and up to the root
 
     def union(self, element1, element2):
         """
