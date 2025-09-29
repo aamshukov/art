@@ -3,7 +3,7 @@
 # UI Lab Inc. Arthur Amshukov
 #
 """ Root class """
-from abc import ABCMeta, abstractmethod
+from abc import ABCMeta
 
 
 class Base(metaclass=ABCMeta):
